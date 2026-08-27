@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HealthBit · Mapa del sistema</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.2"></script>
+  <style>
+    :root {
+      --bg: #0b0e12;
+      --bg-2: #11161c;
+      --surface: #171d25;
+      --surface-2: #1d252f;
+      --line: #2c3642;
+      --line-2: #3a4654;
+      --text: #eef3f8;
+      --muted: #93a0b0;
+      --faint: #6b7888;
+      --ready: #a78bfa;
+      --ready-bg: #2e1065;
+      --ready-bd: #5b21b6;
+      --mid: #e8b84a;
+      --mid-bg: #33280c;
+      --mid-bd: #6b5414;
+      --miss: #f07178;
+      --miss-bg: #3a1418;
+      --miss-bd: #7a2a32;
+      --accent: #8b5cf6;
+      --accent-2: #a78bfa;
+      --focus: #818cf8;
+      --shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+      --sidebar: 268px;
+      --radius: 14px;
+      --font: "DM Sans", system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      letter-spacing: -0.011em;
+    }
+
+    a { color: var(--accent-2); }
+    button, select { font-family: inherit; }
+
+    :focus-visible {
+      outline: 2px solid var(--focus);
+      outline-offset: 3px;
+    }
+
+    .skip {
+      position: absolute;
+      left: -999px;
+      top: 8px;
+      background: var(--accent);
+      color: #042016;
+      padding: 8px 12px;
+      border-radius: 8px;
+      z-index: 80;
+    }
+    .skip:focus { left: 8px; }
+
+    .app {
+      display: grid;
+      grid-template-columns: var(--sidebar) 1fr;
+      min-height: 100%;
+    }
+
+    .sidebar {
+      background: var(--bg-2);
+      border-right: 1px solid var(--line);
+      padding: 22px 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+
+    .brand {
+      padding: 0 8px;
+    }
+    .brand-kicker {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    .brand h1 {
+      margin: 6px 0 0;
+      font-size: 22px;
+      font-weight: 700;
+    }
+    .brand p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .health-pill {
+      margin-top: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--mid-bg);
+      border: 1px solid var(--mid-bd);
+      color: var(--mid);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 10px;
+      border-radius: 999px;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .nav button {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      text-align: left;
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--muted);
+      padding: 10px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .nav button i { font-size: 18px; }
+    .nav button[aria-current="page"] {
+      background: var(--surface);
+      border-color: var(--line);
+      color: var(--text);
+    }
+    .nav button:hover { color: var(--text); background: var(--surface); }
+
+    .product-box {
+      margin-top: auto;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 12px;
+    }
+    .product-box label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--faint);
+      margin-bottom: 8px;
+    }
+    .product-box select {
+      width: 100%;
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--line-2);
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-size: 13px;
+    }
+    .hint {
+      margin: 8px 0 0;
+      font-size: 12px;
+      color: var(--faint);
+      line-height: 1.4;
+    }
+
+    .main {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .topbar {
+      padding: 22px 28px 0;
+    }
+    .topbar h2 {
+      margin: 0;
+      font-size: 26px;
+      letter-spacing: -0.03em;
+    }
+    .lede {
+      margin: 8px 0 0;
+      max-width: 72ch;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .view { display: none; padding: 18px 28px 36px; }
+    .view.active { display: block; }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid;
+      white-space: nowrap;
+    }
+    .status.ready { color: var(--ready); background: var(--ready-bg); border-color: var(--ready-bd); }
+    .status.mid { color: var(--mid); background: var(--mid-bg); border-color: var(--mid-bd); }
+    .status.miss { color: var(--miss); background: var(--miss-bg); border-color: var(--miss-bd); }
+
+    /* MAP */
+    .map-tools {
+      display: flex;
+      gap: 8px;
+      margin: 14px 0 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .tool-btn, .ghost {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .tool-btn:hover, .ghost:hover { border-color: var(--line-2); }
+    .legend {
+      display: flex;
+      gap: 14px;
+      margin-left: auto;
+      font-size: 12px;
+      color: var(--muted);
+      flex-wrap: wrap;
+    }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+
+    .viewport {
+      height: calc(100vh - 210px);
+      min-height: 520px;
+      overflow: auto;
+      background:
+        radial-gradient(1200px 400px at 10% 0%, rgba(52, 211, 153, 0.07), transparent 55%),
+        var(--bg-2);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      cursor: grab;
+    }
+    .viewport:active { cursor: grabbing; }
+    .canvas {
+      position: relative;
+      width: 1680px;
+      height: 1080px;
+      transform-origin: 0 0;
+    }
+    .lanes {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .lane-label {
+      position: absolute;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--faint);
+    }
+    .node {
+      position: absolute;
+      width: 230px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px 12px 12px 14px;
+      text-align: left;
+      color: inherit;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(0,0,0,.22);
+    }
+    .node::before {
+      content: "";
+      position: absolute;
+      left: 0; top: 10px; bottom: 10px;
+      width: 4px;
+      border-radius: 4px;
+      background: var(--line-2);
+    }
+    .node.ready::before { background: var(--ready); }
+    .node.mid::before { background: var(--mid); }
+    .node.miss::before { background: var(--miss); }
+    .node:hover, .node:focus-visible { border-color: var(--accent); }
+    .node h3 {
+      margin: 0 0 6px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .node p {
+      margin: 0 0 10px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+    .edge-label {
+      position: absolute;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent-2);
+      background: rgba(11, 14, 18, 0.86);
+      border: 1px solid var(--line);
+      padding: 2px 7px;
+      border-radius: 999px;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    .wires { position: absolute; inset: 0; pointer-events: none; }
+
+    /* BOARD */
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      align-items: start;
+    }
+    .col {
+      background: var(--bg-2);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px;
+      min-height: 280px;
+    }
+    .col h3 {
+      margin: 0 0 12px;
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .count {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 1px 8px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .card {
+      width: 100%;
+      text-align: left;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+      color: inherit;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+    .card:hover { border-color: var(--line-2); }
+    .card h4 { margin: 0 0 6px; font-size: 14px; }
+    .card p { margin: 0; font-size: 12px; color: var(--muted); line-height: 1.4; }
+
+    /* RISKS */
+    .risk-list { display: grid; gap: 12px; }
+    .risk {
+      width: 100%;
+      text-align: left;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px 18px;
+      color: inherit;
+      cursor: pointer;
+    }
+    .risk:hover { border-color: var(--miss-bd); }
+    .risk-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .risk h3 { margin: 0 0 8px; font-size: 16px; }
+    .chain {
+      display: grid;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .chain strong { color: var(--text); font-weight: 650; }
+
+    .empty {
+      background: var(--surface);
+      border: 1px dashed var(--line-2);
+      border-radius: 16px;
+      padding: 28px;
+      color: var(--muted);
+      max-width: 62ch;
+      line-height: 1.55;
+    }
+    .empty h3 { margin: 0 0 8px; color: var(--text); }
+
+    /* DRAWER */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(4, 8, 12, 0.62);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .18s ease;
+      z-index: 40;
+    }
+    .overlay.open { opacity: 1; pointer-events: auto; }
+    .drawer {
+      position: fixed;
+      top: 0; right: 0; bottom: 0;
+      width: min(440px, 100%);
+      background: var(--bg-2);
+      border-left: 1px solid var(--line);
+      transform: translateX(100%);
+      transition: transform .2s ease;
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow);
+    }
+    .drawer.open { transform: none; }
+    .drawer header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 18px 18px 12px;
+      border-bottom: 1px solid var(--line);
+    }
+    .drawer header h2 { margin: 6px 0 0; font-size: 20px; }
+    .close-btn {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 8px 10px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 13px;
+    }
+    .drawer-body {
+      padding: 16px 18px 28px;
+      overflow: auto;
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+    .drawer-body h3 {
+      margin: 18px 0 8px;
+      color: var(--text);
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .drawer-body ul { margin: 0; padding-left: 18px; }
+    .drawer-body li { margin: 6px 0; }
+    .file {
+      font-size: 12px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 6px 8px;
+      color: var(--accent-2);
+      display: inline-block;
+      margin: 0 6px 6px 0;
+    }
+    .steps { counter-reset: s; padding-left: 0; list-style: none; }
+    .steps li {
+      margin: 10px 0;
+      padding-left: 34px;
+      position: relative;
+    }
+    .steps li::before {
+      counter-increment: s;
+      content: counter(s);
+      position: absolute;
+      left: 0; top: 0;
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: var(--surface);
+      border: 1px solid var(--line-2);
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 700;
+      display: grid;
+      place-items: center;
+    }
+
+    @media (max-width: 900px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar {
+        height: auto;
+        position: relative;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .nav { flex-direction: row; flex-wrap: wrap; }
+      .nav button { width: auto; }
+      .product-box { margin-top: 0; }
+      .board { grid-template-columns: 1fr; }
+      .legend { margin-left: 0; }
+      .view, .topbar { padding-left: 16px; padding-right: 16px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#contenido">Saltar al contenido</a>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-kicker">Carpeta de trabajo</div>
+        <h1>HealthBit</h1>
+        <p>Una clínica en el celular: el paciente busca un médico de verdad y el doctor demuestra quién es y lleva a sus pacientes.</p>
+        <div class="health-pill"><span class="dot"></span> A medias · demo que se puede recorrer, no lista para gente real</div>
+      </div>
+
+      <nav class="nav" aria-label="Vistas">
+        <button type="button" data-view="mapa" aria-current="page">
+          <i class="ph ph-map-trifold" aria-hidden="true"></i> Mapa
+        </button>
+        <button type="button" data-view="tareas">
+          <i class="ph ph-kanban" aria-hidden="true"></i> Tareas
+        </button>
+        <button type="button" data-view="riesgos">
+          <i class="ph ph-warning" aria-hidden="true"></i> Riesgos
+        </button>
+        <button type="button" data-view="costos">
+          <i class="ph ph-coins" aria-hidden="true"></i> Costos
+        </button>
+      </nav>
+
+      <div class="product-box">
+        <label for="producto">Producto activo</label>
+        <select id="producto">
+          <option value="healthbit">HealthBit (el único de esta carpeta)</option>
+        </select>
+        <p class="hint">No hay otras apps acá. El README genérico y la guía de diseño son apoyo, no productos aparte.</p>
+      </div>
+    </aside>
+
+    <main class="main" id="contenido">
+      <header class="topbar">
+        <h2 id="view-title">Mapa</h2>
+        <p class="lede" id="view-lede">De izquierda a derecha: quién entra, qué se procesa, qué sale. Tocá un recuadro para ver archivos y el estado real.</p>
+      </header>
+
+      <section class="view active" id="view-mapa" aria-labelledby="view-title">
+        <div class="map-tools">
+          <button class="tool-btn" id="zoom-out" type="button" aria-label="Alejar"><i class="ph ph-minus" aria-hidden="true"></i> Alejar</button>
+          <button class="tool-btn" id="zoom-in" type="button" aria-label="Acercar"><i class="ph ph-plus" aria-hidden="true"></i> Acercar</button>
+          <button class="tool-btn" id="zoom-reset" type="button">Caber</button>
+          <div class="legend" aria-hidden="true">
+            <span><span class="status ready">Listo</span></span>
+            <span><span class="status mid">A medias</span></span>
+            <span><span class="status miss">Falta</span></span>
+          </div>
+        </div>
+        <div class="viewport" id="viewport" tabindex="0" aria-label="Lienzo del mapa. Arrastrá para mover. Click en un recuadro para el detalle.">
+          <div class="canvas" id="canvas">
+            <svg class="wires" width="1680" height="1080" aria-hidden="true">
+              <defs>
+                <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                  <path d="M0,0 L8,3 L0,6 Z" fill="#a78bfa"></path>
+                </marker>
+              </defs>
+              <!-- Paciente lane -->
+              <path d="M250 150 H320" stroke="#a78bfa" stroke-width="1.6" fill="none" marker-end="url(#arrow)"/>
+              <path d="M560 150 H630" stroke="#a78bfa" stroke-width="1.6" fill="none" marker-end="url(#arrow)"/>
+              <path d="M870 150 H940" stroke="#a78bfa" stroke-width="1.6" fill="none" marker-end="url(#arrow)"/>
+              <!-- Doctor lane -->
+              <path d="M250 340 H320" stroke="#a78bfa" stroke-width="1.6" fill="none" marker-end="url(#arrow)"/>
+              <path d="M560 340 H630" stroke="#a78bfa" stroke-width="1.6" fill="none" marker-end="url(#arrow)"/>
+              <path d="M870 310 V250 H940" stroke="#a78bfa" stroke-width="1.6" fill="none" marker-end="url(#arrow)"/>
+              <path d="M870 370 H940" stroke="#a78bfa" stroke-width="1.6" fill="none" marker-end="url(#arrow)"/>
+              <path d="M1180 250 H1250" stroke="#a78bfa" stroke-width="1.6" fill="none" marker-end="url(#arrow)"/>
+              <path d="M1180 400 H1250 1250 340" stroke="#a78bfa" stroke-width="1.6" fill="none" marker-end="url(#arrow)"/>
+              <path d="M1480 340 H1520 V500 H1250" stroke="#93a0b0" stroke-width="1.4" fill="none" marker-end="url(#arrow)"/>
+              <path d="M1365 590 V640" stroke="#a78bfa" stroke-width="1.6" fill="none" marker-end="url(#arrow)"/>
+              <path d="M1365 590 H1520 V730 H1250" stroke="#a78bfa" stroke-width="1.4" fill="none" marker-end="url(#arrow)"/>
+              <path d="M1365 590 H1080 V820 H1250" stroke="#a78bfa" stroke-width="1.4" fill="none" marker-end="url(#arrow)"/>
+              <!-- Archivador feeds -->
+              <path d="M250 820 H320 320 150" stroke="#8b98a8" stroke-width="1.2" stroke-dasharray="5 5" fill="none" marker-end="url(#arrow)"/>
+              <path d="M250 860 H940 940 730" stroke="#8b98a8" stroke-width="1.2" stroke-dasharray="5 5" fill="none" marker-end="url(#arrow)"/>
+              <!-- RETHUS disconnected -->
+              <path d="M745 480 V640" stroke="#f07178" stroke-width="1.4" stroke-dasharray="4 4" fill="none" marker-end="url(#arrow)"/>
+              <!-- Huérfanos -->
+              <path d="M1365 910 H1080" stroke="#f07178" stroke-width="1.2" stroke-dasharray="4 4" fill="none"/>
+            </svg>
+            <div class="lanes">
+              <div class="lane-label" style="left:40px;top:48px">Entra</div>
+              <div class="lane-label" style="left:360px;top:48px">Procesa</div>
+              <div class="lane-label" style="left:980px;top:48px">Sale</div>
+            </div>
+            <span class="edge-label" style="left:258px;top:128px">busca</span>
+            <span class="edge-label" style="left:568px;top:128px">abre</span>
+            <span class="edge-label" style="left:878px;top:128px">pide (simulado)</span>
+            <span class="edge-label" style="left:258px;top:318px">entra</span>
+            <span class="edge-label" style="left:558px;top:318px">se registra</span>
+            <span class="edge-label" style="left:888px;top:228px">usa</span>
+            <span class="edge-label" style="left:878px;top:348px">manda la foto</span>
+            <span class="edge-label" style="left:1188px;top:228px">pide lectura</span>
+            <span class="edge-label" style="left:1188px;top:372px">si Gemini falla, igual dice que sí</span>
+            <span class="edge-label" style="left:1488px;top:430px">pantalla de éxito</span>
+            <span class="edge-label" style="left:1380px;top:600px">pasa al panel</span>
+            <span class="edge-label" style="left:700px;top:560px">no está conectado</span>
+            <span class="edge-label" style="left:80px;top:780px">alimenta con datos de ejemplo</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="view-tareas" hidden>
+        <p class="hint" style="margin:0 0 14px">Carril: HealthBit. No hay otro producto en esta carpeta.</p>
+        <div class="board">
+          <div class="col" data-col="miss"><h3>Falta <span class="count" id="c-miss">0</span></h3></div>
+          <div class="col" data-col="mid"><h3>A medias <span class="count" id="c-mid">0</span></h3></div>
+          <div class="col" data-col="ready"><h3>Listo <span class="count" id="c-ready">0</span></h3></div>
+        </div>
+      </section>
+
+      <section class="view" id="view-riesgos" hidden>
+        <div class="risk-list" id="risk-list"></div>
+      </section>
+
+      <section class="view" id="view-costos" hidden>
+        <div class="empty">
+          <h3>No hay registro de tokens en esta carpeta</h3>
+          <p>La app puede pedir a Gemini (el lector de Google) que mire una cédula o una selfie, pero acá no hay facturas, logs ni conteos. No invento números. Cuando existan, van a aparecer en esta vista y voy a decir en una frase a qué se fue el gasto.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="overlay" id="overlay" hidden></div>
+  <aside class="drawer" id="drawer" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
+    <header>
+      <div>
+        <div id="drawer-status"></div>
+        <h2 id="drawer-title">Detalle</h2>
+      </div>
+      <button type="button" class="close-btn" id="cerrar">Cerrar</button>
+    </header>
+    <div class="drawer-body" id="drawer-body"></div>
+  </aside>
+
+  <script>
+    const PRODUCT = "healthbit";
+
+    const NODES = [
+      { id: "paciente", x: 20, y: 90, status: "ready", name: "Paciente", does: "Una persona busca un especialista verificado.", files: ["src/components/PatientDirectory.tsx"], tech: ["Pantallas en el navegador"], tasks: ["No hay cuenta de paciente: entra directo al directorio."], decisions: [] },
+      { id: "directorio", x: 330, y: 90, status: "ready", name: "Directorio público", does: "Lista médicos de ejemplo, con búsqueda y especialidad.", files: ["src/components/PatientDirectory.tsx", "src/data/mockDoctors.ts"], tech: ["Datos escritos a mano, no pedidos a un archivo maestro"], tasks: ["Los médicos no salen de un registro real."], decisions: ["Hay una cara pública (directorio) y una cara privada (panel del doctor)."] },
+      { id: "perfil", x: 640, y: 90, status: "ready", name: "Perfil del médico", does: "Muestra sello, biografía, casos y datos de contacto.", files: ["src/components/DoctorOnePager.tsx"], tech: ["Pantalla larga tipo folleto"], tasks: [], decisions: [] },
+      { id: "cita", x: 950, y: 90, status: "mid", name: "Pedir cita", does: "Muestra un éxito de reserva. No se guarda en ningún lado.", files: ["src/components/PatientDirectory.tsx", "src/components/DoctorOnePager.tsx"], tech: ["Un aviso en pantalla"], tasks: ["La cita no llega al calendario del doctor."], decisions: [] },
+      { id: "doctor", x: 20, y: 280, status: "ready", name: "Doctor", does: "Entra a trabajar o se registra por primera vez.", files: ["src/App.tsx"], tech: [], tasks: [], decisions: [] },
+      { id: "puerta", x: 330, y: 280, status: "mid", name: "Puerta de acceso", does: "Pide correo y contraseña, pero deja pasar a cualquiera.", files: ["src/components/DoctorAuthModal.tsx"], tech: ["Espera un segundo y abre el panel, sin comprobar nada"], tasks: ["Armar el control real de quién puede entrar."], decisions: ["El dueño priorizó mostrar el panel antes que un acceso de verdad."] },
+      { id: "registro", x: 640, y: 280, status: "mid", name: "Registro en 5 pasos", does: "Cuenta, código profesional, frente y dorso de cédula, selfie.", files: ["src/components/VerificationFlow.tsx", "src/App.tsx"], tech: ["Pasos en pantalla + envío de fotos al recibidor"], tasks: ["El paso de RETHUS es un formulario; no consulta el registro nacional."], decisions: ["Cinco pasos para parecer una verificación seria."] },
+      { id: "camara", x: 950, y: 190, status: "ready", name: "Cámara", does: "Pide permiso y saca la foto de la cédula o de la cara.", files: ["src/components/CameraModal.tsx", "metadata.json"], tech: ["Cámara del celular o la computadora"], tasks: [], decisions: ["Se puede cargar un archivo si la cámara falla."] },
+      { id: "recibidor", x: 950, y: 340, status: "mid", name: "Recibidor interno", does: "Recibe la foto y se la manda al lector de Google. Si algo falla, inventa un “sí”.", files: ["server.ts"], tech: ["Un pequeño servidor en la misma carpeta", "Forma de pedir y entregar datos: /api/verify-document y /api/verify-biometrics"], tasks: ["Dejar de aprobar cuando el lector falle.", "La consulta RETHUS del recibidor no la usa ninguna pantalla."], decisions: ["Si Gemini no responde, la demo no se rompe: responde éxito igual."] },
+      { id: "gemini", x: 1260, y: 190, status: "mid", name: "Lector Gemini", does: "Mira la imagen y dice qué documento es y si hay un rostro.", files: ["server.ts", "README.md"], tech: ["Servicio de Google (Gemini)", "Clave GEMINI_API_KEY"], tasks: ["No hay archivo de ejemplo para la clave.", "No hay registro de cuánto cuesta cada lectura."], decisions: ["Mandar cédula y selfie a un tercero para “leerlas”."] },
+      { id: "exito", x: 1260, y: 280, status: "mid", name: "Identidad verificada", does: "Pantalla verde de éxito. El sello no está respaldado por un registro oficial.", files: ["src/App.tsx"], tech: [], tasks: ["No amarrar el sello a un “sí” inventado."], decisions: [] },
+      { id: "rethus", x: 640, y: 650, status: "miss", name: "Consulta RETHUS", does: "El recibidor tiene una ventanilla, pero es un listado inventado y la pantalla no la llama.", files: ["server.ts"], tech: ["Una consulta de prueba que casi siempre responde “activo”"], tasks: ["Conectar la pantalla con el recibidor.", "Consultar el registro nacional de verdad, no un listado de mentira."], decisions: ["Se anuncia RETHUS en la marca; no hay cruce real con MinSalud."] },
+      { id: "panel", x: 1260, y: 500, status: "ready", name: "Panel del doctor", does: "Inicio con números y gráficos de ejemplo, barra inferior tipo celular.", files: ["src/components/HomeDashboard.tsx", "src/components/BottomTabBar.tsx", "src/components/Header.tsx"], tech: ["Gráficos de ejemplo"], tasks: [], decisions: ["Navegación inferior (Home, Pacientes, Documentos, Ajustes)."] },
+      { id: "ficha", x: 1260, y: 650, status: "ready", name: "Ficha de paciente", does: "Notas clínicas, cirugías, alertas y fotos del antes y después.", files: ["src/components/PatientsSection.tsx", "src/components/PatientDetailView.tsx", "src/data/mockPatients.ts"], tech: ["Todo vive en la memoria de esta visita"], tasks: ["Al recargar, se pierde lo que agregaste."], decisions: ["La historia se ve completa para la demo, sin archivo maestro."] },
+      { id: "docs", x: 950, y: 730, status: "ready", name: "Documentos", does: "Archivador de cédula, diploma y certificados de ejemplo.", files: ["src/components/DocumentsSection.tsx", "src/data/portalData.ts"], tech: [], tasks: ["Subir un documento no lo guarda de verdad."], decisions: [] },
+      { id: "ajustes", x: 1260, y: 820, status: "mid", name: "Ajustes", does: "Cambia nombre, correo y foto en pantalla. La contraseña no se guarda.", files: ["src/components/SettingsSection.tsx"], tech: [], tasks: ["Persistir el perfil y el cambio de clave."], decisions: [] },
+      { id: "archivador", x: 20, y: 820, status: "mid", name: "Archivador de ejemplo", does: "Médicos, pacientes y diplomas escritos a mano. Es la única “base” que hay.", files: ["src/data/mockDoctors.ts", "src/data/mockPatients.ts", "src/data/portalData.ts", "src/types.ts"], tech: ["Listas dentro del código, no un archivo maestro"], tasks: ["Cuando crezca: un lugar real y seguro para guardar."], decisions: ["Demo primero; guardar después."] },
+      { id: "huerfanos", x: 1260, y: 960, status: "miss", name: "Pantallas sin usar", does: "Tres piezas hechas que nadie abre. Código muerto evidente.", files: ["src/components/SpecialistDashboard.tsx", "src/components/MobileFrame.tsx", "src/components/PatientPhotosSection.tsx"], tech: [], tasks: ["Usarlas o borrarlas para no confundir."], decisions: [] }
+    ];
+
+    const TASKS = [
+      { id: "t1", col: "miss", title: "Guardar de verdad", text: "No hay archivo maestro. Pacientes, citas y documentos viven solo mientras la ventana está abierta.", node: "archivador" },
+      { id: "t2", col: "miss", title: "Control de quién entra", text: "La puerta deja pasar a cualquiera. Cualquier visitante ve el panel del doctor.", node: "puerta" },
+      { id: "t3", col: "miss", title: "Consultar RETHUS de verdad", text: "Hoy es un listado inventado. La pantalla de registro ni siquiera lo llama.", node: "rethus" },
+      { id: "t4", col: "miss", title: "Pruebas automáticas", text: "No hay carpeta de pruebas. Nadie comprueba que el sello o la ficha sigan siendo ciertos al cambiar código.", node: "registro" },
+      { id: "t5", col: "miss", title: "Ejemplo de la clave de Google", text: "El README pide GEMINI_API_KEY en .env.local y no hay un archivo de ejemplo sin secretos.", node: "gemini" },
+      { id: "t6", col: "miss", title: "Pantallas huérfanas", text: "SpecialistDashboard, MobileFrame y PatientPhotosSection no están conectados.", node: "huerfanos" },
+      { id: "t7", col: "miss", title: "Cuenta de paciente", text: "El público entra al directorio sin identificarse. No hay historial propio.", node: "paciente" },
+      { id: "t8", col: "mid", title: "Dejar de aprobar si el lector falla", text: "El recibidor responde “documento válido” aunque Gemini no esté o se equivoque.", node: "recibidor" },
+      { id: "t9", col: "mid", title: "Cita que llegue al doctor", text: "Pedir cita muestra un éxito. No aparece en el panel.", node: "cita" },
+      { id: "t10", col: "mid", title: "Ajustes que sobrevivan al recargar", text: "Nombre y foto cambian en pantalla y se pierden.", node: "ajustes" },
+      { id: "t11", col: "mid", title: "Un solo nombre", text: "La carpeta y la marca dicen HealthBit; index.html y el servidor dicen VerifyMD.", node: "panel" },
+      { id: "t12", col: "mid", title: "Conectar fotos de evolución", text: "La ficha ya tiene fotos. Hay otra pantalla de fotos que nadie usa.", node: "ficha" },
+      { id: "t13", col: "ready", title: "Directorio con búsqueda", text: "Se puede filtrar por especialidad y abrir un perfil.", node: "directorio" },
+      { id: "t14", col: "ready", title: "Folleto público del médico", text: "Perfil largo con sello, casos y WhatsApp de ejemplo.", node: "perfil" },
+      { id: "t15", col: "ready", title: "Cinco pasos de registro en pantalla", text: "El recorrido visual está armado: datos, código, cédula, dorso, selfie.", node: "registro" },
+      { id: "t16", col: "ready", title: "Cámara del navegador", text: "Pide permiso y captura. Si falla, se puede subir un archivo.", node: "camara" },
+      { id: "t17", col: "ready", title: "Panel, pacientes, documentos", text: "Las cuatro pestañas del doctor se recorren y se ven completas con datos de ejemplo.", node: "panel" },
+      { id: "t18", col: "ready", title: "Guía de diseño", text: "DESIGNHealthBit.md deja colores, tamaños y reglas para no inventar otra cara.", node: "panel" }
+    ];
+
+    const RISKS = [
+      {
+        id: "r1",
+        title: "Cualquiera entra al consultorio",
+        what: "La puerta pide correo y clave, espera un segundo y abre el panel. No comprueba nada.",
+        why: "El día que haya historias reales, un extraño vería nombres, alergias, fotos de cirugía y teléfonos. Eso no es “un bug de login”: es abrir el archivo clínico de la clínica.",
+        well: "El control que decide quién puede entrar tiene que vivir en el recibidor, no solo en la pantalla. Sesión con vencimiento, una persona = un rol, y registro de quién abrió qué ficha.",
+        steps: [
+          "Dejar de dar por bueno el botón “Entrar” sin preguntarle a un servicio de acceso.",
+          "Guardar sesiones del lado del recibidor y cerrarlas al salir.",
+          "Separar lo público (directorio) de lo clínico (fichas). Nadie sin rol de doctor ve un paciente."
+        ],
+        links: [
+          { href: "https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html", label: "OWASP: cómo comprobar quién entra" },
+          { href: "https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html", label: "OWASP: cómo cuidar la sesión" }
+        ],
+        node: "puerta"
+      },
+      {
+        id: "r2",
+        title: "El sello verde puede ser mentira",
+        what: "Si el lector de Google falla, el recibidor igual responde que la cédula es válida. La consulta RETHUS es un listado inventado y la pantalla no la usa.",
+        why: "Al crecer, la gente va a elegir médico por ese sello. Un sello fácil de fabricar pone pacientes frente a alguien que no está habilitado.",
+        well: "Si no se puede comprobar, no se aprueba (falla cerrado). El sello solo sale cuando el registro nacional responde y, si hace falta, una persona revisa.",
+        steps: [
+          "Quitar el “éxito de mentira” cuando Gemini no responde.",
+          "Llamar de verdad al registro de talento humano en salud, no a un listado local.",
+          "Dejar un estado “en revisión” en vez de “habilitado oficial” hasta tener respuesta."
+        ],
+        links: [
+          { href: "https://www.sispro.gov.co/central-prestadores/Pages/RETHUS-Registro-de-Talento-Humano-en-Salud.aspx", label: "RETHUS (MinSalud): el registro oficial" },
+          { href: "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/", label: "OWASP: no seguir adelante si la comprobación falló" }
+        ],
+        node: "recibidor"
+      },
+      {
+        id: "r3",
+        title: "Cédula y cara viajan a Google",
+        what: "La foto de la cédula y la selfie se mandan a Gemini para que las “lea”.",
+        why: "Son datos de identidad y de la cara. En Colombia eso entra en protección de datos personales. Al escalar, sin consentimiento claro y sin contrato, es un problema legal, no solo técnico.",
+        well: "Pedir permiso en lenguaje claro, mandar lo mínimo, saber cuánto tiempo lo guarda el proveedor, y ofrecer una vía que no dependa de un tercero.",
+        steps: [
+          "Aviso antes de sacar la foto: qué se envía, a quién, y para qué.",
+          "Borrar la imagen en el recibidor después de leerla, si no hace falta guardarla.",
+          "Revisar el contrato y las reglas de Gemini para datos sensibles."
+        ],
+        links: [
+          { href: "https://www.sic.gov.co/ley-1581-de-2012", label: "Ley 1581 de 2012 (protección de datos, Colombia)" },
+          { href: "https://ai.google.dev/gemini-api/docs/prompting-strategies", label: "Gemini: buenas prácticas al enviar contenido" }
+        ],
+        node: "gemini"
+      },
+      {
+        id: "r4",
+        title: "Las historias no tienen casa",
+        what: "Pacientes, notas y fotos de ejemplo viven dentro del código. Lo que agregás se esfuma al recargar.",
+        why: "Cuando pasen a un archivo maestro sin cuidado, van a mezclar salud, identidad y fotos. Sin copias, permisos ni rastro de quién miró, una filtración o una pérdida es irreversible.",
+        well: "Un lugar de guarda cifrado, acceso por rol, copias, y un cuaderno de quién abrió cada ficha. Las fotos clínicas no van a un banco público de imágenes.",
+        steps: [
+          "Elegir un archivo maestro con cifrado en reposo.",
+          "Nunca volver a usar fotos de Unsplash como si fueran pacientes reales.",
+          "Definir retención: cuánto tiempo se guarda una historia y quién la borra."
+        ],
+        links: [
+          { href: "https://www.minsalud.gov.co/Normatividad_Nuevo/RESOLUCI%C3%93N%201995%20DE%201999.pdf", label: "Resolución 1995 de 1999: historia clínica (Colombia)" },
+          { href: "https://cheatsheetseries.owasp.org/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html", label: "OWASP: cómo guardar datos sensibles" }
+        ],
+        node: "archivador"
+      },
+      {
+        id: "r5",
+        title: "La llave de Google puede filtrarse",
+        what: "El README pide poner GEMINI_API_KEY en un archivo local. No hay ejemplo vacío ni rastro de que esa llave esté ignorada por git (esta carpeta ni siquiera es un repositorio todavía).",
+        why: "Si esa llave se copia a un chat, un zip o un git público, cualquiera gasta tu cuota y lee lo que mandes. Al crecer, una llave robada es una factura y una puerta.",
+        well: "La llave vive en el entorno del servidor, nunca en el código ni en el chat. Rotarla si se expuso.",
+        steps: [
+          "Crear un .env.example sin secretos y un .gitignore que tape .env.local.",
+          "No pegar la llave en README ni en capturas.",
+          "Cuando haya git, revisar el historial antes de publicar."
+        ],
+        links: [
+          { href: "https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html", label: "OWASP: cómo cuidar llaves y secretos" },
+          { href: "https://ai.google.dev/gemini-api/docs/api-key", label: "Google: cómo usar la clave de Gemini" }
+        ],
+        node: "gemini"
+      }
+    ];
+
+    const DETAILS = {
+      t1: NODES.find(n => n.id === "archivador"),
+      r1: RISKS[0]
+    };
+
+    const canvas = document.getElementById("canvas");
+    const viewport = document.getElementById("viewport");
+    let scale = 0.86;
+    let opener = null;
+
+    function statusLabel(s) {
+      return s === "ready" ? "Listo" : s === "mid" ? "A medias" : "Falta";
+    }
+    function statusEl(s) {
+      return `<span class="status ${s}">${statusLabel(s)}</span>`;
+    }
+
+    function renderNodes() {
+      NODES.forEach((n) => {
+        const b = document.createElement("button");
+        b.className = `node ${n.status}`;
+        b.style.left = n.x + "px";
+        b.style.top = n.y + "px";
+        b.type = "button";
+        b.dataset.id = n.id;
+        b.innerHTML = `<h3>${n.name}</h3><p>${n.does}</p>${statusEl(n.status)}`;
+        b.addEventListener("click", () => openDrawer("node", n, b));
+        canvas.appendChild(b);
+      });
+    }
+
+    function renderTasks() {
+      const cols = {
+        miss: document.querySelector('[data-col="miss"]'),
+        mid: document.querySelector('[data-col="mid"]'),
+        ready: document.querySelector('[data-col="ready"]')
+      };
+      TASKS.forEach((t) => {
+        const b = document.createElement("button");
+        b.className = "card";
+        b.type = "button";
+        b.innerHTML = `<h4>${t.title}</h4><p>${t.text}</p>`;
+        b.addEventListener("click", () => {
+          const node = NODES.find((n) => n.id === t.node);
+          openDrawer("task", { ...t, node }, b);
+        });
+        cols[t.col].appendChild(b);
+      });
+      document.getElementById("c-miss").textContent = TASKS.filter(t => t.col === "miss").length;
+      document.getElementById("c-mid").textContent = TASKS.filter(t => t.col === "mid").length;
+      document.getElementById("c-ready").textContent = TASKS.filter(t => t.col === "ready").length;
+    }
+
+    function renderRisks() {
+      const box = document.getElementById("risk-list");
+      RISKS.forEach((r) => {
+        const b = document.createElement("button");
+        b.className = "risk";
+        b.type = "button";
+        b.innerHTML = `
+          <div class="risk-top">
+            <h3>${r.title}</h3>
+            ${statusEl("miss")}
+          </div>
+          <div class="chain">
+            <div><strong>Qué pasa.</strong> ${r.what}</div>
+            <div><strong>Por qué importa (al crecer).</strong> ${r.why}</div>
+            <div><strong>Cómo se hace bien.</strong> ${r.well}</div>
+          </div>`;
+        b.addEventListener("click", () => openDrawer("risk", r, b));
+        box.appendChild(b);
+      });
+    }
+
+    function openDrawer(kind, data, from) {
+      opener = from;
+      const drawer = document.getElementById("drawer");
+      const overlay = document.getElementById("overlay");
+      const title = document.getElementById("drawer-title");
+      const status = document.getElementById("drawer-status");
+      const body = document.getElementById("drawer-body");
+      overlay.hidden = false;
+      overlay.classList.add("open");
+      drawer.classList.add("open");
+      drawer.setAttribute("aria-hidden", "false");
+
+      if (kind === "node") {
+        title.textContent = data.name;
+        status.innerHTML = statusEl(data.status);
+        body.innerHTML = `
+          <p>${data.does}</p>
+          <h3>Archivos</h3>
+          <div>${(data.files || []).map(f => `<span class="file">${f}</span>`).join("") || "—"}</div>
+          <h3>Tecnologías (en cristiano)</h3>
+          <ul>${(data.tech && data.tech.length ? data.tech : ["Solo pantalla, sin servicio detrás"]).map(t => `<li>${t}</li>`).join("")}</ul>
+          <h3>Tareas de esta pieza</h3>
+          <ul>${(data.tasks && data.tasks.length ? data.tasks : ["Ninguna pendiente evidente en los archivos."]).map(t => `<li>${t}</li>`).join("")}</ul>
+          ${data.decisions && data.decisions.length ? `<h3>Decisiones</h3><ul>${data.decisions.map(d => `<li>${d}</li>`).join("")}</ul>` : ""}
+        `;
+      } else if (kind === "task") {
+        title.textContent = data.title;
+        status.innerHTML = statusEl(data.col);
+        const node = data.node;
+        body.innerHTML = `
+          <p>${data.text}</p>
+          <h3>Producto</h3>
+          <p>HealthBit</p>
+          <h3>Pieza</h3>
+          <p>${node ? node.name + " — " + node.does : "—"}</p>
+          <h3>Archivos</h3>
+          <div>${(node && node.files ? node.files : []).map(f => `<span class="file">${f}</span>`).join("")}</div>
+        `;
+      } else if (kind === "risk") {
+        title.textContent = data.title;
+        status.innerHTML = statusEl("miss");
+        body.innerHTML = `
+          <h3>Qué pasa</h3>
+          <p>${data.what}</p>
+          <h3>Por qué importa (al crecer)</h3>
+          <p>${data.why}</p>
+          <h3>Cómo se hace bien</h3>
+          <p>${data.well}</p>
+          <h3>Pasos concretos</h3>
+          <ol class="steps">${data.steps.map(s => `<li>${s}</li>`).join("")}</ol>
+          <h3>Para leer bien hecho</h3>
+          <ul>${data.links.map(l => `<li><a href="${l.href}" target="_blank" rel="noopener noreferrer">${l.label}</a></li>`).join("")}</ul>
+        `;
+      }
+      document.getElementById("cerrar").focus();
+    }
+
+    function closeDrawer() {
+      const drawer = document.getElementById("drawer");
+      const overlay = document.getElementById("overlay");
+      overlay.classList.remove("open");
+      drawer.classList.remove("open");
+      drawer.setAttribute("aria-hidden", "true");
+      setTimeout(() => { overlay.hidden = true; }, 180);
+      if (opener) opener.focus();
+    }
+
+    function applyScale() {
+      canvas.style.transform = `scale(${scale})`;
+    }
+
+    const copy = {
+      mapa: {
+        title: "Mapa",
+        lede: "De izquierda a derecha: quién entra, qué se procesa, qué sale. Tocá un recuadro para ver archivos y el estado real."
+      },
+      tareas: {
+        title: "Tareas",
+        lede: "Lo que falta, lo que está a medias y lo que ya se puede recorrer. Todo es de HealthBit; no hay otro producto en la carpeta."
+      },
+      riesgos: {
+        title: "Riesgos",
+        lede: "No para asustar: para crecer sin llevarse por delante datos de salud ni un sello falso. Cada tarjeta se abre con los pasos y lecturas."
+      },
+      costos: {
+        title: "Costos",
+        lede: "Acá irían los tokens del lector de Google, si hubiera facturas o logs. En esta carpeta no hay ninguno."
+      }
+    };
+
+    document.querySelectorAll(".nav button").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const id = btn.dataset.view;
+        document.querySelectorAll(".nav button").forEach((b) => b.removeAttribute("aria-current"));
+        btn.setAttribute("aria-current", "page");
+        document.querySelectorAll(".view").forEach((v) => {
+          const on = v.id === "view-" + id;
+          v.classList.toggle("active", on);
+          v.hidden = !on;
+        });
+        document.getElementById("view-title").textContent = copy[id].title;
+        document.getElementById("view-lede").textContent = copy[id].lede;
+      });
+    });
+
+    document.getElementById("cerrar").addEventListener("click", closeDrawer);
+    document.getElementById("overlay").addEventListener("click", closeDrawer);
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeDrawer();
+    });
+
+    document.getElementById("zoom-in").addEventListener("click", () => { scale = Math.min(1.4, scale + 0.1); applyScale(); });
+    document.getElementById("zoom-out").addEventListener("click", () => { scale = Math.max(0.5, scale - 0.1); applyScale(); });
+    document.getElementById("zoom-reset").addEventListener("click", () => { scale = 0.86; applyScale(); viewport.scrollTo({ left: 0, top: 0 }); });
+
+    let pan = false, sx = 0, sy = 0, sl = 0, st = 0;
+    viewport.addEventListener("pointerdown", (e) => {
+      if (e.target.closest(".node")) return;
+      pan = true;
+      sx = e.clientX; sy = e.clientY;
+      sl = viewport.scrollLeft; st = viewport.scrollTop;
+      viewport.setPointerCapture(e.pointerId);
+    });
+    viewport.addEventListener("pointermove", (e) => {
+      if (!pan) return;
+      viewport.scrollLeft = sl - (e.clientX - sx);
+      viewport.scrollTop = st - (e.clientY - sy);
+    });
+    viewport.addEventListener("pointerup", () => { pan = false; });
+
+    renderNodes();
+    renderTasks();
+    renderRisks();
+    applyScale();
+  </script>
+</body>
+</html>

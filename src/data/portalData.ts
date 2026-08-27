@@ -1,0 +1,146 @@
+import { DoctorDocument, PatientCase } from '../types';
+
+export const INITIAL_DOCTOR_DOCUMENTS: DoctorDocument[] = [
+  {
+    id: 'doc-1',
+    title: 'Cédula de Ciudadanía (Anverso y Reverso)',
+    category: 'identity',
+    issuer: 'Registraduría Nacional de Colombia',
+    issueYear: '2012',
+    status: 'verified',
+    fileType: 'image',
+    fileUrl: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=800',
+    uploadDate: '2026-01-10',
+    verificationBadge: 'Validación Biométrica 100%',
+  },
+  {
+    id: 'doc-2',
+    title: 'Registro RETHUS - Médico y Cirujano',
+    category: 'rethus',
+    issuer: 'Ministerio de Salud y Protección Social',
+    issueYear: '2021',
+    status: 'verified',
+    fileType: 'pdf',
+    fileUrl: '#',
+    uploadDate: '2026-01-10',
+    verificationBadge: 'Código Oficial: RTH-2021-89412',
+  },
+  {
+    id: 'doc-3',
+    title: 'Título de Especialista en Cirugía Plástica, Estética y Reconstructiva',
+    category: 'specialty',
+    issuer: 'Universidad Nacional de Colombia',
+    issueYear: '2020',
+    status: 'verified',
+    fileType: 'pdf',
+    fileUrl: '#',
+    uploadDate: '2026-01-12',
+    verificationBadge: 'Acta de Grado No. 49201',
+  },
+  {
+    id: 'doc-4',
+    title: 'Diploma de Médico Cirujano',
+    category: 'diploma',
+    issuer: 'Universidad de Caldas',
+    issueYear: '2015',
+    status: 'verified',
+    fileType: 'pdf',
+    fileUrl: '#',
+    uploadDate: '2026-01-12',
+    verificationBadge: 'Acreditación de Alta Calidad',
+  },
+  {
+    id: 'doc-5',
+    title: 'Certificación Internacional en Microcirugía Facial y Rinoplastia Estructural',
+    category: 'certification',
+    issuer: 'International Society of Aesthetic Plastic Surgery (ISAPS)',
+    issueYear: '2024',
+    status: 'pending',
+    fileType: 'pdf',
+    fileUrl: '#',
+    uploadDate: '2026-02-01',
+    verificationBadge: 'En proceso de auditoría RETHUS',
+  },
+];
+
+export const INITIAL_PATIENT_CASES: PatientCase[] = [
+  {
+    id: 'case-1',
+    patientName: 'Laura Marcela Gómez',
+    patientId: 'CC 1.018.492.110',
+    procedure: 'Rinoplastia Ultrasónica Estética y Funcional',
+    surgeryDate: '2026-01-15',
+    preOpPhoto: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=600',
+    finalPhoto: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=600',
+    status: 'completed',
+    evolution: [
+      {
+        id: 'evo-1',
+        dayLabel: 'Pre-Operatorio',
+        date: '2026-01-14',
+        photos: [
+          'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=600',
+        ],
+        clinicalNotes: 'Evaluación inicial: Giba osteocartilaginosa prominente y asimetría de la punta nasal. Plan de osteotomía de precisión ultrasónica y soporte de punta.',
+      },
+      {
+        id: 'evo-2',
+        dayLabel: 'Día 3 Post-Op',
+        date: '2026-01-18',
+        photos: [
+          'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=600',
+        ],
+        clinicalNotes: 'Primer control postquirúrgico. Edema periorbitario leve sin hematomas severos. Férula termoplástica fija, sin signos de sangrado.',
+      },
+      {
+        id: 'evo-3',
+        dayLabel: 'Día 15 Post-Op',
+        date: '2026-01-30',
+        photos: [
+          'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&q=80&w=600',
+        ],
+        clinicalNotes: 'Retiro de micropore y férula externa. Proyección y rotación de la punta adecuadas. Se prescribe vendaje nocturno por 2 semanas.',
+      },
+      {
+        id: 'evo-4',
+        dayLabel: 'Resultado Final (Día 90)',
+        date: '2026-04-15',
+        photos: [
+          'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=600',
+        ],
+        clinicalNotes: 'Alta médica definitiva. Cicatrización imperceptible, función respiratoria óptima y satisfacción total de la paciente con el perfil armónico.',
+        isFinalResult: true,
+      },
+    ],
+  },
+  {
+    id: 'case-2',
+    patientName: 'Carlos Eduardo Mendoza',
+    patientId: 'CC 79.845.201',
+    procedure: 'Blefaroplastia Superior e Inferior Láser',
+    surgeryDate: '2026-02-02',
+    preOpPhoto: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=600',
+    finalPhoto: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=600',
+    status: 'in_progress',
+    evolution: [
+      {
+        id: 'evo-201',
+        dayLabel: 'Pre-Operatorio',
+        date: '2026-02-01',
+        photos: [
+          'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=600',
+        ],
+        clinicalNotes: 'Dermatocalasia severa con bolsas grasas prominentes en párpados inferiores. Resección conservadora y cantoplastia de soporte.',
+      },
+      {
+        id: 'evo-202',
+        dayLabel: 'Día 5 Post-Op',
+        date: '2026-02-07',
+        photos: [
+          'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&q=80&w=600',
+        ],
+        clinicalNotes: 'Retiro de suturas monofilamento 6-0. Oclusión palpebral completa sin ectropión. Paciente continúa con compresas frías y lubricación ocular.',
+      },
+    ],
+  },
+];
