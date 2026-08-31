@@ -9,7 +9,7 @@ import { VerificationFlow } from './components/VerificationFlow';
 import { PatientDirectory } from './components/PatientDirectory';
 import { DoctorAuthModal } from './components/DoctorAuthModal';
 import { AdminRethusQueue } from './components/AdminRethusQueue';
-import { DoctorProfile, DoctorPortalTab, PendingRethusReview } from './types';
+import { DoctorProfile, DoctorPortalTab, PendingRethusReview, DegreeDocumentFile } from './types';
 import { INITIAL_DOCTORS } from './data/mockDoctors';
 import { CheckCircle2, ShieldCheck } from 'lucide-react';
 
@@ -121,6 +121,10 @@ export default function App() {
 
   const handleVerificationComplete = (data: any) => {
     const personal = data?.personalData;
+    const degreeDocuments: DegreeDocumentFile[] = Array.isArray(data?.degreeDocuments)
+      ? data.degreeDocuments
+      : [];
+    const firstDiploma = degreeDocuments.find((doc) => doc.kind === 'diploma');
     const registered: DoctorProfile = {
       ...DEFAULT_DOCTOR,
       id: `doc-reg-${Date.now()}`,
@@ -132,6 +136,7 @@ export default function App() {
       idNumber: personal?.idNumber || DEFAULT_DOCTOR.idNumber,
       rethusCode: personal?.medicalLicenseNumber || DEFAULT_DOCTOR.rethusCode,
       avatarUrl: data?.selfieImage || DEFAULT_DOCTOR.avatarUrl,
+      diplomaUrl: firstDiploma?.previewUrl || DEFAULT_DOCTOR.diplomaUrl,
       verificationLevel: 3,
       verificationDate: new Date().toLocaleDateString('es-CO', {
         day: '2-digit',

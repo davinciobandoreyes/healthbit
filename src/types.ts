@@ -1,4 +1,17 @@
-export type VerificationStepNumber = 1 | 2 | 3 | 4 | 5;
+export type VerificationStepNumber = 1 | 2 | 3 | 4 | 5 | 6;
+
+export type DegreeDocumentKind = 'diploma' | 'acta';
+export type DegreeDocumentScope = 'medico' | 'especializacion';
+
+export interface DegreeDocumentFile {
+  id: string;
+  kind: DegreeDocumentKind;
+  scope: DegreeDocumentScope;
+  fileName: string;
+  mimeType: string;
+  previewUrl: string;
+  sizeBytes: number;
+}
 
 export interface DoctorPersonalData {
   firstName: string;

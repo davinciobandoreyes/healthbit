@@ -24,10 +24,12 @@ import {
   Phone,
 } from 'lucide-react';
 import { CameraModal } from './CameraModal';
+import { DegreeValidationStep } from './DegreeValidationStep';
 import {
   DoctorPersonalData,
   DocumentAnalysisResult,
   BiometricResult,
+  DegreeDocumentFile,
 } from '../types';
 import { SAMPLE_FRONT_ID_SVG, SAMPLE_BACK_ID_SVG } from '../utils/sampleDocuments';
 
@@ -81,6 +83,10 @@ export const VerificationFlow: React.FC<VerificationFlowProps> = ({
 
   // RETHUS is submitted for HealthBit team review (no API lookup)
   const [rethusSubmitted, setRethusSubmitted] = useState<boolean>(false);
+
+  // Step 6: Degree documents (optional)
+  const [diplomas, setDiplomas] = useState<DegreeDocumentFile[]>([]);
+  const [actas, setActas] = useState<DegreeDocumentFile[]>([]);
 
   // Camera Modal Control
   const [isCameraOpen, setIsCameraOpen] = useState<boolean>(false);
@@ -236,26 +242,35 @@ export const VerificationFlow: React.FC<VerificationFlowProps> = ({
     }
   };
 
+  const completeRegistration = (degreeDocuments: DegreeDocumentFile[]) => {
+    onComplete({
+      personalData,
+      frontImage,
+      backImage,
+      selfieImage,
+      frontAnalysis,
+      backAnalysis,
+      biometricResult,
+      rethusSubmitted: true,
+      degreeDocuments,
+    });
+  };
+
   const handlePrimaryAction = () => {
     if (currentStep === 2 && !rethusSubmitted) {
       setRethusSubmitted(true);
       return;
     }
 
-    if (currentStep < 5) {
+    if (currentStep < 6) {
       setCurrentStep((prev) => prev + 1);
     } else {
-      onComplete({
-        personalData,
-        frontImage,
-        backImage,
-        selfieImage,
-        frontAnalysis,
-        backAnalysis,
-        biometricResult,
-        rethusSubmitted: true,
-      });
+      completeRegistration([...diplomas, ...actas]);
     }
+  };
+
+  const handleSkipDegree = () => {
+    completeRegistration([]);
   };
 
   const handlePrevStep = () => {
@@ -264,8 +279,8 @@ export const VerificationFlow: React.FC<VerificationFlowProps> = ({
     }
   };
 
-  // Calculate Progress Percentage for 5 steps
-  const progressPercent = Math.round((currentStep / 5) * 100);
+  // Calculate Progress Percentage for 6 steps
+  const progressPercent = Math.round((currentStep / 6) * 100);
 
   // Validation checks for Step 1
   const isStep1Valid =
@@ -283,7 +298,7 @@ export const VerificationFlow: React.FC<VerificationFlowProps> = ({
       <div className="sticky top-0 z-30 bg-slate-50/95 backdrop-blur-md pt-3 pb-3 border-b border-slate-200/80 mb-4">
         <div className="flex items-center justify-between mb-2">
           <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-            Paso {currentStep} de 5
+            Paso {currentStep} de 6
           </span>
           <span className="text-xs font-bold text-violet-700 bg-violet-50 border border-violet-200/60 px-2.5 py-0.5 rounded-full">
             {progressPercent}% Completado
@@ -858,6 +873,15 @@ export const VerificationFlow: React.FC<VerificationFlowProps> = ({
             )}
           </div>
         )}
+
+        {currentStep === 6 && (
+          <DegreeValidationStep
+            diplomas={diplomas}
+            actas={actas}
+            onDiplomasChange={setDiplomas}
+            onActasChange={setActas}
+          />
+        )}
       </div>
 
       {/* 3. ACTION BUTTONS ALWAYS FIXED (Sticky Bottom) */}
@@ -875,7 +899,7 @@ export const VerificationFlow: React.FC<VerificationFlowProps> = ({
           className="w-full min-h-[48px] bg-violet-600 hover:bg-violet-700 text-white font-bold py-3 px-6 rounded-2xl shadow-xs transition-all flex justify-center items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed text-xs sm:text-sm cursor-pointer"
         >
           <span>
-            {currentStep === 5
+            {currentStep === 6
               ? 'Finalizar y Activar Cuenta Médica'
               : currentStep === 2 && !rethusSubmitted
                 ? 'Enviar RETHUS a revisión'
@@ -891,6 +915,16 @@ export const VerificationFlow: React.FC<VerificationFlowProps> = ({
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Paso Anterior</span>
+          </button>
+        )}
+
+        {currentStep === 6 && (
+          <button
+            type="button"
+            onClick={handleSkipDegree}
+            className="w-full min-h-[44px] py-2 text-slate-500 hover:text-slate-700 font-bold text-xs transition-colors cursor-pointer"
+          >
+            Omitir por ahora
           </button>
         )}
       </div>

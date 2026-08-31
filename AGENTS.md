@@ -31,7 +31,7 @@ No leer de entrada: `dashboard.html`, `src/data/mock*.ts`, `DESIGNHealthBit.md` 
 |---|---|---|
 | Orquestación / 4 vistas | `src/App.tsx` | `portal` \| `public_directory` \| `verification_flow` \| `admin_review` |
 | Tipos | `src/types.ts` | Fuente de datos de dominio |
-| Registro 5 pasos | `src/components/VerificationFlow.tsx` | Paso 2 = RETHUS enviado a revisión, no API |
+| Registro 6 pasos | `src/components/VerificationFlow.tsx` | Paso 2 = RETHUS a revisión. Paso 6 = diplomas/actas, opcional |
 | Login | `src/components/DoctorAuthModal.tsx` | Submit → `onLoginSuccess(email)` |
 | Directorio pacientes | `src/components/PatientDirectory.tsx` | Solo `verifiedStatus.rethus && !isPaused` |
 | Cola admin | `src/components/AdminRethusQueue.tsx` | Filtros pending / approved / denied + pausa |

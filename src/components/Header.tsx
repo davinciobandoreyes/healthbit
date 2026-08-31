@@ -9,9 +9,9 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({
-  doctorName = 'Dra. María Camila Restrepo Gómez',
+  doctorName = 'Dra. María Camila Gómez',
   doctorAvatar = 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=200',
-  specialty = 'Cirugía Plástica Facial',
+  specialty = 'Cirugía Plástica de Mamas',
   onLogout,
 }) => {
   return (

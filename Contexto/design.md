@@ -5,7 +5,7 @@ Detalle visual: [`../DESIGNHealthBit.md`](../DESIGNHealthBit.md). Leer ese archi
 ## Usuarios y vistas (`App.tsx`)
 
 1. **Paciente** — `public_directory`: busca especialistas, abre ficha, “reserva” demo.
-2. **Médico** — `verification_flow` (5 pasos) luego `portal` (Home / Pacientes / Documentos / Ajustes).
+2. **Médico** — `verification_flow` (6 pasos) luego `portal` (Home / Pacientes / Documentos / Ajustes).
 3. **Super admin** — `admin_review`: cola RETHUS (pendientes, aceptadas, negadas) + pausar/reactivar.
 
 ## Registro (pasos)
@@ -14,6 +14,7 @@ Detalle visual: [`../DESIGNHealthBit.md`](../DESIGNHealthBit.md). Leer ese archi
 2. Datos profesionales + RETHUS → aviso “en revisión” → puede seguir. **No llama API.**
 3–4. Cédula frente / dorso (cámara, upload o preset). Gemini o fallback.
 5. Selfie / liveness. Gemini o fallback.
+6. Validación de grado (diplomas y actas). Opcional: omitir o continuar con 0–N archivos. **Sin Gemini.**
 
 Al terminar: identidad OK, RETHUS pendiente, **no sale en el buscador** hasta que admin apruebe.
 
