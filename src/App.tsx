@@ -327,22 +327,13 @@ export default function App() {
     const rethusPending = !doctor.verifiedStatus.rethus;
     return (
       <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col justify-between p-4 sm:p-6 font-['Plus_Jakarta_Sans',sans-serif] animate-fadeIn">
-        <div className="w-full max-w-md mx-auto flex items-center justify-between pt-2 pb-4">
+        <div className="w-full max-w-md mx-auto flex items-center pt-2 pb-4">
           <div className="flex items-center gap-1.5">
             <span className="font-extrabold text-lg text-slate-900 tracking-tight">
               Health<span className="text-violet-600">Bit</span>
             </span>
             <span className="text-[11px] font-semibold text-slate-400">| Acreditación</span>
           </div>
-          <span
-            className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full whitespace-nowrap border ${
-              rethusPending
-                ? 'text-amber-700 bg-amber-50 border-amber-200/80'
-                : 'text-violet-700 bg-violet-50 border-violet-200/80'
-            }`}
-          >
-            {rethusPending ? 'RETHUS en revisión' : 'Nivel 4 RETHUS'}
-          </span>
         </div>
 
         <div className="w-full max-w-md mx-auto my-auto bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-xs text-center space-y-5">
@@ -369,10 +360,6 @@ export default function App() {
             <div className="flex items-center justify-between border-b border-slate-200/60 pb-2">
               <span className="text-slate-400">Especialidad</span>
               <span className="font-semibold text-slate-800 truncate max-w-[200px]">{doctor.specialty}</span>
-            </div>
-            <div className="flex items-center justify-between border-b border-slate-200/60 pb-2">
-              <span className="text-slate-400">Registro RETHUS</span>
-              <span className="font-mono font-bold text-violet-700">{doctor.rethusCode}</span>
             </div>
             <div className="flex items-center justify-between pt-0.5">
               <span className="text-slate-400">Estado de Acreditación</span>

@@ -62,7 +62,7 @@ export const INITIAL_DOCTORS: DoctorProfile[] = [
     rethusCode: 'RTH-2022-44109',
     idNumber: '1037624109',
     institution: 'Universidad del Valle — ISAPS',
-    avatarUrl: 'https://images.unsplash.com/photo-1594824813566-88855ce783d1?auto=format&fit=crop&q=80&w=400',
+    avatarUrl: 'https://images.unsplash.com/photo-1527613426441-4da17471b66d?auto=format&fit=crop&q=80&w=400',
     verificationLevel: 4,
     verificationDate: '2026-02-18',
     rating: 5.0,
