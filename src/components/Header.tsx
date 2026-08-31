@@ -6,6 +6,7 @@ interface HeaderProps {
   doctorAvatar?: string;
   specialty?: string;
   onLogout?: () => void;
+  hideBrandOnLg?: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -13,12 +14,12 @@ export const Header: React.FC<HeaderProps> = ({
   doctorAvatar = 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=200',
   specialty = 'Cirugía Plástica de Mamas',
   onLogout,
+  hideBrandOnLg = false,
 }) => {
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-2xs">
       <div className="max-w-7xl mx-auto px-3.5 sm:px-6 h-15 sm:h-16 flex items-center justify-between gap-2.5 sm:gap-4">
-        {/* Brand Logo: HealthBit */}
-        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+        <div className={`flex items-center gap-2.5 sm:gap-3 min-w-0 ${hideBrandOnLg ? 'lg:hidden' : ''}`}>
           <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-violet-600 to-indigo-400 text-white flex items-center justify-center shadow-xs shadow-violet-200 shrink-0">
             <Activity className="w-5 h-5 sm:w-6 sm:h-6 text-white stroke-[2.5]" />
           </div>
@@ -38,7 +39,7 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* User Status & Mini Profile & Logout */}
-        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0 ml-auto">
           <div className="flex-col text-right hidden md:flex">
             <span className="text-xs font-bold text-slate-900 truncate max-w-[180px]">
               {doctorName}

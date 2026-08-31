@@ -13,6 +13,8 @@ import {
 } from 'lucide-react';
 import { PendingRethusReview, RethusReviewStatus } from '../types';
 import { AdminReviewOnePager } from './AdminReviewOnePager';
+import { AppSidebar } from './AppSidebar';
+import { ADMIN_NAV_ITEMS } from '../nav';
 
 interface AdminRethusQueueProps {
   reviews: PendingRethusReview[];
@@ -59,6 +61,7 @@ export const AdminRethusQueue: React.FC<AdminRethusQueueProps> = ({
     review: PendingRethusReview;
     action: 'approve' | 'deny' | 'pause' | 'unpause';
   } | null>(null);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const normalizeStr = (str: string) =>
     str
@@ -105,21 +108,30 @@ export const AdminRethusQueue: React.FC<AdminRethusQueueProps> = ({
           };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-['Plus_Jakarta_Sans',sans-serif]">
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex font-['Plus_Jakarta_Sans',sans-serif]">
+      <AppSidebar
+        items={ADMIN_NAV_ITEMS}
+        currentId="rethus"
+        onSelect={() => {}}
+        collapsed={sidebarCollapsed}
+        onToggleCollapsed={() => setSidebarCollapsed((prev) => !prev)}
+      />
+
+      <div className="flex-1 flex flex-col min-w-0 min-h-screen">
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-2xs">
         <div className="max-w-7xl mx-auto px-3.5 sm:px-6 h-16 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5 min-w-0">
+          <div className="flex items-center gap-2.5 min-w-0 lg:hidden">
             <span className="font-extrabold text-lg sm:text-xl tracking-tight text-slate-900">
               Health<span className="text-violet-600">Bit</span>
             </span>
             <span className="text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-200/80 px-2 py-0.5 rounded-full whitespace-nowrap">
-              Super admin
+              Súper administrador
             </span>
           </div>
           <button
             type="button"
             onClick={onLogout}
-            className="min-h-[44px] px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors cursor-pointer"
+            className="min-h-[44px] px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors cursor-pointer ml-auto"
           >
             Cerrar sesión
           </button>
@@ -353,6 +365,7 @@ export const AdminRethusQueue: React.FC<AdminRethusQueueProps> = ({
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 };

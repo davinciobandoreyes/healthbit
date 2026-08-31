@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Header } from './components/Header';
 import { BottomTabBar } from './components/BottomTabBar';
+import { AppSidebar } from './components/AppSidebar';
 import { HomeDashboard } from './components/HomeDashboard';
 import { DocumentsSection } from './components/DocumentsSection';
 import { PatientsSection } from './components/PatientsSection';
@@ -11,6 +12,7 @@ import { DoctorAuthModal } from './components/DoctorAuthModal';
 import { AdminRethusQueue } from './components/AdminRethusQueue';
 import { DoctorProfile, DoctorPortalTab, PendingRethusReview, DegreeDocumentFile } from './types';
 import { INITIAL_DOCTORS } from './data/mockDoctors';
+import { PORTAL_NAV_ITEMS } from './nav';
 import { CheckCircle2, ShieldCheck } from 'lucide-react';
 
 const isHealthbitAdminEmail = (email: string) =>
@@ -80,6 +82,7 @@ export default function App() {
   );
   const [emailNotices, setEmailNotices] = useState<Record<string, string>>({});
   const [adminMailNotice, setAdminMailNotice] = useState<string | null>(null);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const upsertSessionDoctor = (profile: DoctorProfile) => {
     setSessionDoctors((prev) => ({ ...prev, [normalizeEmail(profile.email)]: profile }));
@@ -393,46 +396,57 @@ export default function App() {
   const doctorEmailKey = normalizeEmail(doctor.email);
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-['Plus_Jakarta_Sans',sans-serif]">
-      <Header
-        doctorName={doctor.fullName}
-        doctorAvatar={doctor.avatarUrl}
-        specialty={doctor.specialty}
-        onLogout={handleLogout}
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex font-['Plus_Jakarta_Sans',sans-serif]">
+      <AppSidebar
+        items={PORTAL_NAV_ITEMS}
+        currentId={currentTab === 'patient-photos' ? 'patients' : currentTab}
+        onSelect={(id) => setCurrentTab(id as DoctorPortalTab)}
+        collapsed={sidebarCollapsed}
+        onToggleCollapsed={() => setSidebarCollapsed((prev) => !prev)}
       />
 
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 py-6 md:py-8 pb-28 sm:pb-32">
-        {currentTab === 'home' && (
-          <HomeDashboard
-            doctor={doctor}
-            onNavigateToTab={(tab) => setCurrentTab(tab)}
-            emailNotice={emailNotices[doctorEmailKey] || null}
-            onDismissEmailNotice={() =>
-              setEmailNotices((prev) => {
-                const next = { ...prev };
-                delete next[doctorEmailKey];
-                return next;
-              })
-            }
-          />
-        )}
-        {(currentTab === 'patients' || currentTab === 'patient-photos') && <PatientsSection />}
-        {currentTab === 'documents' && <DocumentsSection />}
-        {currentTab === 'settings' && (
-          <SettingsSection
-            doctor={doctor}
-            onUpdateDoctor={handleUpdateDoctor}
-            onLogout={handleLogout}
-          />
-        )}
-      </main>
+      <div className="flex-1 flex flex-col min-w-0 min-h-screen">
+        <Header
+          doctorName={doctor.fullName}
+          doctorAvatar={doctor.avatarUrl}
+          specialty={doctor.specialty}
+          onLogout={handleLogout}
+          hideBrandOnLg
+        />
 
-      <BottomTabBar
-        currentTab={currentTab}
-        onSelectTab={(tab) => {
-          setCurrentTab(tab);
-        }}
-      />
+        <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 py-6 md:py-8 pb-28 sm:pb-32 lg:pb-8">
+          {currentTab === 'home' && (
+            <HomeDashboard
+              doctor={doctor}
+              onNavigateToTab={(tab) => setCurrentTab(tab)}
+              emailNotice={emailNotices[doctorEmailKey] || null}
+              onDismissEmailNotice={() =>
+                setEmailNotices((prev) => {
+                  const next = { ...prev };
+                  delete next[doctorEmailKey];
+                  return next;
+                })
+              }
+            />
+          )}
+          {(currentTab === 'patients' || currentTab === 'patient-photos') && <PatientsSection />}
+          {currentTab === 'documents' && <DocumentsSection />}
+          {currentTab === 'settings' && (
+            <SettingsSection
+              doctor={doctor}
+              onUpdateDoctor={handleUpdateDoctor}
+              onLogout={handleLogout}
+            />
+          )}
+        </main>
+
+        <BottomTabBar
+          currentTab={currentTab}
+          onSelectTab={(tab) => {
+            setCurrentTab(tab);
+          }}
+        />
+      </div>
     </div>
   );
 }

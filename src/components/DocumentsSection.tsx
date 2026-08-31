@@ -240,7 +240,7 @@ export const DocumentsSection: React.FC = () => {
       )}
 
       {/* 4. Botón flotante fijo a la derecha, sobre la tab bar */}
-      <div className="fixed inset-x-0 bottom-20 sm:bottom-22 z-40 pointer-events-none">
+      <div className="fixed inset-x-0 bottom-20 sm:bottom-22 lg:bottom-6 z-40 pointer-events-none">
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 flex justify-end">
           <button
             type="button"

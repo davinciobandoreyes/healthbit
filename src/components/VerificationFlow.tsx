@@ -204,7 +204,7 @@ export const VerificationFlow: React.FC<VerificationFlowProps> = ({
       setBiometricResult({
         livenessVerified: true,
         matchScore: 96,
-        notes: 'Facematch 96% de coincidencia con la fotografía del documento oficial.',
+        notes: 'Coincidencia facial 96% con la fotografía del documento oficial.',
         timestamp: new Date().toLocaleTimeString(),
       });
     } finally {
@@ -520,7 +520,7 @@ export const VerificationFlow: React.FC<VerificationFlowProps> = ({
 
                 <div className="space-y-1">
                   <label className="block text-xs font-bold text-slate-700">
-                    Universidad / Alma Mater <span className="text-rose-500">*</span>
+                    Universidad <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -804,7 +804,7 @@ export const VerificationFlow: React.FC<VerificationFlowProps> = ({
                 {/* Selfie Avatar Preview & Status */}
                 <div className="flex flex-col sm:flex-row items-center gap-4 border-b border-slate-100 pb-4">
                   <div className="relative w-20 h-20 rounded-2xl overflow-hidden border-2 border-violet-500 shadow-xs shrink-0">
-                    <img src={selfieImage} alt="Facial Selfie" className="w-full h-full object-cover" />
+                    <img src={selfieImage} alt="Selfie facial" className="w-full h-full object-cover" />
                     <div className="absolute bottom-1 right-1 bg-violet-600 text-white p-0.5 rounded-full">
                       <Check className="w-3 h-3" />
                     </div>
@@ -827,7 +827,7 @@ export const VerificationFlow: React.FC<VerificationFlowProps> = ({
                 {isAnalyzingBiometric ? (
                   <div className="flex items-center justify-center gap-2 py-4 text-xs font-bold text-violet-700">
                     <div className="w-4 h-4 border-2 border-violet-600 border-t-transparent rounded-full animate-spin"></div>
-                    <span>Verificando prueba de vida y Facematch con documento...</span>
+                    <span>Verificando prueba de vida y coincidencia facial con documento...</span>
                   </div>
                 ) : biometricResult ? (
                   /* DESATURATED, HIGHLY READABLE ACCREDITATION SUMMARY */

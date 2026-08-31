@@ -317,7 +317,7 @@ export const PatientsSection: React.FC = () => {
         onClick={() => setIsNewPatientModalOpen(true)}
         title="Registrar nuevo paciente"
         aria-label="Registrar nuevo paciente"
-        className="fixed bottom-24 right-5 sm:bottom-26 sm:right-8 z-40 w-14 h-14 rounded-full sm:rounded-2xl bg-violet-600 hover:bg-violet-700 active:scale-95 text-white shadow-xl shadow-violet-950/25 flex items-center justify-center transition-all cursor-pointer focus-visible:ring-4 focus-visible:ring-violet-300 outline-none hover:scale-105"
+        className="fixed bottom-24 right-5 sm:bottom-26 sm:right-8 lg:bottom-8 z-40 w-14 h-14 rounded-full sm:rounded-2xl bg-violet-600 hover:bg-violet-700 active:scale-95 text-white shadow-xl shadow-violet-950/25 flex items-center justify-center transition-all cursor-pointer focus-visible:ring-4 focus-visible:ring-violet-300 outline-none hover:scale-105"
       >
         <Plus className="w-6 h-6 stroke-[2.5]" />
       </button>

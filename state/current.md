@@ -3,6 +3,7 @@
 ## Hecho
 
 - Arranque en el buscador público (`public_directory`), no en el portal.
+- Portal/admin en `lg+`: sidebar izquierdo colapsable. Móvil: barra inferior (portal). Copy de navegación en español (Inicio).
 - Paso 6 Validación de grado: diplomas y actas, opcional (omitir o continuar con 0–N archivos). Sin Gemini.
 - RETHUS: revisión humana. Admin `@healthbit.co`. Cola con 3 estados + pausa.
 - Gemini multimodal para cédula y selfie (con fallback que no rompe la demo).

@@ -5,7 +5,7 @@ Detalle visual: [`../DESIGNHealthBit.md`](../DESIGNHealthBit.md). Leer ese archi
 ## Usuarios y vistas (`App.tsx`)
 
 1. **Paciente** — `public_directory`: busca especialistas, abre ficha, “reserva” demo.
-2. **Médico** — `verification_flow` (6 pasos) luego `portal` (Home / Pacientes / Documentos / Ajustes).
+2. **Médico** — `verification_flow` (6 pasos) luego `portal` (Inicio / Pacientes / Documentos / Ajustes).
 3. **Super admin** — `admin_review`: cola RETHUS (pendientes, aceptadas, negadas) + pausar/reactivar.
 
 ## Registro (pasos)
@@ -22,7 +22,7 @@ Al terminar: identidad OK, RETHUS pendiente, **no sale en el buscador** hasta qu
 
 - Primario: `violet-600` / hover `violet-700`. Pendiente: ámbar. Fondo: `slate-50`. Tarjetas: `white` + `border-slate-200/80`.
 - Iconos: `lucide-react`. Radios: `rounded-3xl` contenedor, `rounded-2xl` tarjeta, `rounded-xl` input.
-- Touch ≥ 44px. Badges: `whitespace-nowrap`. Bottom tabs iOS (`BottomTabBar`). CTA de Documentos: `fixed` a la derecha, no centrado.
+- Touch ≥ 44px. Badges: `whitespace-nowrap`. Móvil: tabs inferiores (`BottomTabBar`). Web `lg+`: panel izquierdo colapsable (`AppSidebar`; iconos solos o iconos + copy). CTA de Documentos: `fixed` a la derecha, no centrado.
 - Fuentes: `index.html` carga Inter; el portal pide Plus Jakarta Sans en clase (no está en el HTML). No añadir una tercera.
 
 ## Copy
