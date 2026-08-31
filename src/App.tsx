@@ -64,7 +64,7 @@ const reviewsFromListedDoctors = (docs: DoctorProfile[]): PendingRethusReview[] 
 export default function App() {
   const [viewMode, setViewMode] = useState<
     'portal' | 'public_directory' | 'verification_flow' | 'admin_review'
-  >('portal');
+  >('public_directory');
   const [currentTab, setCurrentTab] = useState<DoctorPortalTab>('home');
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
   const [verificationInitialStep, setVerificationInitialStep] = useState<number>(1);

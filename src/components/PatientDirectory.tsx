@@ -159,10 +159,10 @@ export const PatientDirectory: React.FC<PatientDirectoryProps> = ({ onOpenDoctor
         <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-violet-950 text-white rounded-3xl p-6 sm:p-10 shadow-xl space-y-6 relative overflow-hidden border border-slate-800">
           <div className="max-w-2xl space-y-3 relative z-10">
             <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
-              Encuentra y Verifica a tu Médico Especialista
+              Encuentra y Verifica a tu Médico
             </h1>
             <p className="text-xs sm:text-sm text-slate-300">
-              Consulta credenciales oficiales autenticadas, licencias RETHUS ante el MinSalud y agendas médicas protegidas.
+              Todos los medicos registrados en HealthBit son verificados con el RETHUS.
             </p>
           </div>
 
@@ -174,7 +174,7 @@ export const PatientDirectory: React.FC<PatientDirectoryProps> = ({ onOpenDoctor
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Busca por nombre, especialidad o código RETHUS (ej. RTH-2021-89412)..."
+                placeholder="Busca por nombre, especialidad o cédula"
                 className="w-full text-xs sm:text-sm font-medium text-slate-800 outline-none placeholder:text-slate-400"
               />
             </div>

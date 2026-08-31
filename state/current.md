@@ -2,7 +2,7 @@
 
 ## Hecho
 
-- Directorio público, login demo, registro 6 pasos, portal (Home / Pacientes / Documentos / Ajustes).
+- Arranque en el buscador público (`public_directory`), no en el portal.
 - Paso 6 Validación de grado: diplomas y actas, opcional (omitir o continuar con 0–N archivos). Sin Gemini.
 - RETHUS: revisión humana. Admin `@healthbit.co`. Cola con 3 estados + pausa.
 - Gemini multimodal para cédula y selfie (con fallback que no rompe la demo).
@@ -30,6 +30,6 @@
 npm run dev   # http://localhost:3000
 ```
 
-- Portal médico: modal → `dra.restrepo@javeriana.edu.co` → Ingresar.
+- Arranque: buscador público. Portal médico: botón de médico → `dra.restrepo@javeriana.edu.co` → Ingresar.
 - Admin: mismo modal → `admin@healthbit.co` → Ingresar.
 - Registro: Registrarse → paso 2 envía a revisión → paso 6 se puede omitir → Home con chip pendiente → no aparece en buscador hasta aprobar.
