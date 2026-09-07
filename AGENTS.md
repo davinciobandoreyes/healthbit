@@ -36,8 +36,9 @@ No leer de entrada: `dashboard.html`, `src/data/mock*.ts`, `DESIGNHealthBit.md` 
 | Directorio pacientes | `src/components/PatientDirectory.tsx` | Solo `verifiedStatus.rethus && !isPaused` |
 | Cola admin | `src/components/AdminRethusQueue.tsx` | Filtros pending / approved / denied + pausa |
 | Home médico | `src/components/HomeDashboard.tsx` | Chip RETHUS pendiente / aprobado / denegado |
-| Alta / ficha paciente | `PatientsSection.tsx` + `PatientCreateView.tsx` + `PatientDetailView.tsx` | Profundidad 2: sin sidebar. Alta = una columna. `city` = procedencia |
+| Alta / ficha paciente | `PatientsSection.tsx` + `PatientCreateView.tsx` + `PatientDetailView.tsx` | Profundidad 2: sin sidebar. Alta = una columna. `city` = procedencia. Alertas = pills en sección propia |
 | Gemini cédula / selfie | `server.ts` | `/api/verify-document`, `/api/verify-biometrics` |
+| Sandbox Verifik RETHUS | `public/test.html` + `server.ts` | `GET /test`. Proxy `POST /api/verifik-rethus`. No es el registro. |
 | Design system | `DESIGNHealthBit.md` | No inventar tokens |
 | Mapa de producto (humano) | `dashboard.html` | No es la app |
 
@@ -51,7 +52,7 @@ Componentes no montados (no usar como base): `SpecialistDashboard.tsx`, `MobileF
 
 ## Invariantes (también en `reglas.md`)
 
-1. RETHUS del registro es revisión humana. El paso 2 no llama `/api/rethus-check`.
+1. RETHUS del registro es revisión humana. El paso 2 no llama `/api/rethus-check` ni `/api/verifik-rethus`.
 2. Un médico no aparece en el buscador hasta RETHUS aprobado y no pausado.
 3. El sello / análisis de Gemini no es prueba: si el API falla, el server inventa `success: true`. No tratar fallback como verificación real.
 4. “Correo enviado” es aviso en pantalla. No hay SMTP.
@@ -66,6 +67,7 @@ Componentes no montados (no usar como base): `SpecialistDashboard.tsx`, `MobileF
 | Cerrar sesión importante | `skills/actualizar-contexto.md` (obligatorio) |
 | UI / layout / copy | `Contexto/design.md` + `DESIGNHealthBit.md` |
 | Login, admin, directorio, RETHUS | `App.tsx` + gotcha de estado en memoria |
+| Probar Verifik RETHUS | `public/test.html` + `VERIFIK_TOKEN` → `/test` |
 | Pacientes / SOAP / fotos | `PatientsSection.tsx` + `types.ts` + `src/data/patientCatalog.ts` |
 | Gemini / cédula / selfie | `server.ts` + `gotchas/gemini-fallback.md` |
 

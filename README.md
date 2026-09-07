@@ -35,6 +35,8 @@ npm run dev
 
 Abre [http://localhost:3000](http://localhost:3000).
 
+Sandbox RETHUS (Verifik, aislado del registro): [http://localhost:3000/test](http://localhost:3000/test). Requiere `VERIFIK_TOKEN`.
+
 Sin `GEMINI_API_KEY` la app arranca igual: login, directorio, registro y cola admin funcionan; cédula y selfie usan el fallback descrito arriba.
 
 ## Cuentas demo
@@ -55,14 +57,16 @@ Crea `.env.local` en la raíz (está en `.gitignore`) o exporta las variables en
 
 ```bash
 GEMINI_API_KEY=tu_clave
+VERIFIK_TOKEN=tu_jwt
 ```
 
 | Variable | Obligatoria | Uso |
 |---|---|---|
 | `GEMINI_API_KEY` | No | Análisis multimodal de cédula y selfie. Sin ella, fallback de demo. |
 | `DATOS_GOV_APP_TOKEN` | No | Token opcional de `/api/rethus-check`. La UI de registro **no** llama ese endpoint. |
+| `VERIFIK_TOKEN` | No | JWT de Verifik para el sandbox [`/test`](http://localhost:3000/test) (`POST /api/verifik-rethus`). Sin él, `/test` avisa y el proxy responde 503. El registro **no** usa este endpoint. |
 
-`dotenv` está en dependencias; el servidor lee `process.env` al arrancar. Si la clave no llega, exporta en el mismo terminal:
+El servidor carga `.env.local` y luego `.env` al arrancar. Si la clave no llega, exporta en el mismo terminal:
 
 ```bash
 export GEMINI_API_KEY=tu_clave
@@ -85,6 +89,7 @@ npm run dev
 - No hay SMTP. El aviso de “correo enviado” al aprobar RETHUS es copy en pantalla.
 - El sello de Gemini no es prueba de identidad si vino de fallback.
 - `/api/rethus-check` existe en el servidor pero el registro no lo usa (el dataset público de RETHUS no trae identificadores útiles para match).
+- `/test` y `/api/verifik-rethus` son un laboratorio de Verifik. No están cableados al paso 2 del registro.
 - Componentes `SpecialistDashboard` y `MobileFrame` no están montados; no son la app.
 
 ## Mapa del código
@@ -94,7 +99,8 @@ src/App.tsx                 Orquestación: portal | directorio | registro | admi
 src/types.ts                Tipos de dominio
 src/components/             Flujos cableados (VerificationFlow, PatientDirectory, …)
 src/data/mockDoctors.ts     Médicos de ejemplo del directorio
-server.ts                   API Gemini + RETHUS (sin uso en UI) + Vite middleware
+server.ts                   API Gemini + RETHUS datos.gov.co + proxy Verifik + Vite
+public/test.html            Sandbox RETHUS Verifik en /test
 DESIGNHealthBit.md          Design system (tokens; no inventar colores)
 ```
 

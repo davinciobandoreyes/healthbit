@@ -1,11 +1,45 @@
+import dotenv from 'dotenv';
 import express from 'express';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import { GoogleGenAI } from '@google/genai';
 import { createServer as createViteServer } from 'vite';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
+dotenv.config();
+
+const VERIFIK_RETHUS_URL = 'https://api.verifik.co/v2/co/cedula/rethus';
+const VERIFIK_DOCUMENT_TYPES = new Set(['CC', 'CE', 'PPT']);
+
+const asRecord = (value: unknown): Record<string, unknown> =>
+  value && typeof value === 'object' && !Array.isArray(value) ? (value as Record<string, unknown>) : {};
+
+const summarizeVerifikRethus = (payload: unknown) => {
+  const body = asRecord(payload);
+  const data = asRecord(body.data);
+  const identitySource = Object.keys(data).length ? data : body;
+  const rethus = asRecord(identitySource.rethus);
+  return {
+    identity: {
+      documentType: identitySource.documentType ?? null,
+      documentNumber: identitySource.documentNumber ?? null,
+      firstName: identitySource.firstName ?? null,
+      lastName: identitySource.lastName ?? null,
+      fullName: identitySource.fullName ?? null,
+    },
+    rethus: {
+      status: rethus.status ?? null,
+      academic: Array.isArray(rethus.academic) ? rethus.academic : [],
+      dataSSO: Array.isArray(rethus.dataSSO) ? rethus.dataSSO : [],
+    },
+  };
+};
+
+const verifikErrorMessage = (payload: unknown, fallback: string) => {
+  const body = asRecord(payload);
+  const message = body.message;
+  if (typeof message === 'string' && message.trim()) return message.trim();
+  return fallback;
+};
 
 async function startServer() {
   const app = express();
@@ -368,6 +402,104 @@ Responde únicamente en formato JSON:
         found: false,
         error: 'No se pudo consultar el registro nacional. Inténtalo de nuevo.',
       });
+    }
+  });
+
+  const testHtmlPath = () =>
+    path.join(process.cwd(), process.env.NODE_ENV === 'production' ? 'dist/test.html' : 'public/test.html');
+
+  app.get('/test', (_req, res) => {
+    res.sendFile(testHtmlPath());
+  });
+
+  app.get('/api/verifik-rethus/status', (_req, res) => {
+    res.json({ configured: Boolean(process.env.VERIFIK_TOKEN) });
+  });
+
+  app.post('/api/verifik-rethus', async (req, res) => {
+    const documentType = String(req.body?.documentType || '')
+      .trim()
+      .toUpperCase();
+    const documentNumber = String(req.body?.documentNumber || '').replace(/[\s.\-]/g, '');
+
+    if (!VERIFIK_DOCUMENT_TYPES.has(documentType)) {
+      return res.status(400).json({
+        success: false,
+        configured: Boolean(process.env.VERIFIK_TOKEN),
+        found: false,
+        error: 'documentType debe ser CC, CE o PPT.',
+      });
+    }
+
+    if (!documentNumber || documentNumber.length < 5 || documentNumber.length > 15) {
+      return res.status(400).json({
+        success: false,
+        configured: Boolean(process.env.VERIFIK_TOKEN),
+        found: false,
+        error: 'Se necesita un número de documento de 5 a 15 caracteres, sin espacios ni signos.',
+      });
+    }
+
+    if (!process.env.VERIFIK_TOKEN) {
+      return res.status(503).json({
+        success: false,
+        configured: false,
+        found: false,
+        error: 'Falta VERIFIK_TOKEN en el servidor. Añádelo a .env.local y reinicia npm run dev.',
+      });
+    }
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 20000);
+
+    try {
+      const response = await fetch(
+        `${VERIFIK_RETHUS_URL}?documentType=${encodeURIComponent(documentType)}&documentNumber=${encodeURIComponent(documentNumber)}`,
+        {
+          method: 'GET',
+          headers: {
+            Accept: 'application/json',
+            Authorization: `Bearer ${process.env.VERIFIK_TOKEN}`,
+          },
+          signal: controller.signal,
+        }
+      );
+
+      const text = await response.text();
+      let payload: unknown = null;
+      try {
+        payload = text ? JSON.parse(text) : null;
+      } catch {
+        payload = { message: text || 'Respuesta no JSON de Verifik.' };
+      }
+
+      const summary = summarizeVerifikRethus(payload);
+      const found = response.ok && Boolean(summary.identity.fullName || summary.rethus.status);
+
+      return res.status(response.status).json({
+        success: response.ok,
+        configured: true,
+        found,
+        httpStatus: response.status,
+        error: response.ok
+          ? undefined
+          : verifikErrorMessage(payload, 'Verifik no devolvió un registro para este documento.'),
+        ...summary,
+        raw: payload,
+      });
+    } catch (error: unknown) {
+      const aborted = error instanceof Error && error.name === 'AbortError';
+      console.error('Error in /api/verifik-rethus:', aborted ? 'timeout' : 'upstream');
+      return res.status(502).json({
+        success: false,
+        configured: true,
+        found: false,
+        error: aborted
+          ? 'Verifik no respondió a tiempo. Inténtalo de nuevo.'
+          : 'No se pudo contactar a Verifik. Inténtalo de nuevo.',
+      });
+    } finally {
+      clearTimeout(timeout);
     }
   });
 

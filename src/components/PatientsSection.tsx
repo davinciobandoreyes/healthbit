@@ -117,8 +117,8 @@ export const PatientsSection: React.FC<PatientsSectionProps> = ({ onDepthChange 
       primaryDiagnosis: payload.primaryDiagnosis || 'Evaluación inicial de valoración estética facial',
       plannedProcedure: payload.plannedProcedure,
       status: 'pre_op',
-      criticalAlerts: payload.alerts
-        ? payload.alerts.split(',').map((a) => a.trim())
+      criticalAlerts: payload.alerts.length > 0
+        ? payload.alerts
         : ['Sin alertas críticas reportadas'],
       medicalHistory: {
         pathological: ['Sin antecedentes patológicos relevantes'],

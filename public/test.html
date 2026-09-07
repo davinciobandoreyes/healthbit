@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HealthBit — prueba RETHUS (Verifik)</title>
+    <style>
+      :root {
+        --violet-600: #7c3aed;
+        --violet-700: #6d28d9;
+        --violet-50: #f5f3ff;
+        --violet-200: #ddd6fe;
+        --violet-700-text: #6d28d9;
+        --amber-50: #fffbeb;
+        --amber-200: #fde68a;
+        --amber-700: #b45309;
+        --rose-50: #fff1f2;
+        --rose-200: #fecdd3;
+        --rose-700: #be123c;
+        --slate-50: #f8fafc;
+        --slate-100: #f1f5f9;
+        --slate-200: #e2e8f0;
+        --slate-400: #94a3b8;
+        --slate-600: #475569;
+        --slate-700: #334155;
+        --slate-800: #1e293b;
+        --slate-900: #0f172a;
+        --white: #ffffff;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: var(--slate-50);
+        color: var(--slate-900);
+      }
+
+      .wrap {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 24px 16px 48px;
+      }
+
+      header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+
+      .brand {
+        font-size: 20px;
+        font-weight: 900;
+        letter-spacing: -0.03em;
+        margin: 0;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        white-space: nowrap;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid var(--amber-200);
+        background: var(--amber-50);
+        color: var(--amber-700);
+      }
+
+      .badge.ok {
+        border-color: var(--violet-200);
+        background: var(--violet-50);
+        color: var(--violet-700-text);
+      }
+
+      .badge.err {
+        border-color: var(--rose-200);
+        background: var(--rose-50);
+        color: var(--rose-700);
+      }
+
+      .card {
+        background: var(--white);
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+      }
+
+      h1 {
+        font-size: 22px;
+        font-weight: 900;
+        letter-spacing: -0.03em;
+        margin: 0 0 6px;
+      }
+
+      .lede {
+        margin: 0 0 16px;
+        font-size: 13px;
+        color: var(--slate-600);
+        line-height: 1.5;
+      }
+
+      .notice {
+        font-size: 12px;
+        line-height: 1.5;
+        color: var(--amber-700);
+        background: var(--amber-50);
+        border: 1px solid var(--amber-200);
+        border-radius: 12px;
+        padding: 12px 14px;
+        margin-bottom: 16px;
+      }
+
+      form {
+        display: grid;
+        gap: 14px;
+      }
+
+      label {
+        display: block;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--slate-700);
+        margin-bottom: 6px;
+      }
+
+      input,
+      select {
+        width: 100%;
+        min-height: 44px;
+        border: 1px solid #cbd5e1;
+        border-radius: 12px;
+        padding: 10px 14px;
+        font: inherit;
+        font-size: 13px;
+        font-weight: 600;
+        background: var(--slate-50);
+        color: var(--slate-900);
+        outline: none;
+      }
+
+      input:focus,
+      select:focus {
+        border-color: var(--violet-600);
+        background: var(--white);
+      }
+
+      .row {
+        display: grid;
+        grid-template-columns: 140px 1fr;
+        gap: 12px;
+      }
+
+      @media (max-width: 560px) {
+        .row {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      button {
+        min-height: 44px;
+        border: 0;
+        border-radius: 12px;
+        background: var(--violet-600);
+        color: var(--white);
+        font: inherit;
+        font-size: 14px;
+        font-weight: 700;
+        padding: 10px 16px;
+        cursor: pointer;
+      }
+
+      button:hover:not(:disabled) {
+        background: var(--violet-700);
+      }
+
+      button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .result {
+        margin-top: 16px;
+      }
+
+      .result h2 {
+        font-size: 14px;
+        font-weight: 700;
+        margin: 0 0 10px;
+      }
+
+      dl {
+        display: grid;
+        grid-template-columns: 140px 1fr;
+        gap: 8px 12px;
+        margin: 0 0 16px;
+        font-size: 13px;
+      }
+
+      dt {
+        color: var(--slate-400);
+        font-weight: 600;
+      }
+
+      dd {
+        margin: 0;
+        font-weight: 700;
+        color: var(--slate-800);
+        word-break: break-word;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+        margin: 0 0 16px;
+      }
+
+      th,
+      td {
+        text-align: left;
+        padding: 8px 6px;
+        border-bottom: 1px solid var(--slate-200);
+        vertical-align: top;
+      }
+
+      th {
+        color: var(--slate-400);
+        font-weight: 700;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        white-space: nowrap;
+      }
+
+      details {
+        border: 1px solid var(--slate-200);
+        border-radius: 12px;
+        background: var(--slate-50);
+        padding: 10px 12px;
+      }
+
+      summary {
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--slate-700);
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+      }
+
+      pre {
+        margin: 8px 0 0;
+        overflow: auto;
+        font-size: 11px;
+        line-height: 1.45;
+        color: var(--slate-800);
+      }
+
+      .empty {
+        font-size: 12px;
+        color: var(--slate-400);
+        margin: 0 0 16px;
+      }
+
+      a {
+        color: var(--violet-600);
+        font-weight: 700;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <p class="brand">HealthBit</p>
+        <span id="config-badge" class="badge">Comprobando token…</span>
+      </header>
+
+      <section class="card">
+        <h1>Prueba RETHUS vía Verifik</h1>
+        <p class="lede">
+          Laboratorio aislado. No forma parte del registro del médico. El token se queda en el servidor;
+          esta página llama a <code>POST /api/verifik-rethus</code>.
+        </p>
+        <p class="notice">
+          La respuesta incluye datos personales de salud. Usa una cédula propia o autorizada. Cumple habeas data.
+        </p>
+
+        <form id="rethus-form">
+          <div class="row">
+            <div>
+              <label for="documentType">Tipo</label>
+              <select id="documentType" name="documentType" required>
+                <option value="CC" selected>CC</option>
+                <option value="CE">CE</option>
+                <option value="PPT">PPT</option>
+              </select>
+            </div>
+            <div>
+              <label for="documentNumber">Número de documento</label>
+              <input
+                id="documentNumber"
+                name="documentNumber"
+                type="text"
+                inputmode="numeric"
+                autocomplete="off"
+                placeholder="Sin puntos ni espacios"
+                required
+                minlength="5"
+                maxlength="15"
+              />
+            </div>
+          </div>
+          <button type="submit" id="submit-btn">Consultar RETHUS</button>
+        </form>
+
+        <div id="result" class="result" hidden></div>
+      </section>
+    </div>
+
+    <script>
+      const badge = document.getElementById('config-badge');
+      const form = document.getElementById('rethus-form');
+      const result = document.getElementById('result');
+      const submitBtn = document.getElementById('submit-btn');
+
+      const escapeHtml = (value) =>
+        String(value ?? '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+
+      const textOrDash = (value) => (value == null || value === '' ? '—' : escapeHtml(value));
+
+      const setBadge = (configured) => {
+        if (configured) {
+          badge.className = 'badge ok';
+          badge.textContent = 'VERIFIK_TOKEN listo';
+        } else {
+          badge.className = 'badge err';
+          badge.textContent = 'Falta VERIFIK_TOKEN';
+        }
+      };
+
+      const rowsFrom = (items, columns) => {
+        if (!Array.isArray(items) || items.length === 0) return '';
+        const head = columns.map((col) => `<th>${escapeHtml(col.label)}</th>`).join('');
+        const body = items
+          .map((item) => {
+            const cells = columns
+              .map((col) => `<td>${textOrDash(item?.[col.key])}</td>`)
+              .join('');
+            return `<tr>${cells}</tr>`;
+          })
+          .join('');
+        return `<table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>`;
+      };
+
+      fetch('/api/verifik-rethus/status')
+        .then((res) => res.json())
+        .then((data) => setBadge(Boolean(data.configured)))
+        .catch(() => {
+          badge.className = 'badge err';
+          badge.textContent = 'Servidor no disponible';
+        });
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        submitBtn.disabled = true;
+        result.hidden = false;
+        result.innerHTML = '<p class="lede">Consultando Verifik…</p>';
+
+        const documentType = document.getElementById('documentType').value;
+        const documentNumber = document.getElementById('documentNumber').value.trim();
+
+        try {
+          const response = await fetch('/api/verifik-rethus', {
+            method: 'POST',
+            headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+            body: JSON.stringify({ documentType, documentNumber }),
+          });
+          const payload = await response.json();
+
+          if (payload.configured === false) setBadge(false);
+          else if (payload.configured === true) setBadge(true);
+
+          const identity = payload.identity || {};
+          const rethus = payload.rethus || {};
+          const academicHtml = rowsFrom(rethus.academic, [
+            { key: 'profession', label: 'Profesión' },
+            { key: 'type', label: 'Tipo' },
+            { key: 'originDegree', label: 'Origen' },
+            { key: 'entity', label: 'Entidad' },
+            { key: 'startDate', label: 'Inicio' },
+            { key: 'administrativeAct', label: 'Acto' },
+          ]);
+          const ssoHtml = rowsFrom(rethus.dataSSO, [
+            { key: 'programBenefit', label: 'Programa' },
+            { key: 'typeBenefit', label: 'Tipo' },
+            { key: 'entity', label: 'Entidad' },
+            { key: 'placeBenefit', label: 'Lugar' },
+            { key: 'startDate', label: 'Inicio' },
+            { key: 'endDate', label: 'Fin' },
+          ]);
+
+          const statusLabel = payload.success
+            ? 'Consulta ok'
+            : payload.configured === false
+              ? 'Falta token'
+              : 'Error';
+
+          result.innerHTML = `
+            <h2>Resultado <span class="badge ${payload.success ? 'ok' : 'err'}">${escapeHtml(statusLabel)} · HTTP ${payload.httpStatus || response.status}</span></h2>
+            ${payload.error ? `<p class="notice">${escapeHtml(payload.error)}</p>` : ''}
+            <dl>
+              <dt>Nombre</dt><dd>${textOrDash(identity.fullName)}</dd>
+              <dt>Documento</dt><dd>${textOrDash(identity.documentType)} ${textOrDash(identity.documentNumber)}</dd>
+              <dt>Estado RETHUS</dt><dd>${textOrDash(rethus.status)}</dd>
+              <dt>Encontrado</dt><dd>${payload.found ? 'Sí' : 'No'}</dd>
+            </dl>
+            <h2>Formación académica</h2>
+            ${academicHtml || '<p class="empty">Sin filas académicas.</p>'}
+            <h2>Prestaciones / SSO</h2>
+            ${ssoHtml || '<p class="empty">Sin filas SSO.</p>'}
+            <details>
+              <summary>JSON crudo de Verifik</summary>
+              <pre>${escapeHtml(JSON.stringify(payload.raw ?? payload, null, 2))}</pre>
+            </details>
+          `;
+        } catch (error) {
+          result.innerHTML = `<p class="notice">No se pudo completar la consulta. ${escapeHtml(error.message || error)}</p>`;
+        } finally {
+          submitBtn.disabled = false;
+        }
+      });
+    </script>
+  </body>
+</html>

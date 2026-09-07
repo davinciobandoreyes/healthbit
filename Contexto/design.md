@@ -11,7 +11,7 @@ Detalle visual: [`../DESIGNHealthBit.md`](../DESIGNHealthBit.md). Leer ese archi
 ## Registro (pasos)
 
 1. Cuenta (nombre, email, password ≥6, términos).
-2. Datos profesionales + RETHUS → aviso “en revisión” → puede seguir. **No llama API.**
+2. Datos profesionales + RETHUS → aviso “en revisión” → puede seguir. **No llama API.** Laboratorio Verifik aparte: `/test`.
 3–4. Cédula frente / dorso (cámara, upload o preset). Gemini o fallback.
 5. Selfie / liveness. Gemini o fallback.
 6. Validación de grado (diplomas y actas). Opcional: omitir o continuar con 0–N archivos. **Sin Gemini.**
@@ -27,7 +27,7 @@ Al terminar: identidad OK, RETHUS pendiente, **no sale en el buscador** hasta qu
 
 ## Pacientes (portal)
 
-Alta (FAB) es one-pager de una columna (`max-w-3xl`): identidad → sociodemográficos → clínico. Obligatorio: nombre e identidad. Ficha: tarjeta “Datos sociodemográficos” editable. Ambos son profundidad 2 (sin sidebar).
+Alta (FAB) es one-pager de una columna (`max-w-3xl`): identidad → sociodemográficos → clínico → alertas médicas (pills, input abierto por default, tokens ámbar; no rose de error). Obligatorio: nombre e identidad. Ficha: tarjeta “Datos sociodemográficos” editable. Ambos son profundidad 2 (sin sidebar).
 
 ## Copy
 

@@ -2,7 +2,7 @@
 
 Solo reglas violables y detectables. Si no se puede señalar un diff que las rompe, no pertenece aquí.
 
-1. **No llamar `/api/rethus-check` desde el registro.** El paso 2 de `VerificationFlow` envía RETHUS a revisión humana. Restaurar consulta automática a datos.gov.co está prohibido salvo pedido explícito del usuario.
+1. **No llamar `/api/rethus-check` ni `/api/verifik-rethus` desde el registro.** El paso 2 de `VerificationFlow` envía RETHUS a revisión humana. `/test` sí puede llamar el proxy Verifik. Restaurar consulta automática en el registro está prohibido salvo pedido explícito del usuario.
 2. **No mostrar en el buscador a un médico con RETHUS pendiente, denegado o `isPaused`.** El filtro canónico es `doc.verifiedStatus.rethus && !doc.isPaused` en `PatientDirectory`.
 3. **No tratar el fallback de Gemini como verificación real.** `/api/verify-document` y `/api/verify-biometrics` responden `success: true` con datos inventados si falta API key o hay error. No borrar el fallback “para que la demo no se rompa” sin decirlo; no afirmar en UI que el documento/selfie quedó “oficialmente verificado por IA” si vino de fallback.
 4. **No implementar SMTP ni decir que se envió un correo real.** El aviso de RETHUS aprobado es copy en pantalla (`emailNotices` / `adminMailNotice`).

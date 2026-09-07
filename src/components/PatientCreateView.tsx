@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ArrowLeft } from 'lucide-react';
+import React, { useRef, useState } from 'react';
+import { AlertTriangle, ArrowLeft, Plus, X } from 'lucide-react';
 import { PatientRecord } from '../types';
 import {
   PATIENT_BLOOD_TYPES,
@@ -27,7 +27,7 @@ export interface PatientCreatePayload {
   eps?: string;
   primaryDiagnosis: string;
   plannedProcedure: string;
-  alerts: string;
+  alerts: string[];
 }
 
 interface PatientCreateViewProps {
@@ -50,11 +50,65 @@ export const PatientCreateView: React.FC<PatientCreateViewProps> = ({ onCancel, 
   const [eps, setEps] = useState('');
   const [diagnosis, setDiagnosis] = useState('');
   const [procedure, setProcedure] = useState('Rinoplastia Estructural');
-  const [alerts, setAlerts] = useState('');
+  const [alerts, setAlerts] = useState<string[]>([]);
+  const [alertDraft, setAlertDraft] = useState('');
+  const [isComposerOpen, setIsComposerOpen] = useState(true);
+  const [alertToRemove, setAlertToRemove] = useState<string | null>(null);
+  const composerRef = useRef<HTMLInputElement>(null);
+
+  const focusComposer = () => {
+    requestAnimationFrame(() => composerRef.current?.focus());
+  };
+
+  const addAlert = () => {
+    const next = alertDraft.trim();
+    if (!next) {
+      setAlertDraft('');
+      setIsComposerOpen(false);
+      return;
+    }
+
+    const exists = alerts.some((alert) => alert.toLowerCase() === next.toLowerCase());
+    if (!exists) {
+      setAlerts((current) => [...current, next]);
+    }
+    setAlertDraft('');
+    setIsComposerOpen(true);
+    focusComposer();
+  };
+
+  const openComposer = () => {
+    setIsComposerOpen(true);
+    focusComposer();
+  };
+
+  const handleComposerKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addAlert();
+    }
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      setAlertDraft('');
+      setIsComposerOpen(false);
+    }
+  };
+
+  const confirmRemoveAlert = () => {
+    if (!alertToRemove) return;
+    setAlerts((current) => current.filter((alert) => alert !== alertToRemove));
+    setAlertToRemove(null);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!fullName.trim() || !documentId.trim()) return;
+
+    const pendingAlert = alertDraft.trim();
+    const resolvedAlerts =
+      pendingAlert && !alerts.some((alert) => alert.toLowerCase() === pendingAlert.toLowerCase())
+        ? [...alerts, pendingAlert]
+        : alerts;
 
     onSubmit({
       fullName: fullName.trim(),
@@ -71,7 +125,7 @@ export const PatientCreateView: React.FC<PatientCreateViewProps> = ({ onCancel, 
       eps: eps || undefined,
       primaryDiagnosis: diagnosis,
       plannedProcedure: procedure,
-      alerts,
+      alerts: resolvedAlerts,
     });
   };
 
@@ -334,22 +388,104 @@ export const PatientCreateView: React.FC<PatientCreateViewProps> = ({ onCancel, 
               className="w-full min-h-[88px] bg-slate-50 border border-slate-300 rounded-xl p-3 text-xs text-slate-800 outline-none focus:border-violet-600"
             />
           </div>
+        </section>
 
-          <div className="space-y-1">
-            <label htmlFor="create-alerts" className="text-xs font-bold text-rose-700">
-              Alertas médicas críticas / alergias (separadas por comas)
-            </label>
-            <input
-              id="create-alerts"
-              type="text"
-              value={alerts}
-              onChange={(e) => setAlerts(e.target.value)}
-              placeholder="Ej. Alergia a penicilina, hipertensión controlada"
-              className="w-full min-h-[44px] bg-rose-50/60 border border-rose-300 rounded-xl px-3 py-2.5 text-xs text-rose-800 outline-none focus:border-rose-500"
-            />
-          </div>
+        <section className="bg-white border border-slate-200/80 rounded-3xl p-6 space-y-4 shadow-xs">
+          <h2 className="font-extrabold text-sm text-slate-900 border-b pb-3 border-slate-100">
+            Alertas médicas
+          </h2>
+
+          {alerts.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {alerts.map((alert) => (
+                <span
+                  key={alert}
+                  className="inline-flex items-center gap-1.5 min-h-[44px] pl-3 pr-1 rounded-xl bg-amber-50 border border-amber-200/80 text-amber-700 font-bold text-xs whitespace-nowrap"
+                >
+                  <AlertTriangle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                  <span>{alert}</span>
+                  <button
+                    type="button"
+                    onClick={() => setAlertToRemove(alert)}
+                    className="min-w-[44px] min-h-[44px] inline-flex items-center justify-center rounded-xl text-amber-700 hover:bg-amber-100 cursor-pointer"
+                    aria-label={`Quitar alerta ${alert}`}
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </span>
+              ))}
+            </div>
+          )}
+
+          {isComposerOpen ? (
+            <div className="flex items-stretch gap-2">
+              <input
+                ref={composerRef}
+                id="create-alerts"
+                type="text"
+                value={alertDraft}
+                onChange={(e) => setAlertDraft(e.target.value)}
+                onKeyDown={handleComposerKeyDown}
+                placeholder="Ej. Alergia a penicilina"
+                className={fieldClass}
+              />
+              <button
+                type="button"
+                onClick={addAlert}
+                className="min-w-[44px] min-h-[44px] px-3 rounded-xl bg-violet-600 hover:bg-violet-700 text-white inline-flex items-center justify-center shrink-0 cursor-pointer"
+                aria-label="Agregar alerta"
+              >
+                <Plus className="w-4 h-4" />
+              </button>
+            </div>
+          ) : (
+            <p className="text-xs text-slate-500 font-medium">
+              {alerts.length === 0 ? 'Sin alertas. Presiona + para agregar.' : 'Presiona + para agregar otra alerta.'}
+            </p>
+          )}
+
+          <button
+            type="button"
+            onClick={openComposer}
+            className="min-h-[44px] px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs inline-flex items-center gap-1.5 cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            Agregar nueva alerta médica
+          </button>
         </section>
       </div>
+
+      {alertToRemove !== null && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="remove-alert-title"
+            className="bg-white rounded-2xl border border-slate-200/80 p-6 max-w-sm w-full shadow-xl space-y-4"
+          >
+            <h3 id="remove-alert-title" className="text-sm font-extrabold text-slate-900">
+              ¿Quitar esta alerta?
+            </h3>
+            <p className="text-xs text-slate-600 font-medium">{alertToRemove}</p>
+            <div className="flex justify-end gap-2 pt-1">
+              <button
+                type="button"
+                onClick={() => setAlertToRemove(null)}
+                className="min-h-[44px] px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={confirmRemoveAlert}
+                className="min-h-[44px] px-4 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs cursor-pointer"
+              >
+                Quitar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-2">
         <button

@@ -2,7 +2,9 @@
 
 **VerifyMD / Lovi:** `index.html` title, `server.ts` prompts y `console.log`. Producto = HealthBit. No copiar esos nombres a UI nueva.
 
-**`/api/rethus-check`:** endpoint vivo, UI no lo llama. No “arreglar el paso 2” cableándolo de nuevo.
+**`/api/rethus-check`:** endpoint vivo (datos.gov.co), UI no lo llama. No “arreglar el paso 2” cableándolo de nuevo.
+
+**`/api/verifik-rethus`:** solo el HTML de `/test`. Si Vite se come `/test`, la ruta Express quedó **después** del middleware SPA.
 
 **`SpecialistDashboard.tsx`, `MobileFrame.tsx`:** no importados por `App.tsx`. El portal real es `HomeDashboard` + tabs.
 
