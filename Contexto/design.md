@@ -22,8 +22,12 @@ Al terminar: identidad OK, RETHUS pendiente, **no sale en el buscador** hasta qu
 
 - Primario: `violet-600` / hover `violet-700`. Pendiente: ámbar. Fondo: `slate-50`. Tarjetas: `white` + `border-slate-200/80`.
 - Iconos: `lucide-react`. Radios: `rounded-3xl` contenedor, `rounded-2xl` tarjeta, `rounded-xl` input.
-- Touch ≥ 44px. Badges: `whitespace-nowrap`. Móvil: tabs inferiores (`BottomTabBar`). Web `lg+`: panel izquierdo colapsable (`AppSidebar`; iconos solos o iconos + copy). CTA de Documentos: `fixed` a la derecha, no centrado.
+- Touch ≥ 44px. Badges: `whitespace-nowrap`. Móvil: tabs inferiores (`BottomTabBar`) siempre. Web `lg+`: `AppSidebar` solo en profundidad 1 (`shouldShowSidebar`). En alta/ficha (2+) no hay menú izquierdo; la marca vuelve al header. CTA de Documentos: `fixed` a la derecha, no centrado.
 - Fuentes: `index.html` carga Inter; el portal pide Plus Jakarta Sans en clase (no está en el HTML). No añadir una tercera.
+
+## Pacientes (portal)
+
+Alta (FAB) es one-pager de una columna (`max-w-3xl`): identidad → sociodemográficos → clínico. Obligatorio: nombre e identidad. Ficha: tarjeta “Datos sociodemográficos” editable. Ambos son profundidad 2 (sin sidebar).
 
 ## Copy
 

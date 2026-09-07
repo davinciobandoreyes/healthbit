@@ -139,13 +139,10 @@ export const PatientDirectory: React.FC<PatientDirectoryProps> = ({ onOpenDoctor
             <div className="flex items-center gap-2 shrink-0">
               <button
                 onClick={onOpenDoctorAuth}
-                className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-2xl bg-slate-900 hover:bg-violet-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-slate-900/10 transition-all cursor-pointer group active:scale-95 shrink-0"
+                className="inline-flex items-center gap-1.5 sm:gap-2 min-h-[44px] px-3 sm:px-4 py-2 rounded-2xl bg-slate-900 hover:bg-violet-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-slate-900/10 transition-all cursor-pointer group active:scale-95 shrink-0"
               >
                 <Stethoscope className="w-4 h-4 text-violet-400 group-hover:text-white transition-colors shrink-0" />
-                <span>
-                  <span className="sm:hidden">Ingresar</span>
-                  <span className="hidden sm:inline">¿Eres Médico? Iniciar Sesión / Registro</span>
-                </span>
+                <span>Ingresar</span>
                 <ArrowRight className="w-3.5 h-3.5 opacity-70 group-hover:translate-x-0.5 transition-transform shrink-0" />
               </button>
             </div>

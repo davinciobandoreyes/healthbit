@@ -1,7 +1,8 @@
-# Estado actual — 2026-08-31
+# Estado actual — 2026-09-05
 
 ## Hecho
 
+- Alta de paciente: one-pager de una columna. Sidebar solo en profundidad 1 (`shouldShowSidebar` en `nav.ts`).
 - Arranque en el buscador público (`public_directory`), no en el portal.
 - Portal/admin en `lg+`: sidebar izquierdo colapsable. Móvil: barra inferior (portal). Copy de navegación en español (Inicio).
 - Paso 6 Validación de grado: diplomas y actas, opcional (omitir o continuar con 0–N archivos). Sin Gemini.

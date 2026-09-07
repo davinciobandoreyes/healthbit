@@ -9,5 +9,8 @@ Cada ítem apunta a `decisions/`. No copiar el razonamiento aquí.
 | 2026-08-25 | Admin = cualquier `@healthbit.co`; médico demo fuera de ese dominio | [`../decisions/2026-08-25-admin-por-dominio.md`](../decisions/2026-08-25-admin-por-dominio.md) |
 | 2026-08-25 | Cola admin con 3 estados + pausar/despausar | [`../decisions/2026-08-25-cola-filtros-y-pausa.md`](../decisions/2026-08-25-cola-filtros-y-pausa.md) |
 | 2026-08-31 | Paso 6 Validación de grado, opcional, después del selfie | [`../decisions/2026-08-31-validacion-de-grado.md`](../decisions/2026-08-31-validacion-de-grado.md) |
+| 2026-09-05 | Socio del paciente: `city` = procedencia; catálogos en `patientCatalog.ts` | [`../decisions/2026-09-05-socio-paciente.md`](../decisions/2026-09-05-socio-paciente.md) |
+| 2026-09-05 | Alta de paciente es one-pager, no modal | [`../decisions/2026-09-05-alta-onepager.md`](../decisions/2026-09-05-alta-onepager.md) |
+| 2026-09-05 | Sidebar solo en profundidad 1 | [`../decisions/2026-09-05-sidebar-profundidad.md`](../decisions/2026-09-05-sidebar-profundidad.md) |
 
 Supersedidas: la verificación automática en el paso 2 (20 ago) quedó anulada el 21 ago. `/api/rethus-check` sigue en `server.ts` pero la UI no lo usa.

@@ -12,7 +12,7 @@ import { DoctorAuthModal } from './components/DoctorAuthModal';
 import { AdminRethusQueue } from './components/AdminRethusQueue';
 import { DoctorProfile, DoctorPortalTab, PendingRethusReview, DegreeDocumentFile } from './types';
 import { INITIAL_DOCTORS } from './data/mockDoctors';
-import { PORTAL_NAV_ITEMS } from './nav';
+import { PORTAL_NAV_ITEMS, shouldShowSidebar } from './nav';
 import { CheckCircle2, ShieldCheck } from 'lucide-react';
 
 const isHealthbitAdminEmail = (email: string) =>
@@ -83,6 +83,8 @@ export default function App() {
   const [emailNotices, setEmailNotices] = useState<Record<string, string>>({});
   const [adminMailNotice, setAdminMailNotice] = useState<string | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [navDepth, setNavDepth] = useState(1);
+  const showSidebar = shouldShowSidebar(navDepth);
 
   const upsertSessionDoctor = (profile: DoctorProfile) => {
     setSessionDoctors((prev) => ({ ...prev, [normalizeEmail(profile.email)]: profile }));
@@ -397,13 +399,15 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex font-['Plus_Jakarta_Sans',sans-serif]">
-      <AppSidebar
-        items={PORTAL_NAV_ITEMS}
-        currentId={currentTab === 'patient-photos' ? 'patients' : currentTab}
-        onSelect={(id) => setCurrentTab(id as DoctorPortalTab)}
-        collapsed={sidebarCollapsed}
-        onToggleCollapsed={() => setSidebarCollapsed((prev) => !prev)}
-      />
+      {showSidebar && (
+        <AppSidebar
+          items={PORTAL_NAV_ITEMS}
+          currentId={currentTab === 'patient-photos' ? 'patients' : currentTab}
+          onSelect={(id) => setCurrentTab(id as DoctorPortalTab)}
+          collapsed={sidebarCollapsed}
+          onToggleCollapsed={() => setSidebarCollapsed((prev) => !prev)}
+        />
+      )}
 
       <div className="flex-1 flex flex-col min-w-0 min-h-screen">
         <Header
@@ -411,7 +415,7 @@ export default function App() {
           doctorAvatar={doctor.avatarUrl}
           specialty={doctor.specialty}
           onLogout={handleLogout}
-          hideBrandOnLg
+          hideBrandOnLg={showSidebar}
         />
 
         <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 py-6 md:py-8 pb-28 sm:pb-32 lg:pb-8">
@@ -429,7 +433,9 @@ export default function App() {
               }
             />
           )}
-          {(currentTab === 'patients' || currentTab === 'patient-photos') && <PatientsSection />}
+          {(currentTab === 'patients' || currentTab === 'patient-photos') && (
+            <PatientsSection onDepthChange={setNavDepth} />
+          )}
           {currentTab === 'documents' && <DocumentsSection />}
           {currentTab === 'settings' && (
             <SettingsSection

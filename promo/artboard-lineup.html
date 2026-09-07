@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>HealthBit — Promo lineup 1920×1080</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      background: #f8fafc;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    #artboard {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse 1100px 480px at 50% 100%, rgba(124, 58, 237, 0.10), transparent 70%),
+        #f8fafc;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 48px 64px 40px;
+    }
+
+    .masthead {
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .brand-mark {
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      background: linear-gradient(to top right, #7c3aed, #818cf8);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 20px -8px rgba(124, 58, 237, 0.55);
+    }
+
+    .wordmark {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      color: #0f172a;
+      line-height: 1;
+    }
+
+    .wordmark span { color: #7c3aed; }
+
+    h1 {
+      font-size: 44px;
+      font-weight: 800;
+      letter-spacing: -0.045em;
+      line-height: 1.1;
+      color: #0f172a;
+    }
+
+    .sub {
+      margin-top: 10px;
+      font-size: 16px;
+      font-weight: 500;
+      color: #475569;
+    }
+
+    .chips {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 30px;
+      padding: 0 12px 0 10px;
+      border-radius: 999px;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      color: #475569;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .chip svg { color: #7c3aed; }
+
+    .lineup {
+      flex: 1;
+      width: 100%;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 28px;
+      padding: 28px 0 8px;
+    }
+
+    .col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #94a3b8;
+    }
+
+    .desktop {
+      width: 720px;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #fff;
+      border: 1px solid rgba(226, 232, 240, 0.95);
+      box-shadow:
+        0 1px 2px rgba(15, 23, 42, 0.04),
+        0 22px 44px -16px rgba(15, 23, 42, 0.22);
+    }
+
+    .desktop img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .phone {
+      width: 236px;
+      padding: 9px 8px 12px;
+      border-radius: 32px;
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.08) inset,
+        0 24px 40px -14px rgba(15, 23, 42, 0.4);
+    }
+
+    .phone .notch {
+      width: 68px;
+      height: 6px;
+      border-radius: 999px;
+      background: #334155;
+      margin: 0 auto 7px;
+    }
+
+    .phone .screen {
+      border-radius: 22px;
+      overflow: hidden;
+      background: #f8fafc;
+    }
+
+    .phone img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .footer {
+      flex-shrink: 0;
+      font-size: 12px;
+      font-weight: 600;
+      color: #94a3b8;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+  <div id="artboard">
+    <header class="masthead">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          </svg>
+        </div>
+        <div class="wordmark">Health<span>Bit</span></div>
+      </div>
+      <h1>Médicos verificados. Confianza real.</h1>
+      <p class="sub">Especialistas con RETHUS revisado. · Colombia</p>
+      <div class="chips">
+        <span class="chip">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path>
+            <path d="m9 12 2 2 4-4"></path>
+          </svg>
+          RETHUS
+        </span>
+        <span class="chip">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          Biometría
+        </span>
+        <span class="chip">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+          Directorio
+        </span>
+      </div>
+    </header>
+
+    <div class="lineup">
+      <div class="col">
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="screen">
+            <img src="screens/mobile.png" alt="Registro y validación biométrica" />
+          </div>
+        </div>
+        <span class="label">Registro</span>
+      </div>
+      <div class="col">
+        <div class="desktop">
+          <img src="screens/dashboard.png" alt="Portal médico HealthBit" />
+        </div>
+        <span class="label">Portal médico</span>
+      </div>
+      <div class="col">
+        <div class="desktop" style="width: 620px;">
+          <img src="screens/directory.png" alt="Directorio de médicos HealthBit" />
+        </div>
+        <span class="label">Directorio</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

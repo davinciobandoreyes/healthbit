@@ -25,6 +25,7 @@ import {
   Upload,
   Layers,
   FileCheck,
+  Pencil,
 } from 'lucide-react';
 import {
   PatientRecord,
@@ -33,6 +34,14 @@ import {
   ClinicalPhoto,
   PatientStatus,
 } from '../types';
+import {
+  PATIENT_EDUCATION_LEVELS,
+  PATIENT_EPS,
+  PATIENT_MARITAL_STATUSES,
+} from '../data/patientCatalog';
+
+const socioFieldClass =
+  'w-full min-h-[44px] bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-xs text-slate-800 outline-none focus:border-violet-600';
 
 interface PatientDetailViewProps {
   patient: PatientRecord;
@@ -78,6 +87,40 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
   // New Photo form state
   const [photoUrl, setPhotoUrl] = useState('https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=800');
   const [photoStage, setPhotoStage] = useState<ClinicalPhoto['stage']>('control_7d');
+  const [isEditingSocio, setIsEditingSocio] = useState(false);
+  const [socioDraft, setSocioDraft] = useState({
+    occupation: patient.occupation || '',
+    origin: patient.origin || '',
+    city: patient.city || '',
+    educationLevel: patient.educationLevel || '',
+    maritalStatus: patient.maritalStatus || '',
+    eps: patient.eps || '',
+  });
+
+  const startSocioEdit = () => {
+    setSocioDraft({
+      occupation: patient.occupation || '',
+      origin: patient.origin || '',
+      city: patient.city || '',
+      educationLevel: patient.educationLevel || '',
+      maritalStatus: patient.maritalStatus || '',
+      eps: patient.eps || '',
+    });
+    setIsEditingSocio(true);
+  };
+
+  const saveSocioEdit = () => {
+    onUpdatePatient({
+      ...patient,
+      occupation: socioDraft.occupation.trim() || undefined,
+      origin: socioDraft.origin.trim() || undefined,
+      city: socioDraft.city.trim(),
+      educationLevel: socioDraft.educationLevel || undefined,
+      maritalStatus: socioDraft.maritalStatus || undefined,
+      eps: socioDraft.eps || undefined,
+    });
+    setIsEditingSocio(false);
+  };
   const [photoAngle, setPhotoAngle] = useState<ClinicalPhoto['angle']>('frontal');
   const [photoNotes, setPhotoNotes] = useState('');
 
@@ -452,6 +495,132 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
           {/* Sidebar Info & Habits */}
           <div className="space-y-6">
             <div className="bg-white border border-slate-200/80 rounded-3xl p-6 space-y-4 shadow-xs">
+              <div className="flex items-center justify-between gap-2 border-b pb-3 border-slate-100">
+                <h3 className="font-extrabold text-sm text-slate-900">Datos sociodemográficos</h3>
+                {!isEditingSocio ? (
+                  <button
+                    type="button"
+                    onClick={startSocioEdit}
+                    className="min-h-[44px] px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs inline-flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <Pencil className="w-3.5 h-3.5" />
+                    Editar datos
+                  </button>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsEditingSocio(false)}
+                      className="min-h-[44px] px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="button"
+                      onClick={saveSocioEdit}
+                      className="min-h-[44px] px-3 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs cursor-pointer"
+                    >
+                      Guardar
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {isEditingSocio ? (
+                <div className="space-y-3">
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-slate-700">Profesión / ocupación</label>
+                    <input
+                      type="text"
+                      value={socioDraft.occupation}
+                      onChange={(e) => setSocioDraft({ ...socioDraft, occupation: e.target.value })}
+                      className={socioFieldClass}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-slate-700">Origen</label>
+                    <input
+                      type="text"
+                      value={socioDraft.origin}
+                      onChange={(e) => setSocioDraft({ ...socioDraft, origin: e.target.value })}
+                      className={socioFieldClass}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-slate-700">Procedencia</label>
+                    <input
+                      type="text"
+                      value={socioDraft.city}
+                      onChange={(e) => setSocioDraft({ ...socioDraft, city: e.target.value })}
+                      className={socioFieldClass}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-slate-700">Escolaridad</label>
+                    <select
+                      value={socioDraft.educationLevel}
+                      onChange={(e) => setSocioDraft({ ...socioDraft, educationLevel: e.target.value })}
+                      className={socioFieldClass}
+                    >
+                      <option value="">Seleccionar</option>
+                      {PATIENT_EDUCATION_LEVELS.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-slate-700">Estado civil</label>
+                    <select
+                      value={socioDraft.maritalStatus}
+                      onChange={(e) => setSocioDraft({ ...socioDraft, maritalStatus: e.target.value })}
+                      className={socioFieldClass}
+                    >
+                      <option value="">Seleccionar</option>
+                      {PATIENT_MARITAL_STATUSES.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-slate-700">EPS</label>
+                    <select
+                      value={socioDraft.eps}
+                      onChange={(e) => setSocioDraft({ ...socioDraft, eps: e.target.value })}
+                      className={socioFieldClass}
+                    >
+                      <option value="">Seleccionar</option>
+                      {PATIENT_EPS.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-3 text-xs">
+                  {[
+                    { label: 'Profesión / ocupación', value: patient.occupation },
+                    { label: 'Origen', value: patient.origin },
+                    { label: 'Procedencia', value: patient.city },
+                    { label: 'Escolaridad', value: patient.educationLevel },
+                    { label: 'Estado civil', value: patient.maritalStatus },
+                    { label: 'EPS', value: patient.eps },
+                  ].map((row) => (
+                    <div key={row.label} className="flex items-center justify-between gap-3">
+                      <span className="text-slate-500 shrink-0">{row.label}</span>
+                      <span className="font-bold text-slate-700 text-right">{row.value || 'No especificada'}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="bg-white border border-slate-200/80 rounded-3xl p-6 space-y-4 shadow-xs">
               <h3 className="font-extrabold text-sm text-slate-900 border-b pb-3 border-slate-100">
                 Estilo de Vida & Hábitos
               </h3>
@@ -479,10 +648,6 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
                   <span className="font-bold text-slate-700">
                     {patient.medicalHistory.lifestyle.physicalActivity}
                   </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-500">Ocupación:</span>
-                  <span className="font-bold text-slate-700">{patient.occupation || 'No especificada'}</span>
                 </div>
               </div>
             </div>

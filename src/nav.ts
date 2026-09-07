@@ -20,3 +20,5 @@ export const ADMIN_NAV_ITEMS: AppNavItem[] = [
 
 export const isPortalNavActive = (itemId: string, currentTab: DoctorPortalTab): boolean =>
   itemId === currentTab || (itemId === 'patients' && currentTab === 'patient-photos');
+
+export const shouldShowSidebar = (depth: number): boolean => depth < 2;

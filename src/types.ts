@@ -213,6 +213,10 @@ export interface PatientRecord {
   city: string;
   address?: string;
   occupation?: string;
+  origin?: string;
+  educationLevel?: string;
+  maritalStatus?: string;
+  eps?: string;
   avatarUrl: string;
   primaryDiagnosis: string;
   plannedProcedure: string;
