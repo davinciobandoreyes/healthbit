@@ -217,6 +217,91 @@ Responde únicamente en formato JSON:
     }
   });
 
+  const ILLNESS_CATEGORIES = [
+    'Estético',
+    'Funcional',
+    'Dolor',
+    'Infeccioso',
+    'Trauma',
+    'Postoperatorio',
+    'Alérgico',
+    'Otro',
+  ] as const;
+
+  const categorizeIllnessLocal = (text: string): string[] => {
+    const t = text
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
+    const hits: string[] = [];
+    if (/estetic|rinoplast|blefaro|lipo|implante|nariz|parpado|menton|abdomino|mento/.test(t)) {
+      hits.push('Estético');
+    }
+    if (/respir|funcional|obstruc|olfato|vision|ronquido|apnea/.test(t)) hits.push('Funcional');
+    if (/dolor|cefalea|algia|molestia/.test(t)) hits.push('Dolor');
+    if (/infecc|pus|fiebre|absceso|celulitis|secrecion/.test(t)) hits.push('Infeccioso');
+    if (/trauma|golpe|fractura|herida|accidente/.test(t)) hits.push('Trauma');
+    if (/postop|cirug|operatori|puntos|ferula|sutura/.test(t)) hits.push('Postoperatorio');
+    if (/alerg|urticaria|prurito|hinchazon/.test(t)) hits.push('Alérgico');
+    if (hits.length === 0) hits.push('Otro');
+    return hits;
+  };
+
+  app.post('/api/categorize-illness', async (req, res) => {
+    const text = typeof req.body?.text === 'string' ? req.body.text.trim() : '';
+    if (!text) {
+      return res.status(400).json({ error: 'Se requiere texto de la enfermedad actual.' });
+    }
+
+    try {
+      const response = await ai.models.generateContent({
+        model: 'gemini-3.7-flash',
+        contents: [
+          {
+            text: `Clasifica esta descripción de enfermedad actual de una consulta médica en Colombia.
+Texto: """${text}"""
+
+Responde ÚNICAMENTE JSON: { "categories": string[] }
+Usa solo estas categorías (0 o más): ${ILLNESS_CATEGORIES.join(', ')}.
+No inventes otras. Si no encaja, usa "Otro".`,
+          },
+        ],
+        config: {
+          responseMimeType: 'application/json',
+        },
+      });
+
+      const rawText = response.text || '{}';
+      let parsed: { categories?: unknown } = {};
+      try {
+        parsed = JSON.parse(rawText);
+      } catch {
+        parsed = {};
+      }
+
+      const allowed = new Set<string>(ILLNESS_CATEGORIES);
+      const categories = Array.isArray(parsed.categories)
+        ? parsed.categories.filter((item): item is string => typeof item === 'string' && allowed.has(item))
+        : [];
+
+      if (categories.length === 0) {
+        return res.json({
+          success: true,
+          fallback: true,
+          categories: categorizeIllnessLocal(text),
+        });
+      }
+
+      return res.json({ success: true, categories });
+    } catch {
+      return res.json({
+        success: true,
+        fallback: true,
+        categories: categorizeIllnessLocal(text),
+      });
+    }
+  });
+
   const RETHUS_QUERY_URL = 'https://www.datos.gov.co/api/v3/views/my8c-6xkk/query.json';
   const RETHUS_META_URL = 'https://www.datos.gov.co/api/views/my8c-6xkk.json';
   const ID_COLUMN_HINT = /identific|cedula|c[eé]dula|documento|nroident|numero_id|nro_id/i;

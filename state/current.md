@@ -11,6 +11,7 @@
 - Gemini multimodal para cédula y selfie (con fallback que no rompe la demo).
 - Design system en `DESIGNHealthBit.md` (primario `violet-600`, companion indigo; ámbar = pendiente). Mapa humano en `dashboard.html`.
 - Pacientes: fichas SOAP, cirugías, fotos (datos mock, estado local del componente).
+- Historia clínica: wizard de 7 one-pagers (`ClinicalHistoryFlow`). Reemplaza el modal SOAP. CIE-10 local + `POST /api/categorize-illness` (fallback no se vende como IA). Sin RIPS.
 
 ## Pendiente (producto)
 

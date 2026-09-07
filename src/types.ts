@@ -147,6 +147,50 @@ export interface ClinicalSOAPContent {
   plan: string;       // P: Medicación, curaciones, férulas, próxima cita
 }
 
+export interface Cie10Code {
+  code: string;
+  label: string;
+}
+
+export interface ClinicalAntecedentes {
+  patologicos: string;
+  farmacologicos: string;
+  quirurgicos: string;
+  alergicos: string;
+  ginecobstetricos: string;
+  toxicologicos: string;
+  habitos: string;
+  familiares: string;
+  otros: string;
+  personales: string;
+}
+
+export interface ClinicalSistemas {
+  cabeza: string;
+  torso: string;
+  genitales: string;
+  piernas: string;
+  brazos: string;
+}
+
+export interface ClinicalExamenFisico {
+  heartRate: string;
+  respiratoryRate: string;
+  painScale: string;
+  glasgow: string;
+}
+
+export interface ClinicalHistory {
+  motivo: string;
+  enfermedadActual: string;
+  categorias: string[];
+  antecedentes: ClinicalAntecedentes;
+  sistemas: ClinicalSistemas;
+  examenFisico: ClinicalExamenFisico;
+  diagnosticos: Cie10Code[];
+  tratamiento: string;
+}
+
 export interface ClinicalNote {
   id: string;
   date: string;
@@ -156,11 +200,15 @@ export interface ClinicalNote {
   noteType: 'consulta_inicial' | 'control_postoperatorio' | 'nota_quirurgica' | 'urgencia' | 'alta_medica';
   title: string;
   soap: ClinicalSOAPContent;
+  historia?: ClinicalHistory;
   vitalSigns?: {
     bloodPressure?: string;
     heartRate?: string;
     temperature?: string;
     weightKg?: number;
+    respiratoryRate?: string;
+    painScale?: string;
+    glasgow?: string;
   };
   attachments?: string[];
 }

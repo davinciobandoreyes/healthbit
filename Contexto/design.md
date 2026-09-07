@@ -29,6 +29,8 @@ Al terminar: identidad OK, RETHUS pendiente, **no sale en el buscador** hasta qu
 
 Alta (FAB) es one-pager de una columna (`max-w-3xl`): identidad → sociodemográficos → clínico → alertas médicas (pills, input abierto por default, tokens ámbar; no rose de error). Obligatorio: nombre e identidad. Ficha: tarjeta “Datos sociodemográficos” editable. Ambos son profundidad 2 (sin sidebar).
 
+Historia clínica (desde la ficha, no modal): 7 one-pagers con stepper (`ClinicalHistoryFlow`). Campos opcionales; al revisar, vacío se muestra como “Sin información” (`clinicalDisplay.ts`). Diagnóstico = typeahead CIE-10 local. Sin paso RIPS.
+
 ## Copy
 
 Verbos cortos: Continuar, Registrarse, Ingresar. Términos: RETHUS, Pre-Op, Post-Op Activo. Avisos de correo deben decir que es demo.

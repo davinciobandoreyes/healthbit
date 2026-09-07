@@ -13,6 +13,7 @@ import { PatientRecord, PatientStatus } from '../types';
 import { INITIAL_PATIENTS } from '../data/mockPatients';
 import { PatientDetailView } from './PatientDetailView';
 import { PatientCreateView, PatientCreatePayload } from './PatientCreateView';
+import { ClinicalHistoryFlow, ClinicalHistorySavePayload } from './ClinicalHistoryFlow';
 
 interface PatientsSectionProps {
   onDepthChange?: (depth: 1 | 2) => void;
@@ -24,12 +25,14 @@ export const PatientsSection: React.FC<PatientsSectionProps> = ({ onDepthChange 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatusFilter, setSelectedStatusFilter] = useState<string>('ALL');
   const [isCreating, setIsCreating] = useState(false);
+  const [isWritingHistory, setIsWritingHistory] = useState(false);
+  const [openNotesTab, setOpenNotesTab] = useState(false);
 
   const activePatient = patients.find((p) => p.id === selectedPatientId);
 
   useEffect(() => {
-    onDepthChange?.(selectedPatientId || isCreating ? 2 : 1);
-  }, [selectedPatientId, isCreating, onDepthChange]);
+    onDepthChange?.(selectedPatientId || isCreating || isWritingHistory ? 2 : 1);
+  }, [selectedPatientId, isCreating, isWritingHistory, onDepthChange]);
 
   useEffect(() => {
     return () => onDepthChange?.(1);
@@ -88,12 +91,39 @@ export const PatientsSection: React.FC<PatientsSectionProps> = ({ onDepthChange 
 
   const openPatient = (id: string) => {
     setSelectedPatientId(id);
+    setOpenNotesTab(false);
     reportDepth(2);
   };
 
   const closePatient = () => {
     setSelectedPatientId(null);
+    setIsWritingHistory(false);
+    setOpenNotesTab(false);
     reportDepth(1);
+  };
+
+  const startHistory = () => {
+    setIsWritingHistory(true);
+    reportDepth(2);
+  };
+
+  const cancelHistory = () => {
+    setIsWritingHistory(false);
+    reportDepth(2);
+  };
+
+  const handleSaveHistory = (payload: ClinicalHistorySavePayload) => {
+    if (!activePatient) return;
+    const updated: PatientRecord = {
+      ...activePatient,
+      notes: [payload.note, ...activePatient.notes],
+      primaryDiagnosis: payload.primaryDiagnosis || activePatient.primaryDiagnosis,
+      medicalHistory: payload.medicalHistory || activePatient.medicalHistory,
+    };
+    handleUpdatePatient(updated);
+    setIsWritingHistory(false);
+    setOpenNotesTab(true);
+    reportDepth(2);
   };
 
   const handleCreatePatient = (payload: PatientCreatePayload) => {
@@ -159,12 +189,24 @@ export const PatientsSection: React.FC<PatientsSectionProps> = ({ onDepthChange 
     setIsCreating(false);
   };
 
+  if (isWritingHistory && activePatient) {
+    return (
+      <ClinicalHistoryFlow
+        patient={activePatient}
+        onCancel={cancelHistory}
+        onSubmit={handleSaveHistory}
+      />
+    );
+  }
+
   if (activePatient) {
     return (
       <PatientDetailView
         patient={activePatient}
+        initialTab={openNotesTab ? 'notes' : 'summary'}
         onBack={closePatient}
         onUpdatePatient={handleUpdatePatient}
+        onStartHistory={startHistory}
       />
     );
   }

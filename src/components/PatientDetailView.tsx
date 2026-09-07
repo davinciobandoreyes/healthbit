@@ -29,7 +29,6 @@ import {
 } from 'lucide-react';
 import {
   PatientRecord,
-  ClinicalNote,
   SurgicalProcedureRecord,
   ClinicalPhoto,
   PatientStatus,
@@ -39,40 +38,40 @@ import {
   PATIENT_EPS,
   PATIENT_MARITAL_STATUSES,
 } from '../data/patientCatalog';
+import { displayClinicalValue, isMissingClinicalValue, SIN_INFORMACION } from '../lib/clinicalDisplay';
 
 const socioFieldClass =
   'w-full min-h-[44px] bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-xs text-slate-800 outline-none focus:border-violet-600';
 
-interface PatientDetailViewProps {
-  patient: PatientRecord;
-  onBack: () => void;
-  onUpdatePatient: (updated: PatientRecord) => void;
-}
+const ClinicalText: React.FC<{ value?: string }> = ({ value }) => (
+  <span className={isMissingClinicalValue(value) ? 'text-slate-400' : 'text-slate-700'}>
+    {displayClinicalValue(value)}
+  </span>
+);
 
 type DetailTab = 'summary' | 'notes' | 'procedures' | 'photos';
 
+interface PatientDetailViewProps {
+  patient: PatientRecord;
+  initialTab?: DetailTab;
+  onBack: () => void;
+  onUpdatePatient: (updated: PatientRecord) => void;
+  onStartHistory: () => void;
+}
+
 export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
   patient,
+  initialTab = 'summary',
   onBack,
   onUpdatePatient,
+  onStartHistory,
 }) => {
-  const [activeTab, setActiveTab] = useState<DetailTab>('summary');
+  const [activeTab, setActiveTab] = useState<DetailTab>(initialTab);
 
   // Modals state
-  const [isNewNoteModalOpen, setIsNewNoteModalOpen] = useState(false);
   const [isNewProcedureModalOpen, setIsNewProcedureModalOpen] = useState(false);
   const [isAddPhotoModalOpen, setIsAddPhotoModalOpen] = useState(false);
   const [photoComparisonMode, setPhotoComparisonMode] = useState(false);
-
-  // New Clinical Note form state
-  const [noteType, setNoteType] = useState<ClinicalNote['noteType']>('control_postoperatorio');
-  const [noteTitle, setNoteTitle] = useState('');
-  const [soapS, setSoapS] = useState('');
-  const [soapO, setSoapO] = useState('');
-  const [soapA, setSoapA] = useState('');
-  const [soapP, setSoapP] = useState('');
-  const [bp, setBp] = useState('120/80 mmHg');
-  const [hr, setHr] = useState('72 lpm');
 
   // New Procedure form state
   const [procName, setProcName] = useState(patient.plannedProcedure || '');
@@ -141,45 +140,6 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
   };
 
   const currentBadge = getStatusBadge(patient.status);
-
-  // Handlers
-  const handleSaveNote = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!noteTitle && !soapS) return;
-
-    const newNote: ClinicalNote = {
-      id: `note-${Date.now()}`,
-      date: new Date().toISOString().split('T')[0],
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      authorName: 'Dra. María Camila Restrepo Gómez',
-      authorRole: 'Cirujana Plástica Especialista',
-      noteType,
-      title: noteTitle || `Nota de ${noteType.replace('_', ' ')}`,
-      soap: {
-        subjective: soapS || 'Sin hallazgos subjetivos adicionales.',
-        objective: soapO || 'Examen físico dentro de límites esperados.',
-        assessment: soapA || 'Evolución clínica satisfactoria.',
-        plan: soapP || 'Continuar con recomendaciones generales y citación a control.',
-      },
-      vitalSigns: {
-        bloodPressure: bp,
-        heartRate: hr,
-      },
-    };
-
-    const updated = {
-      ...patient,
-      notes: [newNote, ...patient.notes],
-    };
-    onUpdatePatient(updated);
-    setIsNewNoteModalOpen(false);
-    // Reset
-    setNoteTitle('');
-    setSoapS('');
-    setSoapO('');
-    setSoapA('');
-    setSoapP('');
-  };
 
   const handleSaveProcedure = (e: React.FormEvent) => {
     e.preventDefault();
@@ -250,7 +210,7 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
 
         <div className="flex items-center gap-2 flex-wrap">
           <button
-            onClick={() => setIsNewNoteModalOpen(true)}
+            onClick={onStartHistory}
             className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs shadow-xs transition-all cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
@@ -677,15 +637,15 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
             <div>
               <h3 className="font-extrabold text-lg text-slate-900">Timeline de Notas de Evolución Médica</h3>
               <p className="text-xs text-slate-500">
-                Registro SOAP cronológico con firma del especialista y signos vitales.
+                Historia clínica y notas SOAP con firma del especialista.
               </p>
             </div>
             <button
-              onClick={() => setIsNewNoteModalOpen(true)}
+              onClick={onStartHistory}
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs shadow-xs transition-all cursor-pointer"
             >
               <Plus className="w-4 h-4" />
-              <span>Nueva Nota de Evolución</span>
+              <span>Nueva historia clínica</span>
             </button>
           </div>
 
@@ -722,35 +682,135 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
                     </div>
                   </div>
 
-                  {/* SOAP Breakdown */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                    <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/70 space-y-1">
-                      <span className="font-extrabold text-violet-800 block uppercase tracking-wider text-[11px]">
-                        S • Subjetivo
-                      </span>
-                      <p className="text-slate-700 leading-relaxed">{note.soap.subjective}</p>
+                  {note.historia ? (
+                    <div className="space-y-3 text-xs">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/70 space-y-1">
+                          <span className="font-extrabold text-violet-800 block uppercase tracking-wider text-[11px]">
+                            Motivo
+                          </span>
+                          <p className="leading-relaxed">
+                            <ClinicalText value={note.historia.motivo} />
+                          </p>
+                        </div>
+                        <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/70 space-y-2">
+                          <span className="font-extrabold text-violet-800 block uppercase tracking-wider text-[11px]">
+                            Enfermedad actual
+                          </span>
+                          <p className="leading-relaxed">
+                            <ClinicalText value={note.historia.enfermedadActual} />
+                          </p>
+                          {note.historia.categorias.length > 0 && (
+                            <div className="flex flex-wrap gap-1.5">
+                              {note.historia.categorias.map((cat) => (
+                                <span
+                                  key={cat}
+                                  className="px-2 py-0.5 rounded-lg bg-violet-50 text-violet-700 border border-violet-200 font-bold whitespace-nowrap"
+                                >
+                                  {cat}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/70 space-y-2">
+                        <span className="font-extrabold text-slate-700 block uppercase tracking-wider text-[11px]">
+                          Antecedentes
+                        </span>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1">
+                          <p><span className="font-bold text-slate-700">Patológicos:</span> <ClinicalText value={note.historia.antecedentes.patologicos} /></p>
+                          <p><span className="font-bold text-slate-700">Farmacológicos:</span> <ClinicalText value={note.historia.antecedentes.farmacologicos} /></p>
+                          <p><span className="font-bold text-slate-700">Quirúrgicos:</span> <ClinicalText value={note.historia.antecedentes.quirurgicos} /></p>
+                          <p><span className="font-bold text-slate-700">Alérgicos:</span> <ClinicalText value={note.historia.antecedentes.alergicos} /></p>
+                          <p><span className="font-bold text-slate-700">Ginecoobstétricos:</span> <ClinicalText value={note.historia.antecedentes.ginecobstetricos} /></p>
+                          <p><span className="font-bold text-slate-700">Toxicológicos:</span> <ClinicalText value={note.historia.antecedentes.toxicologicos} /></p>
+                          <p><span className="font-bold text-slate-700">Hábitos:</span> <ClinicalText value={note.historia.antecedentes.habitos} /></p>
+                          <p><span className="font-bold text-slate-700">Familiares:</span> <ClinicalText value={note.historia.antecedentes.familiares} /></p>
+                          <p><span className="font-bold text-slate-700">Otros:</span> <ClinicalText value={note.historia.antecedentes.otros} /></p>
+                          <p><span className="font-bold text-slate-700">Personales:</span> <ClinicalText value={note.historia.antecedentes.personales} /></p>
+                        </div>
+                      </div>
+                      <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/70 space-y-2">
+                        <span className="font-extrabold text-slate-700 block uppercase tracking-wider text-[11px]">
+                          Revisión por sistemas
+                        </span>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1">
+                          <p><span className="font-bold text-slate-700">Cabeza:</span> <ClinicalText value={note.historia.sistemas.cabeza} /></p>
+                          <p><span className="font-bold text-slate-700">Torso:</span> <ClinicalText value={note.historia.sistemas.torso} /></p>
+                          <p><span className="font-bold text-slate-700">Genitales:</span> <ClinicalText value={note.historia.sistemas.genitales} /></p>
+                          <p><span className="font-bold text-slate-700">Piernas:</span> <ClinicalText value={note.historia.sistemas.piernas} /></p>
+                          <p><span className="font-bold text-slate-700">Brazos:</span> <ClinicalText value={note.historia.sistemas.brazos} /></p>
+                        </div>
+                      </div>
+                      <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/70 space-y-2">
+                        <span className="font-extrabold text-slate-700 block uppercase tracking-wider text-[11px]">
+                          Examen físico
+                        </span>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1">
+                          <p><span className="font-bold text-slate-700">FC:</span> <ClinicalText value={note.historia.examenFisico.heartRate} /></p>
+                          <p><span className="font-bold text-slate-700">FR:</span> <ClinicalText value={note.historia.examenFisico.respiratoryRate} /></p>
+                          <p><span className="font-bold text-slate-700">Dolor:</span> <ClinicalText value={note.historia.examenFisico.painScale} /></p>
+                          <p><span className="font-bold text-slate-700">Glasgow:</span> <ClinicalText value={note.historia.examenFisico.glasgow} /></p>
+                        </div>
+                      </div>
+                      <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/70 space-y-2">
+                        <span className="font-extrabold text-indigo-800 block uppercase tracking-wider text-[11px]">
+                          Diagnóstico CIE-10
+                        </span>
+                        {note.historia.diagnosticos.length === 0 ? (
+                          <p className="text-slate-400">{SIN_INFORMACION}</p>
+                        ) : (
+                          <div className="flex flex-wrap gap-1.5">
+                            {note.historia.diagnosticos.map((dx) => (
+                              <span
+                                key={dx.code}
+                                className="px-2.5 py-1 rounded-xl bg-violet-50 text-violet-800 border border-violet-200 font-bold whitespace-nowrap"
+                              >
+                                {dx.code} · {dx.label}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/70 space-y-1">
+                        <span className="font-extrabold text-indigo-800 block uppercase tracking-wider text-[11px]">
+                          Tratamiento
+                        </span>
+                        <p className="leading-relaxed">
+                          <ClinicalText value={note.historia.tratamiento} />
+                        </p>
+                      </div>
                     </div>
-                    <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/70 space-y-1">
-                      <span className="font-extrabold text-violet-800 block uppercase tracking-wider text-[11px]">
-                        O • Objetivo & Examen
-                      </span>
-                      <p className="text-slate-700 leading-relaxed">{note.soap.objective}</p>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                      <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/70 space-y-1">
+                        <span className="font-extrabold text-violet-800 block uppercase tracking-wider text-[11px]">
+                          S • Subjetivo
+                        </span>
+                        <p className="text-slate-700 leading-relaxed">{note.soap.subjective}</p>
+                      </div>
+                      <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/70 space-y-1">
+                        <span className="font-extrabold text-violet-800 block uppercase tracking-wider text-[11px]">
+                          O • Objetivo & Examen
+                        </span>
+                        <p className="text-slate-700 leading-relaxed">{note.soap.objective}</p>
+                      </div>
+                      <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/70 space-y-1">
+                        <span className="font-extrabold text-indigo-800 block uppercase tracking-wider text-[11px]">
+                          A • Análisis & Diagnóstico
+                        </span>
+                        <p className="text-slate-700 leading-relaxed">{note.soap.assessment}</p>
+                      </div>
+                      <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/70 space-y-1">
+                        <span className="font-extrabold text-indigo-800 block uppercase tracking-wider text-[11px]">
+                          P • Plan & Conducta
+                        </span>
+                        <p className="text-slate-700 leading-relaxed">{note.soap.plan}</p>
+                      </div>
                     </div>
-                    <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/70 space-y-1">
-                      <span className="font-extrabold text-indigo-800 block uppercase tracking-wider text-[11px]">
-                        A • Análisis & Diagnóstico
-                      </span>
-                      <p className="text-slate-700 leading-relaxed">{note.soap.assessment}</p>
-                    </div>
-                    <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/70 space-y-1">
-                      <span className="font-extrabold text-indigo-800 block uppercase tracking-wider text-[11px]">
-                        P • Plan & Conducta
-                      </span>
-                      <p className="text-slate-700 leading-relaxed">{note.soap.plan}</p>
-                    </div>
-                  </div>
+                  )}
 
-                  {/* Vital Signs Footer */}
                   {note.vitalSigns && (
                     <div className="flex items-center gap-4 text-xs text-slate-500 pt-1 border-t border-slate-100 flex-wrap">
                       {note.vitalSigns.bloodPressure && (
@@ -761,6 +821,21 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
                       {note.vitalSigns.heartRate && (
                         <span className="flex items-center gap-1 font-mono">
                           <Activity className="w-3.5 h-3.5 text-violet-600" /> FC: {note.vitalSigns.heartRate}
+                        </span>
+                      )}
+                      {note.vitalSigns.respiratoryRate && (
+                        <span className="flex items-center gap-1 font-mono">
+                          FR: {note.vitalSigns.respiratoryRate}
+                        </span>
+                      )}
+                      {note.vitalSigns.painScale && (
+                        <span className="flex items-center gap-1 font-mono">
+                          Dolor: {note.vitalSigns.painScale}
+                        </span>
+                      )}
+                      {note.vitalSigns.glasgow && (
+                        <span className="flex items-center gap-1 font-mono">
+                          Glasgow: {note.vitalSigns.glasgow}
                         </span>
                       )}
                       {note.vitalSigns.temperature && (
@@ -972,119 +1047,6 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
                 </div>
               </div>
             ))}
-          </div>
-        </div>
-      )}
-
-      {/* MODAL: Nueva Nota Clínica */}
-      {isNewNoteModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-xs animate-fadeIn overflow-y-auto">
-          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 md:p-8 space-y-6 shadow-2xl relative my-8 border border-slate-200">
-            <button
-              onClick={() => setIsNewNoteModalOpen(false)}
-              className="absolute top-6 right-6 p-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 cursor-pointer"
-            >
-              <X className="w-4 h-4" />
-            </button>
-
-            <div>
-              <h3 className="text-lg font-extrabold text-slate-900">Registrar Nota de Evolución Médica</h3>
-              <p className="text-xs text-slate-500">Expediente de {patient.fullName} — Modelo SOAP</p>
-            </div>
-
-            <form onSubmit={handleSaveNote} className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">Tipo de Nota</label>
-                  <select
-                    value={noteType}
-                    onChange={(e: any) => setNoteType(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-xs text-slate-800 outline-none focus:border-violet-600"
-                  >
-                    <option value="control_postoperatorio">Control Postoperatorio</option>
-                    <option value="consulta_inicial">Consulta Inicial</option>
-                    <option value="nota_quirurgica">Nota Quirúrgica</option>
-                    <option value="urgencia">Urgencia / Evento Adverso</option>
-                    <option value="alta_medica">Alta Médica Definitiva</option>
-                  </select>
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">Título del Registro</label>
-                  <input
-                    type="text"
-                    value={noteTitle}
-                    onChange={(e) => setNoteTitle(e.target.value)}
-                    placeholder="Ej. Control Día 7 - Retiro de puntos"
-                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-xs text-slate-800 outline-none focus:border-violet-600"
-                  />
-                </div>
-              </div>
-
-              {/* SOAP Inputs */}
-              <div className="space-y-3">
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-violet-800">S (Subjetivo - Síntomas del paciente)</label>
-                  <textarea
-                    rows={2}
-                    value={soapS}
-                    onChange={(e) => setSoapS(e.target.value)}
-                    placeholder="Paciente refiere buena tolerancia, dolor leve controlado..."
-                    className="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-xs text-slate-800 outline-none focus:border-violet-600"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-violet-800">O (Objetivo - Hallazgos del examen físico)</label>
-                  <textarea
-                    rows={2}
-                    value={soapO}
-                    onChange={(e) => setSoapO(e.target.value)}
-                    placeholder="Edema leve, herida limpia sin signos de infección..."
-                    className="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-xs text-slate-800 outline-none focus:border-violet-600"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-indigo-800">A (Análisis)</label>
-                    <input
-                      type="text"
-                      value={soapA}
-                      onChange={(e) => setSoapA(e.target.value)}
-                      placeholder="Evolución postoperatoria esperada"
-                      className="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs text-slate-800 outline-none focus:border-violet-600"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-indigo-800">P (Plan / Conducta)</label>
-                    <input
-                      type="text"
-                      value={soapP}
-                      onChange={(e) => setSoapP(e.target.value)}
-                      placeholder="Continuar curaciones y próximo control"
-                      className="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs text-slate-800 outline-none focus:border-violet-600"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex justify-end gap-3 pt-4 border-t border-slate-200">
-                <button
-                  type="button"
-                  onClick={() => setIsNewNoteModalOpen(false)}
-                  className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className="px-6 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs shadow-xs cursor-pointer"
-                >
-                  Guardar y Firmar Nota
-                </button>
-              </div>
-            </form>
           </div>
         </div>
       )}

@@ -37,7 +37,9 @@ No leer de entrada: `dashboard.html`, `src/data/mock*.ts`, `DESIGNHealthBit.md` 
 | Cola admin | `src/components/AdminRethusQueue.tsx` | Filtros pending / approved / denied + pausa |
 | Home médico | `src/components/HomeDashboard.tsx` | Chip RETHUS pendiente / aprobado / denegado |
 | Alta / ficha paciente | `PatientsSection.tsx` + `PatientCreateView.tsx` + `PatientDetailView.tsx` | Profundidad 2: sin sidebar. Alta = una columna. `city` = procedencia. Alertas = pills en sección propia |
+| Historia clínica | `ClinicalHistoryFlow.tsx` | 7 one-pagers, sin modal, sin RIPS. Entra desde la ficha. |
 | Gemini cédula / selfie | `server.ts` | `/api/verify-document`, `/api/verify-biometrics` |
+| Gemini enfermedad actual | `server.ts` | `POST /api/categorize-illness`. Fallback local + flag; UI no lo vende como IA. |
 | Sandbox Verifik RETHUS | `public/test.html` + `server.ts` | `GET /test`. Proxy `POST /api/verifik-rethus`. No es el registro. |
 | Design system | `DESIGNHealthBit.md` | No inventar tokens |
 | Mapa de producto (humano) | `dashboard.html` | No es la app |
@@ -69,6 +71,7 @@ Componentes no montados (no usar como base): `SpecialistDashboard.tsx`, `MobileF
 | Login, admin, directorio, RETHUS | `App.tsx` + gotcha de estado en memoria |
 | Probar Verifik RETHUS | `public/test.html` + `VERIFIK_TOKEN` → `/test` |
 | Pacientes / SOAP / fotos | `PatientsSection.tsx` + `types.ts` + `src/data/patientCatalog.ts` |
+| Historia clínica | `ClinicalHistoryFlow.tsx` + `src/data/cie10Catalog.ts` |
 | Gemini / cédula / selfie | `server.ts` + `gotchas/gemini-fallback.md` |
 
 Si un flujo se repite ≥2 veces, extraerlo a `skills/` en vez de reexplicarlo en el chat.
