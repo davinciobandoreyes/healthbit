@@ -25,6 +25,10 @@ Al terminar: identidad OK, RETHUS pendiente, **no sale en el buscador** hasta qu
 - Touch ≥ 44px. Badges: `whitespace-nowrap`. Móvil: tabs inferiores (`BottomTabBar`) siempre. Web `lg+`: `AppSidebar` solo en profundidad 1 (`shouldShowSidebar`). En alta/ficha (2+) no hay menú izquierdo; la marca vuelve al header. CTA de Documentos: `fixed` a la derecha, no centrado.
 - Fuentes: `index.html` carga Inter; el portal pide Plus Jakarta Sans en clase (no está en el HTML). No añadir una tercera.
 
+## Ficha pública del médico (`DoctorOnePager`)
+
+Layout tipo directorio: identidad compacta (foto, RETHUS, rating, dos CTAs) + pestañas a la izquierda + **Agendar cita** sticky a la derecha (`lg+`). Móvil: una columna y barra fija inferior. Tabs: Experiencia (default), Verificación, Credenciales, Opiniones. Contenido existente; no hay servicios/precios ni aseguradoras. Reserva sigue siendo demo en memoria.
+
 ## Pacientes (portal)
 
 Alta (FAB) es one-pager de una columna (`max-w-3xl`): identidad → sociodemográficos → clínico → alertas médicas (pills, input abierto por default, tokens ámbar; no rose de error). Obligatorio: nombre e identidad. Ficha: tarjeta “Datos sociodemográficos” editable. Ambos son profundidad 2 (sin sidebar).

@@ -6,21 +6,14 @@ import {
   MapPin,
   Building2,
   Calendar,
-  Phone,
-  Mail,
   CheckCircle2,
   Award,
-  FileText,
   FileCheck,
   ChevronDown,
   ChevronUp,
   Eye,
   X,
-  Clock,
-  Sparkles,
   MessageCircle,
-  ExternalLink,
-  Lock,
   UserCheck,
   Share2,
   Check,
@@ -31,6 +24,8 @@ interface DoctorOnePagerProps {
   doctor: DoctorProfile;
   onBack: () => void;
 }
+
+type ProfileTab = 'experiencia' | 'verificacion' | 'credenciales' | 'opiniones';
 
 interface SuccessCase {
   id: string;
@@ -53,17 +48,265 @@ interface CredentialDoc {
   previewUrl: string;
 }
 
+const PROFILE_TABS: { id: ProfileTab; label: string }[] = [
+  { id: 'experiencia', label: 'Experiencia' },
+  { id: 'verificacion', label: 'Verificación' },
+  { id: 'credenciales', label: 'Credenciales' },
+  { id: 'opiniones', label: 'Opiniones' },
+];
+
+const inputClass =
+  'w-full min-h-[44px] bg-slate-50 border border-slate-200/80 rounded-xl px-3.5 py-2.5 text-sm text-slate-900 font-medium focus:bg-white focus:border-violet-600 focus:outline-none';
+
+const ProfileTabs: React.FC<{
+  activeTab: ProfileTab;
+  onChange: (tab: ProfileTab) => void;
+}> = ({ activeTab, onChange }) => (
+  <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-1">
+    {PROFILE_TABS.map((tab) => {
+      const isActive = activeTab === tab.id;
+      return (
+        <button
+          key={tab.id}
+          type="button"
+          onClick={() => onChange(tab.id)}
+          className={`shrink-0 min-h-[44px] px-4 rounded-full text-xs sm:text-sm font-bold whitespace-nowrap transition-all cursor-pointer ${
+            isActive
+              ? 'bg-violet-600 text-white shadow-xs'
+              : 'bg-white text-slate-600 border border-slate-200/80 hover:bg-slate-50'
+          }`}
+        >
+          {tab.label}
+        </button>
+      );
+    })}
+  </div>
+);
+
+interface BookingPanelProps {
+  doctor: DoctorProfile;
+  whatsAppLink: string;
+  bookingType: 'presencial' | 'telemedicina';
+  setBookingType: (value: 'presencial' | 'telemedicina') => void;
+  bookingDate: string;
+  setBookingDate: (value: string) => void;
+  bookingTime: string;
+  setBookingTime: (value: string) => void;
+  patientName: string;
+  setPatientName: (value: string) => void;
+  patientPhone: string;
+  setPatientPhone: (value: string) => void;
+  patientEmail: string;
+  setPatientEmail: (value: string) => void;
+  consultReason: string;
+  setConsultReason: (value: string) => void;
+  isBooked: boolean;
+  bookingRefCode: string;
+  onSubmit: (e: React.FormEvent) => void;
+  onReset: () => void;
+}
+
+const BookingPanel: React.FC<BookingPanelProps> = ({
+  doctor,
+  whatsAppLink,
+  bookingType,
+  setBookingType,
+  bookingDate,
+  setBookingDate,
+  bookingTime,
+  setBookingTime,
+  patientName,
+  setPatientName,
+  patientPhone,
+  setPatientPhone,
+  patientEmail,
+  setPatientEmail,
+  consultReason,
+  setConsultReason,
+  isBooked,
+  bookingRefCode,
+  onSubmit,
+  onReset,
+}) => (
+  <aside
+    id="agendamiento"
+    className="bg-white border border-slate-200/80 rounded-3xl p-5 sm:p-6 shadow-xs scroll-mt-20"
+  >
+    <h2 className="text-base sm:text-lg font-bold text-slate-900 mb-4">Agendar cita</h2>
+
+    <div className="flex bg-slate-100 p-1 rounded-xl mb-5">
+      <button
+        type="button"
+        onClick={() => setBookingType('presencial')}
+        className={`flex-1 min-h-[44px] px-3 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+          bookingType === 'presencial'
+            ? 'bg-white text-violet-700 shadow-2xs'
+            : 'text-slate-600 hover:text-slate-900'
+        }`}
+      >
+        Presencial
+      </button>
+      <button
+        type="button"
+        onClick={() => setBookingType('telemedicina')}
+        className={`flex-1 min-h-[44px] px-3 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+          bookingType === 'telemedicina'
+            ? 'bg-white text-violet-700 shadow-2xs'
+            : 'text-slate-600 hover:text-slate-900'
+        }`}
+      >
+        Telemedicina
+      </button>
+    </div>
+
+    <div className="space-y-1.5 mb-5 pb-5 border-b border-slate-100">
+      <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400 whitespace-nowrap">
+        Dirección
+      </p>
+      <div className="flex items-start gap-2 text-sm text-slate-700">
+        <MapPin className="w-4 h-4 text-violet-600 shrink-0 mt-0.5" />
+        <div>
+          <p className="font-semibold">{doctor.institution}</p>
+          <p className="text-xs text-slate-500">{doctor.location}</p>
+        </div>
+      </div>
+    </div>
+
+    {!isBooked ? (
+      <form onSubmit={onSubmit} className="space-y-4">
+        <div className="space-y-1.5">
+          <label className="text-xs font-bold text-slate-700">Nombre Completo *</label>
+          <input
+            type="text"
+            required
+            value={patientName}
+            onChange={(e) => setPatientName(e.target.value)}
+            placeholder="Ej. Santiago Morales"
+            className={inputClass}
+          />
+        </div>
+
+        <div className="space-y-1.5">
+          <label className="text-xs font-bold text-slate-700">Teléfono / WhatsApp *</label>
+          <input
+            type="tel"
+            required
+            value={patientPhone}
+            onChange={(e) => setPatientPhone(e.target.value)}
+            placeholder="+57 300 000 0000"
+            className={inputClass}
+          />
+        </div>
+
+        <div className="space-y-1.5">
+          <label className="text-xs font-bold text-slate-700">Correo Electrónico</label>
+          <input
+            type="email"
+            value={patientEmail}
+            onChange={(e) => setPatientEmail(e.target.value)}
+            placeholder="paciente@correo.com"
+            className={inputClass}
+          />
+        </div>
+
+        <div className="space-y-1.5">
+          <label className="text-xs font-bold text-slate-700">Fecha Deseada</label>
+          <input
+            type="date"
+            value={bookingDate}
+            onChange={(e) => setBookingDate(e.target.value)}
+            className={inputClass}
+          />
+        </div>
+
+        <div className="space-y-1.5">
+          <label className="text-xs font-bold text-slate-700">Horario de Preferencia</label>
+          <select
+            value={bookingTime}
+            onChange={(e) => setBookingTime(e.target.value)}
+            className={inputClass}
+          >
+            <option value="09:00 AM">09:00 AM (Mañana)</option>
+            <option value="10:00 AM">10:00 AM (Mañana)</option>
+            <option value="11:30 AM">11:30 AM (Mañana)</option>
+            <option value="02:30 PM">02:30 PM (Tarde)</option>
+            <option value="04:00 PM">04:00 PM (Tarde)</option>
+            <option value="05:30 PM">05:30 PM (Tarde)</option>
+          </select>
+        </div>
+
+        <div className="space-y-1.5">
+          <label className="text-xs font-bold text-slate-700">Motivo de Consulta</label>
+          <select
+            value={consultReason}
+            onChange={(e) => setConsultReason(e.target.value)}
+            className={inputClass}
+          >
+            <option value="Primera consulta de valoración">Primera consulta de valoración</option>
+            <option value="Revisión de procedimiento quirúrgico">
+              Revisión de procedimiento quirúrgico
+            </option>
+            <option value="Segunda opinión médica certificada">
+              Segunda opinión médica certificada
+            </option>
+            <option value="Control post-operatorio">Control post-operatorio</option>
+          </select>
+        </div>
+
+        <button
+          type="submit"
+          className="w-full min-h-[44px] py-3 rounded-2xl bg-violet-600 hover:bg-violet-700 active:scale-98 text-white font-bold text-sm shadow-md shadow-violet-600/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
+        >
+          <Calendar className="w-4 h-4" />
+          <span>Agendar</span>
+        </button>
+      </form>
+    ) : (
+      <div className="bg-violet-50 border border-violet-200/80 rounded-2xl p-5 text-center space-y-3 animate-fadeIn">
+        <div className="w-12 h-12 rounded-2xl bg-violet-600 text-white flex items-center justify-center mx-auto">
+          <CheckCircle2 className="w-6 h-6" />
+        </div>
+        <div className="space-y-1">
+          <h3 className="text-sm font-extrabold text-slate-900">Cita solicitada</h3>
+          <p className="text-xs text-slate-600">
+            {bookingDate} · {bookingTime} ·{' '}
+            {bookingType === 'presencial' ? 'Presencial' : 'Telemedicina'}
+          </p>
+        </div>
+        <div className="inline-block bg-white px-3 py-1.5 rounded-xl border border-violet-300 text-xs font-mono font-bold text-violet-900">
+          {bookingRefCode}
+        </div>
+        <button
+          type="button"
+          onClick={onReset}
+          className="w-full min-h-[44px] px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all cursor-pointer"
+        >
+          Programar otra cita
+        </button>
+      </div>
+    )}
+
+    <a
+      href={whatsAppLink}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="mt-4 w-full min-h-[44px] py-2.5 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200/80 font-bold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
+    >
+      <MessageCircle className="w-4 h-4 text-violet-600" />
+      <span>Enviar mensaje por WhatsApp</span>
+    </a>
+    {doctor.phone && (
+      <p className="mt-2 text-[11px] text-center text-slate-400">{doctor.phone}</p>
+    )}
+  </aside>
+);
+
 export const DoctorOnePager: React.FC<DoctorOnePagerProps> = ({ doctor, onBack }) => {
-  // Accordion state for Verification section
+  const [activeTab, setActiveTab] = useState<ProfileTab>('experiencia');
   const [openAccordion, setOpenAccordion] = useState<string | null>('rethus');
-
-  // Credential Preview Modal State (In-situ document viewer)
   const [previewDoc, setPreviewDoc] = useState<CredentialDoc | null>(null);
-
-  // Selected Success Case for zoom/inspection
   const [selectedCase, setSelectedCase] = useState<SuccessCase | null>(null);
 
-  // Booking Form State
   const [bookingType, setBookingType] = useState<'presencial' | 'telemedicina'>('presencial');
   const [bookingDate, setBookingDate] = useState('2026-08-25');
   const [bookingTime, setBookingTime] = useState('10:00 AM');
@@ -73,11 +316,8 @@ export const DoctorOnePager: React.FC<DoctorOnePagerProps> = ({ doctor, onBack }
   const [consultReason, setConsultReason] = useState('Primera consulta de valoración');
   const [isBooked, setIsBooked] = useState(false);
   const [bookingRefCode, setBookingRefCode] = useState('');
-
-  // Toast / copy feedback
   const [copiedLink, setCopiedLink] = useState(false);
 
-  // Cases of success for the specialist
   const successCases: SuccessCase[] = [
     {
       id: 'case-1',
@@ -114,7 +354,6 @@ export const DoctorOnePager: React.FC<DoctorOnePagerProps> = ({ doctor, onBack }
     },
   ];
 
-  // Official Medical Credentials
   const credentials: CredentialDoc[] = [
     {
       id: 'cred-1',
@@ -170,705 +409,474 @@ export const DoctorOnePager: React.FC<DoctorOnePagerProps> = ({ doctor, onBack }
   const cleanPhone = doctor.phone ? doctor.phone.replace(/[^0-9]/g, '') : '573124567890';
   const whatsAppLink = `https://wa.me/${cleanPhone}?text=${whatsAppMessage}`;
 
+  const bookingPanelProps: BookingPanelProps = {
+    doctor,
+    whatsAppLink,
+    bookingType,
+    setBookingType,
+    bookingDate,
+    setBookingDate,
+    bookingTime,
+    setBookingTime,
+    patientName,
+    setPatientName,
+    patientPhone,
+    setPatientPhone,
+    patientEmail,
+    setPatientEmail,
+    consultReason,
+    setConsultReason,
+    isBooked,
+    bookingRefCode,
+    onSubmit: handleBookingSubmit,
+    onReset: () => setIsBooked(false),
+  };
+
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-['Plus_Jakarta_Sans',sans-serif] pb-16">
-      {/* Top Floating Navigation Bar */}
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-['Plus_Jakarta_Sans',sans-serif] pb-24 lg:pb-16">
       <div className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-2xs">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
           <button
             onClick={onBack}
-            className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-slate-700 hover:text-violet-700 bg-slate-100 hover:bg-violet-50 px-3 py-1.5 rounded-xl transition-all cursor-pointer group"
+            className="inline-flex items-center gap-2 min-h-[44px] text-xs sm:text-sm font-bold text-slate-700 hover:text-violet-700 bg-slate-100 hover:bg-violet-50 px-3 py-1.5 rounded-xl transition-all cursor-pointer group"
           >
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
             <span>Volver al Directorio</span>
           </button>
 
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handleCopyLink}
-              title="Compartir expediente verificado"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-all cursor-pointer"
-            >
-              {copiedLink ? (
-                <>
-                  <Check className="w-3.5 h-3.5 text-violet-600" />
-                  <span className="text-violet-700 font-bold">¡Enlace Copiado!</span>
-                </>
-              ) : (
-                <>
-                  <Share2 className="w-3.5 h-3.5 text-slate-500" />
-                  <span className="hidden sm:inline">Compartir</span>
-                </>
-              )}
-            </button>
-
-            <a
-              href="#agendamiento"
-              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-xs font-bold shadow-xs transition-all cursor-pointer"
-            >
-              <Calendar className="w-3.5 h-3.5" />
-              <span>Agendar</span>
-            </a>
-          </div>
+          <button
+            onClick={handleCopyLink}
+            title="Compartir expediente verificado"
+            className="inline-flex items-center gap-1.5 min-h-[44px] px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-all cursor-pointer"
+          >
+            {copiedLink ? (
+              <>
+                <Check className="w-3.5 h-3.5 text-violet-600" />
+                <span className="text-violet-700 font-bold">¡Enlace Copiado!</span>
+              </>
+            ) : (
+              <>
+                <Share2 className="w-3.5 h-3.5 text-slate-500" />
+                <span className="hidden sm:inline">Compartir</span>
+              </>
+            )}
+          </button>
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-6 space-y-8 animate-fadeIn">
-        {/* HERO: Perfil del Doctor */}
-        <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-xs relative overflow-hidden">
-          <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-            {/* Avatar with Verified Ring */}
-            <div className="relative shrink-0 mx-auto md:mx-0">
-              <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-3xl overflow-hidden border-3 border-violet-500 shadow-md shadow-violet-500/10">
-                <img
-                  src={doctor.avatarUrl}
-                  alt={doctor.fullName}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div
-                className="absolute -bottom-2 -right-2 bg-violet-600 text-white p-1.5 rounded-2xl shadow-md border-2 border-white flex items-center gap-1"
-                title="Especialista Verificado RETHUS Nivel 4"
-              >
-                <ShieldCheck className="w-4 h-4 text-violet-200" />
-              </div>
-            </div>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-5 sm:pt-6 space-y-5 animate-fadeIn">
+        <nav className="flex items-center gap-1.5 text-xs text-slate-500 overflow-x-auto scrollbar-none">
+          <button
+            type="button"
+            onClick={onBack}
+            className="hover:text-violet-700 font-medium cursor-pointer whitespace-nowrap"
+          >
+            Directorio
+          </button>
+          <span className="text-slate-300">/</span>
+          <span className="whitespace-nowrap truncate max-w-[40%]">{doctor.specialty}</span>
+          <span className="text-slate-300">/</span>
+          <span className="text-slate-800 font-semibold whitespace-nowrap truncate">{doctor.fullName}</span>
+        </nav>
 
-            {/* Main Info */}
-            <div className="space-y-3 flex-1 text-center md:text-left">
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
-                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-violet-50 text-violet-800 border border-violet-200 text-xs font-bold uppercase tracking-wider">
-                  <ShieldCheck className="w-3.5 h-3.5 text-violet-600" />
-                  RETHUS: {doctor.rethusCode}
-                </span>
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 text-amber-800 border border-amber-200 text-xs font-bold">
-                  <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-500" />
-                  {doctor.rating} ({doctor.reviewsCount || 142} valoraciones)
-                </span>
-              </div>
-
-              <div>
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-                  {doctor.fullName}
-                </h1>
-                <p className="text-sm sm:text-base font-bold text-violet-700 mt-0.5">
-                  {doctor.specialty}
-                </p>
-                {doctor.subspecialty && (
-                  <p className="text-xs sm:text-sm text-slate-500 font-medium">
-                    {doctor.subspecialty}
-                  </p>
-                )}
-              </div>
-
-              {/* Concise Doctor Description */}
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-2xl">
-                {doctor.biography}
-              </p>
-
-              {/* Metadata Pills */}
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-y-2 gap-x-4 pt-1 text-xs text-slate-500">
-                <div className="flex items-center gap-1.5">
-                  <Building2 className="w-4 h-4 text-violet-600 shrink-0" />
-                  <span className="font-medium truncate">{doctor.institution}</span>
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_340px] gap-5 lg:gap-6 items-start">
+          <div className="space-y-5 min-w-0">
+            <div className="bg-white border border-slate-200/80 rounded-3xl p-5 sm:p-6 shadow-xs">
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
+                <div className="relative shrink-0">
+                  <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl overflow-hidden border-2 border-violet-500">
+                    <img
+                      src={doctor.avatarUrl}
+                      alt={doctor.fullName}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div
+                    className="absolute -bottom-1.5 -right-1.5 bg-violet-600 text-white p-1.5 rounded-2xl border-2 border-white"
+                    title="Especialista verificado RETHUS"
+                  >
+                    <ShieldCheck className="w-4 h-4 text-violet-200" />
+                  </div>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <MapPin className="w-4 h-4 text-violet-600 shrink-0" />
-                  <span className="font-medium truncate">{doctor.location}</span>
+
+                <div className="flex-1 min-w-0 text-center sm:text-left space-y-2.5">
+                  <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                    <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-violet-50 text-violet-800 border border-violet-200/80 text-[11px] font-bold uppercase tracking-wider whitespace-nowrap">
+                      <ShieldCheck className="w-3.5 h-3.5 text-violet-600" />
+                      RETHUS: {doctor.rethusCode}
+                    </span>
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 text-amber-800 border border-amber-200/80 text-[11px] font-bold whitespace-nowrap">
+                      <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-500" />
+                      {doctor.rating} ({doctor.reviewsCount || 142} opiniones)
+                    </span>
+                  </div>
+
+                  <div>
+                    <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                      {doctor.fullName}
+                    </h1>
+                    <p className="text-sm font-bold text-violet-700 mt-0.5">{doctor.specialty}</p>
+                    {doctor.subspecialty && (
+                      <p className="text-xs text-slate-500 font-medium">{doctor.subspecialty}</p>
+                    )}
+                  </div>
+
+                  <div className="flex items-center justify-center sm:justify-start gap-1.5 text-xs text-slate-500">
+                    <MapPin className="w-4 h-4 text-violet-600 shrink-0" />
+                    <span className="font-medium truncate">{doctor.location}</span>
+                  </div>
                 </div>
               </div>
 
-              {/* Quick Action Navigation Buttons */}
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 pt-2">
+              <div className="flex flex-col sm:flex-row gap-3 pt-5 mt-5 border-t border-slate-100">
                 <a
                   href="#agendamiento"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs sm:text-sm shadow-sm transition-all cursor-pointer active:scale-95"
+                  className="inline-flex items-center justify-center gap-2 min-h-[44px] px-5 py-2.5 rounded-2xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-sm shadow-sm transition-all cursor-pointer active:scale-95"
                 >
                   <Calendar className="w-4 h-4" />
-                  <span>Agendar Cita</span>
+                  <span>Agendar cita</span>
                 </a>
-
                 <a
                   href={whatsAppLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-violet-950 hover:bg-violet-900 text-violet-300 border border-violet-700/50 font-bold text-xs sm:text-sm shadow-sm transition-all cursor-pointer active:scale-95"
+                  className="inline-flex items-center justify-center gap-2 min-h-[44px] px-5 py-2.5 rounded-2xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200/80 font-bold text-sm transition-all cursor-pointer active:scale-95"
                 >
-                  <MessageCircle className="w-4 h-4 text-violet-400" />
-                  <span>WhatsApp Consultorio</span>
-                </a>
-
-                <a
-                  href="#credenciales"
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs sm:text-sm transition-all cursor-pointer"
-                >
-                  <Award className="w-4 h-4 text-slate-500" />
-                  <span>Ver Credenciales</span>
+                  <MessageCircle className="w-4 h-4 text-violet-600" />
+                  <span>Enviar mensaje</span>
                 </a>
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* 1. SECCIÓN: VERIFICACIÓN OFICIAL (ACORDEÓN COMPACTO) */}
-        <section className="space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-violet-100 text-violet-700 flex items-center justify-center font-bold text-sm">
-                1
-              </div>
-              <h2 className="text-lg sm:text-xl font-extrabold text-slate-900">
-                Verificación Oficial RETHUS & MinSalud
-              </h2>
-            </div>
-            <span className="text-xs font-bold text-violet-700 bg-violet-50 px-2.5 py-1 rounded-full border border-violet-200">
-              100% Autenticado
-            </span>
-          </div>
+            <ProfileTabs activeTab={activeTab} onChange={setActiveTab} />
 
-          <div className="bg-white border border-slate-200/90 rounded-2xl overflow-hidden divide-y divide-slate-100 shadow-xs">
-            {/* Accordion Item 1: RETHUS & Licencia */}
-            <div>
-              <button
-                type="button"
-                onClick={() =>
-                  setOpenAccordion(openAccordion === 'rethus' ? null : 'rethus')
-                }
-                className="w-full px-5 py-4 flex items-center justify-between text-left hover:bg-slate-50 transition-colors cursor-pointer"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-violet-50 text-violet-700 flex items-center justify-center shrink-0">
-                    <ShieldCheck className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-slate-900">
-                      Registro RETHUS & Licencia Médica Habilitada
-                    </h3>
-                    <p className="text-xs text-slate-500">
-                      Código Oficial: {doctor.rethusCode} • MinSalud Colombia
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-bold text-violet-700 bg-violet-50 px-2 py-0.5 rounded-md">
-                    <CheckCircle2 className="w-3 h-3 text-violet-600" /> Vigente y Activo
-                  </span>
-                  {openAccordion === 'rethus' ? (
-                    <ChevronUp className="w-5 h-5 text-slate-400" />
-                  ) : (
-                    <ChevronDown className="w-5 h-5 text-slate-400" />
-                  )}
-                </div>
-              </button>
-
-              {openAccordion === 'rethus' && (
-                <div className="px-5 pb-5 pt-1 text-xs text-slate-600 space-y-3 bg-slate-50/50">
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div className="bg-white p-3 rounded-xl border border-slate-200">
-                      <span className="font-semibold text-slate-400 block text-[10px] uppercase">
-                        Número de Licencia
-                      </span>
-                      <span className="font-bold text-slate-900 text-xs">
-                        {doctor.rethusCode}
-                      </span>
-                    </div>
-                    <div className="bg-white p-3 rounded-xl border border-slate-200">
-                      <span className="font-semibold text-slate-400 block text-[10px] uppercase">
-                        Estado Disciplinario
-                      </span>
-                      <span className="font-bold text-violet-700 text-xs flex items-center gap-1">
-                        <CheckCircle2 className="w-3 h-3 text-violet-600" /> Sin Sanciones
-                      </span>
-                    </div>
-                    <div className="bg-white p-3 rounded-xl border border-slate-200">
-                      <span className="font-semibold text-slate-400 block text-[10px] uppercase">
-                        Autoridad Certificadora
-                      </span>
-                      <span className="font-bold text-slate-900 text-xs">
-                        MinSalud / Colegio Médico
-                      </span>
-                    </div>
-                  </div>
-                  <p className="text-[11px] text-slate-500">
-                    La habilitación del especialista fue contrastada en tiempo real con la base de datos nacional RETHUS. El profesional cuenta con plenas facultades para ejercer su especialidad.
-                  </p>
-                </div>
-              )}
-            </div>
-
-            {/* Accordion Item 2: Identidad y Biometría Facial */}
-            <div>
-              <button
-                type="button"
-                onClick={() =>
-                  setOpenAccordion(openAccordion === 'identity' ? null : 'identity')
-                }
-                className="w-full px-5 py-4 flex items-center justify-between text-left hover:bg-slate-50 transition-colors cursor-pointer"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center shrink-0">
-                    <UserCheck className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-slate-900">
-                      Identidad Ciudadana & Biometría Facial 3D
-                    </h3>
-                    <p className="text-xs text-slate-500">
-                      Cédula de Ciudadanía {doctor.idNumber} Validada
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md">
-                    <CheckCircle2 className="w-3 h-3 text-blue-600" /> 99.8% Liveness Match
-                  </span>
-                  {openAccordion === 'identity' ? (
-                    <ChevronUp className="w-5 h-5 text-slate-400" />
-                  ) : (
-                    <ChevronDown className="w-5 h-5 text-slate-400" />
-                  )}
-                </div>
-              </button>
-
-              {openAccordion === 'identity' && (
-                <div className="px-5 pb-5 pt-1 text-xs text-slate-600 space-y-3 bg-slate-50/50">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div className="bg-white p-3 rounded-xl border border-slate-200 flex items-center gap-2.5">
-                      <CheckCircle2 className="w-4 h-4 text-violet-600 shrink-0" />
-                      <div>
-                        <span className="font-bold text-slate-900 block">DNI Oficial Verificado</span>
-                        <span className="text-[11px] text-slate-500">Frente y reverso autenticados</span>
-                      </div>
-                    </div>
-                    <div className="bg-white p-3 rounded-xl border border-slate-200 flex items-center gap-2.5">
-                      <CheckCircle2 className="w-4 h-4 text-violet-600 shrink-0" />
-                      <div>
-                        <span className="font-bold text-slate-900 block">Prueba de Vida Facial</span>
-                        <span className="text-[11px] text-slate-500">Micro-movimientos y biometría activa</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Accordion Item 3: Sociedades Médicas y Membresías */}
-            <div>
-              <button
-                type="button"
-                onClick={() =>
-                  setOpenAccordion(openAccordion === 'societies' ? null : 'societies')
-                }
-                className="w-full px-5 py-4 flex items-center justify-between text-left hover:bg-slate-50 transition-colors cursor-pointer"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center shrink-0">
-                    <Award className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-slate-900">
-                      Sociedades Científicas y Membresías Gremiales
-                    </h3>
-                    <p className="text-xs text-slate-500">
-                      Afiliaciones gremiales y colegios de especialistas
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded-md">
-                    <CheckCircle2 className="w-3 h-3 text-purple-600" /> Miembro Activo
-                  </span>
-                  {openAccordion === 'societies' ? (
-                    <ChevronUp className="w-5 h-5 text-slate-400" />
-                  ) : (
-                    <ChevronDown className="w-5 h-5 text-slate-400" />
-                  )}
-                </div>
-              </button>
-
-              {openAccordion === 'societies' && (
-                <div className="px-5 pb-5 pt-1 text-xs text-slate-600 space-y-2 bg-slate-50/50">
-                  <div className="bg-white p-3 rounded-xl border border-slate-200 space-y-1">
-                    <span className="font-bold text-slate-900 block">
-                      Sociedad Colombiana de Cirugía Plástica (SCCP) & FILACP
-                    </span>
-                    <p className="text-[11px] text-slate-500">
-                      Miembro de número con participación continua en congresos internacionales y cursos de actualización quirúrgica.
-                    </p>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </section>
-
-        {/* 2. SECCIÓN: CREDENCIALES & DIPLOMAS (PREVIEW IN-SITU) */}
-        <section id="credenciales" className="space-y-3 pt-2">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-violet-100 text-violet-700 flex items-center justify-center font-bold text-sm">
-                2
-              </div>
-              <div>
-                <h2 className="text-lg sm:text-xl font-extrabold text-slate-900">
-                  Credenciales Académicas & Títulos
-                </h2>
-                <p className="text-xs text-slate-500">
-                  Documentos oficiales digitalizados disponibles para preview inmediato
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {credentials.map((cred) => (
-              <div
-                key={cred.id}
-                className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 flex flex-col justify-between hover:border-violet-400 hover:shadow-md transition-all group"
-              >
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="w-10 h-10 rounded-xl bg-violet-50 text-violet-700 flex items-center justify-center group-hover:scale-105 transition-transform">
-                      <FileCheck className="w-5 h-5" />
-                    </div>
-                    <span className="text-[10px] font-bold uppercase bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
-                      {cred.year}
-                    </span>
-                  </div>
-
-                  <div>
-                    <h3 className="font-bold text-sm text-slate-900 group-hover:text-violet-700 transition-colors">
-                      {cred.title}
-                    </h3>
-                    <p className="text-xs text-violet-600 font-semibold mt-0.5">
-                      {cred.type}
-                    </p>
-                    <p className="text-[11px] text-slate-500 mt-1">
-                      {cred.institution}
-                    </p>
-                    <p className="text-[10px] font-mono text-slate-400 mt-0.5">
-                      {cred.folio}
-                    </p>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => setPreviewDoc(cred)}
-                  className="mt-4 w-full py-2 px-3 rounded-xl bg-slate-50 hover:bg-violet-600 text-slate-700 hover:text-white font-bold text-xs border border-slate-200 hover:border-violet-600 transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
-                >
-                  <Eye className="w-3.5 h-3.5" />
-                  <span>Vista Previa del Documento</span>
-                </button>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* 3. SECCIÓN: PACIENTES Y CASOS DE ÉXITO */}
-        <section className="space-y-3 pt-2">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-violet-100 text-violet-700 flex items-center justify-center font-bold text-sm">
-                3
-              </div>
-              <div>
-                <h2 className="text-lg sm:text-xl font-extrabold text-slate-900">
-                  Pacientes y Casos de Éxito
-                </h2>
-                <p className="text-xs text-slate-500">
-                  Fotografías y testimonios de procedimientos realizados
-                </p>
-              </div>
-            </div>
-            <span className="text-xs font-bold text-slate-500">
-              {successCases.length} Casos Destacados
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
-            {successCases.map((item) => (
-              <div
-                key={item.id}
-                onClick={() => setSelectedCase(item)}
-                className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-2xs hover:shadow-lg hover:border-violet-300 transition-all flex flex-col justify-between cursor-pointer group"
-              >
+            {activeTab === 'experiencia' && (
+              <section className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 shadow-xs space-y-5">
                 <div>
-                  <div className="relative h-44 sm:h-48 overflow-hidden bg-slate-100">
-                    <img
-                      src={item.imageUrl}
-                      alt={item.procedure}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent" />
-                    <span className="absolute top-3 left-3 bg-violet-950/80 text-violet-300 text-[10px] font-bold px-2.5 py-0.5 rounded-full backdrop-blur-xs border border-violet-500/30">
-                      {item.category}
-                    </span>
-                    <div className="absolute bottom-3 left-3 right-3 text-white">
-                      <span className="text-xs font-bold block truncate">
-                        {item.procedure}
-                      </span>
-                      <span className="text-[11px] text-slate-300 flex items-center gap-1">
-                        Paciente: {item.patientName} • {item.timeAgo}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="p-4 space-y-2">
-                    <div className="flex items-center gap-1 text-amber-500">
-                      {[...Array(item.rating)].map((_, i) => (
-                        <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-500" />
-                      ))}
-                    </div>
-                    <p className="text-xs text-slate-600 line-clamp-3 italic">
-                      "{item.comment}"
-                    </p>
-                  </div>
+                  <h2 className="text-base sm:text-lg font-bold text-slate-900 mb-2">Sobre mí</h2>
+                  <p className="text-sm text-slate-600 leading-relaxed">{doctor.biography}</p>
                 </div>
 
-                <div className="px-4 pb-4 pt-1 border-t border-slate-100 flex items-center justify-between text-xs text-violet-700 font-bold group-hover:text-violet-800">
-                  <span className="flex items-center gap-1">
-                    <Eye className="w-3.5 h-3.5" /> Ver Detalle del Caso
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900 mb-2">Especialista en</h3>
+                  <ul className="space-y-1.5 text-sm text-slate-600">
+                    <li className="flex items-start gap-2">
+                      <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-violet-600 shrink-0" />
+                      {doctor.specialty}
+                    </li>
+                    {doctor.subspecialty && (
+                      <li className="flex items-start gap-2">
+                        <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-violet-600 shrink-0" />
+                        {doctor.subspecialty}
+                      </li>
+                    )}
+                  </ul>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3 pt-1">
+                  <div className="flex items-center gap-2 text-xs text-slate-600 bg-slate-50 border border-slate-200/80 rounded-xl px-3 py-2.5 min-h-[44px]">
+                    <Building2 className="w-4 h-4 text-violet-600 shrink-0" />
+                    <span className="font-medium truncate">{doctor.institution}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-slate-600 bg-slate-50 border border-slate-200/80 rounded-xl px-3 py-2.5 min-h-[44px]">
+                    <MapPin className="w-4 h-4 text-violet-600 shrink-0" />
+                    <span className="font-medium truncate">{doctor.location}</span>
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {activeTab === 'verificacion' && (
+              <section className="space-y-3">
+                <div className="flex items-center justify-between gap-3">
+                  <h2 className="text-base sm:text-lg font-bold text-slate-900">
+                    Verificación RETHUS & MinSalud
+                  </h2>
+                  <span className="text-[11px] font-bold text-violet-700 bg-violet-50 px-2.5 py-1 rounded-full border border-violet-200/80 whitespace-nowrap">
+                    Autenticado
                   </span>
-                  <span className="text-slate-400">→</span>
                 </div>
-              </div>
-            ))}
-          </div>
-        </section>
 
-        {/* 4. SECCIÓN: AGENDAMIENTO & CONTACTO DIRECTO POR WHATSAPP */}
-        <section id="agendamiento" className="space-y-4 pt-2">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-violet-100 text-violet-700 flex items-center justify-center font-bold text-sm">
-              4
-            </div>
-            <div>
-              <h2 className="text-lg sm:text-xl font-extrabold text-slate-900">
-                Agendamiento de Citas & Contacto Directo
-              </h2>
-              <p className="text-xs text-slate-500">
-                Reserva tu consulta oficial o comunícate directamente con el consultorio
-              </p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Online Booking Form (2 Columns) */}
-            <div className="lg:col-span-2 bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-6">
-              {!isBooked ? (
-                <form onSubmit={handleBookingSubmit} className="space-y-5">
-                  <div className="flex items-center justify-between border-b pb-4 border-slate-100">
-                    <h3 className="font-bold text-base text-slate-900 flex items-center gap-2">
-                      <Calendar className="w-5 h-5 text-violet-600" />
-                      Solicitar Cita de Valoración
-                    </h3>
-                    <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
-                      <button
-                        type="button"
-                        onClick={() => setBookingType('presencial')}
-                        className={`px-3 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                          bookingType === 'presencial'
-                            ? 'bg-white text-violet-700 shadow-2xs'
-                            : 'text-slate-600 hover:text-slate-900'
-                        }`}
-                      >
-                        Presencial
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setBookingType('telemedicina')}
-                        className={`px-3 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                          bookingType === 'telemedicina'
-                            ? 'bg-white text-violet-700 shadow-2xs'
-                            : 'text-slate-600 hover:text-slate-900'
-                        }`}
-                      >
-                        Telemedicina
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                    <div className="space-y-1.5">
-                      <label className="font-bold text-slate-700">Nombre Completo *</label>
-                      <input
-                        type="text"
-                        required
-                        value={patientName}
-                        onChange={(e) => setPatientName(e.target.value)}
-                        placeholder="Ej. Santiago Morales"
-                        className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-slate-900 font-medium focus:bg-white focus:border-violet-600 focus:outline-none"
-                      />
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="font-bold text-slate-700">Teléfono / WhatsApp *</label>
-                      <input
-                        type="tel"
-                        required
-                        value={patientPhone}
-                        onChange={(e) => setPatientPhone(e.target.value)}
-                        placeholder="+57 300 000 0000"
-                        className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-slate-900 font-medium focus:bg-white focus:border-violet-600 focus:outline-none"
-                      />
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="font-bold text-slate-700">Correo Electrónico</label>
-                      <input
-                        type="email"
-                        value={patientEmail}
-                        onChange={(e) => setPatientEmail(e.target.value)}
-                        placeholder="paciente@correo.com"
-                        className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-slate-900 font-medium focus:bg-white focus:border-violet-600 focus:outline-none"
-                      />
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="font-bold text-slate-700">Fecha Deseada</label>
-                      <input
-                        type="date"
-                        value={bookingDate}
-                        onChange={(e) => setBookingDate(e.target.value)}
-                        className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-slate-900 font-medium focus:bg-white focus:border-violet-600 focus:outline-none"
-                      />
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="font-bold text-slate-700">Horario de Preferencia</label>
-                      <select
-                        value={bookingTime}
-                        onChange={(e) => setBookingTime(e.target.value)}
-                        className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-slate-900 font-medium focus:bg-white focus:border-violet-600 focus:outline-none"
-                      >
-                        <option value="09:00 AM">09:00 AM (Mañana)</option>
-                        <option value="10:00 AM">10:00 AM (Mañana)</option>
-                        <option value="11:30 AM">11:30 AM (Mañana)</option>
-                        <option value="02:30 PM">02:30 PM (Tarde)</option>
-                        <option value="04:00 PM">04:00 PM (Tarde)</option>
-                        <option value="05:30 PM">05:30 PM (Tarde)</option>
-                      </select>
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="font-bold text-slate-700">Motivo de Consulta</label>
-                      <select
-                        value={consultReason}
-                        onChange={(e) => setConsultReason(e.target.value)}
-                        className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-slate-900 font-medium focus:bg-white focus:border-violet-600 focus:outline-none"
-                      >
-                        <option value="Primera consulta de valoración">
-                          Primera consulta de valoración
-                        </option>
-                        <option value="Revisión de procedimiento quirúrgico">
-                          Revisión de procedimiento quirúrgico
-                        </option>
-                        <option value="Segunda opinión médica certificada">
-                          Segunda opinión médica certificada
-                        </option>
-                        <option value="Control post-operatorio">Control post-operatorio</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <button
-                    type="submit"
-                    className="w-full py-3.5 rounded-2xl bg-violet-600 hover:bg-violet-700 active:scale-98 text-white font-bold text-sm shadow-md shadow-violet-600/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
-                  >
-                    <Calendar className="w-4 h-4" />
-                    <span>Agendar</span>
-                  </button>
-                </form>
-              ) : (
-                <div className="bg-violet-50 border border-violet-200 rounded-2xl p-6 text-center space-y-4 animate-fadeIn">
-                  <div className="w-14 h-14 rounded-2xl bg-violet-600 text-white flex items-center justify-center mx-auto shadow-md shadow-violet-600/20">
-                    <CheckCircle2 className="w-8 h-8" />
-                  </div>
-                  <div className="space-y-1">
-                    <h3 className="text-xl font-extrabold text-slate-900">
-                      ¡Cita Médica Solicitada con Éxito!
-                    </h3>
-                    <p className="text-xs text-slate-600 max-w-md mx-auto">
-                      Hemos registrado tu solicitud para el <strong>{bookingDate}</strong> a las{' '}
-                      <strong>{bookingTime}</strong> en modalidad{' '}
-                      <strong>{bookingType === 'presencial' ? 'Presencial' : 'Telemedicina'}</strong>.
-                    </p>
-                  </div>
-                  <div className="inline-block bg-white px-4 py-2 rounded-xl border border-violet-300 text-xs font-mono font-bold text-violet-900">
-                    Código de Reserva: {bookingRefCode}
-                  </div>
+                <div className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden divide-y divide-slate-100 shadow-xs">
                   <div>
                     <button
                       type="button"
-                      onClick={() => setIsBooked(false)}
-                      className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all cursor-pointer"
+                      onClick={() => setOpenAccordion(openAccordion === 'rethus' ? null : 'rethus')}
+                      className="w-full min-h-[44px] px-5 py-4 flex items-center justify-between text-left hover:bg-slate-50 transition-colors cursor-pointer"
                     >
-                      Programar otra cita
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-xl bg-violet-50 text-violet-700 flex items-center justify-center shrink-0">
+                          <ShieldCheck className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <h3 className="text-sm font-bold text-slate-900">
+                            Registro RETHUS & Licencia Médica
+                          </h3>
+                          <p className="text-xs text-slate-500">
+                            Código: {doctor.rethusCode} · MinSalud Colombia
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-bold text-violet-700 bg-violet-50 px-2 py-0.5 rounded-md whitespace-nowrap">
+                          <CheckCircle2 className="w-3 h-3 text-violet-600" /> Vigente
+                        </span>
+                        {openAccordion === 'rethus' ? (
+                          <ChevronUp className="w-5 h-5 text-slate-400" />
+                        ) : (
+                          <ChevronDown className="w-5 h-5 text-slate-400" />
+                        )}
+                      </div>
                     </button>
+
+                    {openAccordion === 'rethus' && (
+                      <div className="px-5 pb-5 pt-1 text-xs text-slate-600 space-y-3 bg-slate-50/50">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                          <div className="bg-white p-3 rounded-xl border border-slate-200/80">
+                            <span className="font-semibold text-slate-400 block text-[10px] uppercase">
+                              Número de Licencia
+                            </span>
+                            <span className="font-bold text-slate-900 text-xs">{doctor.rethusCode}</span>
+                          </div>
+                          <div className="bg-white p-3 rounded-xl border border-slate-200/80">
+                            <span className="font-semibold text-slate-400 block text-[10px] uppercase">
+                              Estado Disciplinario
+                            </span>
+                            <span className="font-bold text-violet-700 text-xs flex items-center gap-1">
+                              <CheckCircle2 className="w-3 h-3 text-violet-600" /> Sin Sanciones
+                            </span>
+                          </div>
+                          <div className="bg-white p-3 rounded-xl border border-slate-200/80">
+                            <span className="font-semibold text-slate-400 block text-[10px] uppercase">
+                              Autoridad Certificadora
+                            </span>
+                            <span className="font-bold text-slate-900 text-xs">
+                              MinSalud / Colegio Médico
+                            </span>
+                          </div>
+                        </div>
+                        <p className="text-[11px] text-slate-500">
+                          La habilitación del especialista fue contrastada con la base de datos nacional
+                          RETHUS. El profesional cuenta con facultades para ejercer su especialidad.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  <div>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setOpenAccordion(openAccordion === 'identity' ? null : 'identity')
+                      }
+                      className="w-full min-h-[44px] px-5 py-4 flex items-center justify-between text-left hover:bg-slate-50 transition-colors cursor-pointer"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center shrink-0">
+                          <UserCheck className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <h3 className="text-sm font-bold text-slate-900">Identidad y biometría</h3>
+                          <p className="text-xs text-slate-500">
+                            Cédula {doctor.idNumber} validada
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md whitespace-nowrap">
+                          <CheckCircle2 className="w-3 h-3 text-indigo-600" /> Verificado
+                        </span>
+                        {openAccordion === 'identity' ? (
+                          <ChevronUp className="w-5 h-5 text-slate-400" />
+                        ) : (
+                          <ChevronDown className="w-5 h-5 text-slate-400" />
+                        )}
+                      </div>
+                    </button>
+
+                    {openAccordion === 'identity' && (
+                      <div className="px-5 pb-5 pt-1 text-xs text-slate-600 space-y-3 bg-slate-50/50">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div className="bg-white p-3 rounded-xl border border-slate-200/80 flex items-center gap-2.5">
+                            <CheckCircle2 className="w-4 h-4 text-violet-600 shrink-0" />
+                            <div>
+                              <span className="font-bold text-slate-900 block">Documento verificado</span>
+                              <span className="text-[11px] text-slate-500">
+                                Frente y reverso autenticados
+                              </span>
+                            </div>
+                          </div>
+                          <div className="bg-white p-3 rounded-xl border border-slate-200/80 flex items-center gap-2.5">
+                            <CheckCircle2 className="w-4 h-4 text-violet-600 shrink-0" />
+                            <div>
+                              <span className="font-bold text-slate-900 block">Prueba de vida facial</span>
+                              <span className="text-[11px] text-slate-500">
+                                Micro-movimientos y biometría activa
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setOpenAccordion(openAccordion === 'societies' ? null : 'societies')
+                      }
+                      className="w-full min-h-[44px] px-5 py-4 flex items-center justify-between text-left hover:bg-slate-50 transition-colors cursor-pointer"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-xl bg-violet-50 text-violet-700 flex items-center justify-center shrink-0">
+                          <Award className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <h3 className="text-sm font-bold text-slate-900">Sociedades científicas</h3>
+                          <p className="text-xs text-slate-500">Afiliaciones y colegios de especialistas</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-bold text-violet-700 bg-violet-50 px-2 py-0.5 rounded-md whitespace-nowrap">
+                          <CheckCircle2 className="w-3 h-3 text-violet-600" /> Miembro activo
+                        </span>
+                        {openAccordion === 'societies' ? (
+                          <ChevronUp className="w-5 h-5 text-slate-400" />
+                        ) : (
+                          <ChevronDown className="w-5 h-5 text-slate-400" />
+                        )}
+                      </div>
+                    </button>
+
+                    {openAccordion === 'societies' && (
+                      <div className="px-5 pb-5 pt-1 text-xs text-slate-600 space-y-2 bg-slate-50/50">
+                        <div className="bg-white p-3 rounded-xl border border-slate-200/80 space-y-1">
+                          <span className="font-bold text-slate-900 block">
+                            Sociedad Colombiana de Cirugía Plástica (SCCP) & FILACP
+                          </span>
+                          <p className="text-[11px] text-slate-500">
+                            Miembro de número con participación en congresos y cursos de actualización
+                            quirúrgica.
+                          </p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
-              )}
-            </div>
+              </section>
+            )}
 
-            {/* Direct WhatsApp & Contact Card (1 Column) */}
-            <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-violet-950 text-white rounded-3xl p-6 sm:p-7 shadow-xl space-y-6 border border-slate-800 flex flex-col justify-between">
-              <div className="space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-violet-500/20 text-violet-400 flex items-center justify-center border border-violet-500/30">
-                  <MessageCircle className="w-6 h-6" />
+            {activeTab === 'credenciales' && (
+              <section className="space-y-3">
+                <h2 className="text-base sm:text-lg font-bold text-slate-900">
+                  Credenciales académicas
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {credentials.map((cred) => (
+                    <div
+                      key={cred.id}
+                      className="bg-white border border-slate-200/80 rounded-2xl p-4 sm:p-5 flex flex-col justify-between hover:border-violet-400 hover:shadow-md transition-all group"
+                    >
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <div className="w-10 h-10 rounded-xl bg-violet-50 text-violet-700 flex items-center justify-center">
+                            <FileCheck className="w-5 h-5" />
+                          </div>
+                          <span className="text-[10px] font-bold uppercase bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full whitespace-nowrap">
+                            {cred.year}
+                          </span>
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-sm text-slate-900 group-hover:text-violet-700 transition-colors">
+                            {cred.title}
+                          </h3>
+                          <p className="text-xs text-violet-600 font-semibold mt-0.5">{cred.type}</p>
+                          <p className="text-[11px] text-slate-500 mt-1">{cred.institution}</p>
+                          <p className="text-[10px] font-mono text-slate-400 mt-0.5">{cred.folio}</p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setPreviewDoc(cred)}
+                        className="mt-4 w-full min-h-[44px] py-2 px-3 rounded-xl bg-slate-50 hover:bg-violet-600 text-slate-700 hover:text-white font-bold text-xs border border-slate-200/80 hover:border-violet-600 transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
+                      >
+                        <Eye className="w-3.5 h-3.5" />
+                        <span>Vista previa</span>
+                      </button>
+                    </div>
+                  ))}
                 </div>
+              </section>
+            )}
 
-                <div className="space-y-1.5">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-violet-300 bg-violet-950/60 px-2.5 py-0.5 rounded-full border border-violet-500/30">
-                    Atención Inmediata
+            {activeTab === 'opiniones' && (
+              <section className="space-y-3">
+                <div className="flex items-center justify-between gap-3">
+                  <h2 className="text-base sm:text-lg font-bold text-slate-900">Opiniones de pacientes</h2>
+                  <span className="text-xs font-bold text-slate-500 whitespace-nowrap">
+                    {successCases.length} casos
                   </span>
-                  <h3 className="text-xl font-extrabold text-white tracking-tight">
-                    WhatsApp del Consultorio
-                  </h3>
-                  <p className="text-xs text-slate-300 leading-relaxed">
-                    Comunícate directamente con la secretaría médica y el equipo de la Dra.{' '}
-                    {doctor.fullName} para dudas previas, cotizaciones o agendamiento express.
-                  </p>
                 </div>
-
-                <div className="space-y-2 pt-2 text-xs text-slate-300">
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-violet-400 shrink-0" />
-                    <span>Tiempo de respuesta: <strong>&lt; 15 minutos</strong></span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-violet-400 shrink-0" />
-                    <span>Línea autenticada y cifrada</span>
-                  </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {successCases.map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => setSelectedCase(item)}
+                      className="text-left bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-2xs hover:shadow-md hover:border-violet-300 transition-all flex flex-col cursor-pointer group"
+                    >
+                      <div className="relative h-40 overflow-hidden bg-slate-100">
+                        <img
+                          src={item.imageUrl}
+                          alt={item.procedure}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                        <span className="absolute top-3 left-3 bg-violet-50 text-violet-800 text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-violet-200/80 whitespace-nowrap">
+                          {item.category}
+                        </span>
+                      </div>
+                      <div className="p-4 space-y-2 flex-1">
+                        <p className="text-sm font-bold text-slate-900 line-clamp-1">{item.procedure}</p>
+                        <p className="text-[11px] text-slate-500">
+                          {item.patientName} · {item.timeAgo}
+                        </p>
+                        <div className="flex items-center gap-1">
+                          {[...Array(item.rating)].map((_, i) => (
+                            <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-500" />
+                          ))}
+                        </div>
+                        <p className="text-xs text-slate-600 line-clamp-3">“{item.comment}”</p>
+                      </div>
+                    </button>
+                  ))}
                 </div>
-              </div>
-
-              <div className="space-y-3 pt-4 border-t border-slate-700/60">
-                <a
-                  href={whatsAppLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full py-3.5 rounded-2xl bg-violet-500 hover:bg-violet-400 active:scale-98 text-slate-950 font-black text-xs sm:text-sm shadow-lg shadow-violet-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
-                >
-                  <MessageCircle className="w-4 h-4 fill-slate-950 text-violet-500" />
-                  <span>Iniciar Chat en WhatsApp</span>
-                </a>
-                <p className="text-[10px] text-center text-slate-400">
-                  Tel: {doctor.phone || '+57 (604) 448-9210'}
-                </p>
-              </div>
-            </div>
+              </section>
+            )}
           </div>
-        </section>
+
+          <div className="lg:sticky lg:top-20">
+            <BookingPanel {...bookingPanelProps} />
+          </div>
+        </div>
       </div>
 
-      {/* CREDENTIAL PREVIEW MODAL (IN-SITU DOCUMENT VIEWER) */}
+      <div className="lg:hidden fixed inset-x-0 bottom-0 z-40 p-3 pointer-events-none">
+        <a
+          href="#agendamiento"
+          className="pointer-events-auto flex items-center justify-center gap-2 min-h-[44px] w-full px-6 py-3 rounded-full bg-violet-600 hover:bg-violet-700 text-white font-bold text-sm shadow-lg shadow-violet-600/30 border border-violet-500/40 cursor-pointer"
+        >
+          <Calendar className="w-4 h-4" />
+          <span>Agendar cita</span>
+        </a>
+      </div>
+
       {previewDoc && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-xs p-4 animate-fadeIn overflow-y-auto">
-          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-5 shadow-2xl relative my-8 border border-slate-200">
+          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-5 shadow-2xl relative my-8 border border-slate-200/80">
             <button
               onClick={() => setPreviewDoc(null)}
-              className="absolute top-5 right-5 p-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors cursor-pointer"
+              className="absolute top-5 right-5 p-2 min-h-[44px] min-w-[44px] rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors cursor-pointer flex items-center justify-center"
               aria-label="Cerrar visor"
             >
               <X className="w-4 h-4" />
@@ -879,67 +887,62 @@ export const DoctorOnePager: React.FC<DoctorOnePagerProps> = ({ doctor, onBack }
                 <FileCheck className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="font-extrabold text-base text-slate-900">
-                  {previewDoc.title}
-                </h3>
+                <h3 className="font-extrabold text-base text-slate-900">{previewDoc.title}</h3>
                 <p className="text-xs text-slate-500">
-                  {previewDoc.institution} • {previewDoc.year}
+                  {previewDoc.institution} · {previewDoc.year}
                 </p>
               </div>
             </div>
 
-            {/* Document Image Preview */}
-            <div className="rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 relative max-h-[380px] flex items-center justify-center shadow-inner">
+            <div className="rounded-2xl overflow-hidden border border-slate-200/80 bg-slate-100 relative max-h-[380px] flex items-center justify-center">
               <img
                 src={previewDoc.previewUrl}
                 alt={previewDoc.title}
                 className="w-full h-full object-cover max-h-[380px]"
               />
-              <div className="absolute bottom-3 right-3 bg-slate-950/75 backdrop-blur-xs text-white text-[10px] font-bold px-3 py-1 rounded-full border border-white/20 flex items-center gap-1.5">
-                <ShieldCheck className="w-3.5 h-3.5 text-violet-400" /> Documento Oficial Notariado
+              <div className="absolute bottom-3 right-3 bg-slate-950/75 backdrop-blur-xs text-white text-[10px] font-bold px-3 py-1 rounded-full border border-white/20 flex items-center gap-1.5 whitespace-nowrap">
+                <ShieldCheck className="w-3.5 h-3.5 text-violet-400" /> Documento oficial
               </div>
             </div>
 
-            {/* Verification Metadata Details */}
-            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs text-slate-600 space-y-1.5">
-              <div className="flex justify-between">
-                <span className="font-medium text-slate-500">Registro Legal:</span>
+            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200/80 text-xs text-slate-600 space-y-1.5">
+              <div className="flex justify-between gap-3">
+                <span className="font-medium text-slate-500">Registro legal</span>
                 <span className="font-mono font-bold text-slate-800">{previewDoc.folio}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="font-medium text-slate-500">Estado de Convalidación:</span>
-                <span className="font-bold text-violet-700 flex items-center gap-1">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-violet-600" /> Aprobado & Auténtico
+              <div className="flex justify-between gap-3">
+                <span className="font-medium text-slate-500">Convalidación</span>
+                <span className="font-bold text-violet-700 flex items-center gap-1 whitespace-nowrap">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-violet-600" /> Aprobado
                 </span>
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-2 pt-1">
+            <div className="flex items-center justify-end pt-1">
               <button
                 type="button"
                 onClick={() => setPreviewDoc(null)}
-                className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-violet-700 text-white font-bold text-xs transition-all cursor-pointer"
+                className="min-h-[44px] px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-violet-700 text-white font-bold text-xs transition-all cursor-pointer"
               >
-                Cerrar Vista Previa
+                Cerrar
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* SUCCESS CASE ZOOM MODAL */}
       {selectedCase && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-xs p-4 animate-fadeIn overflow-y-auto">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl relative my-8 border border-slate-200">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl relative my-8 border border-slate-200/80">
             <button
               onClick={() => setSelectedCase(null)}
-              className="absolute top-5 right-5 p-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors cursor-pointer"
+              className="absolute top-5 right-5 p-2 min-h-[44px] min-w-[44px] rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors cursor-pointer flex items-center justify-center"
               aria-label="Cerrar detalle"
             >
               <X className="w-4 h-4" />
             </button>
 
-            <div className="rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 h-64">
+            <div className="rounded-2xl overflow-hidden border border-slate-200/80 bg-slate-100 h-64">
               <img
                 src={selectedCase.imageUrl}
                 alt={selectedCase.procedure}
@@ -949,35 +952,27 @@ export const DoctorOnePager: React.FC<DoctorOnePagerProps> = ({ doctor, onBack }
 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-violet-700 bg-violet-50 px-2.5 py-0.5 rounded-full border border-violet-200">
+                <span className="text-xs font-bold text-violet-700 bg-violet-50 px-2.5 py-0.5 rounded-full border border-violet-200/80 whitespace-nowrap">
                   {selectedCase.category}
                 </span>
                 <span className="text-xs text-slate-400">{selectedCase.timeAgo}</span>
               </div>
-
-              <h3 className="font-bold text-base text-slate-900">
-                {selectedCase.procedure}
-              </h3>
-
-              <div className="flex items-center gap-1 text-amber-500">
+              <h3 className="font-bold text-base text-slate-900">{selectedCase.procedure}</h3>
+              <div className="flex items-center gap-1">
                 {[...Array(selectedCase.rating)].map((_, i) => (
                   <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-500" />
                 ))}
               </div>
-
-              <p className="text-xs sm:text-sm text-slate-600 italic bg-slate-50 p-3.5 rounded-xl border border-slate-200">
-                "{selectedCase.comment}"
+              <p className="text-xs sm:text-sm text-slate-600 bg-slate-50 p-3.5 rounded-xl border border-slate-200/80">
+                “{selectedCase.comment}”
               </p>
-
-              <p className="text-xs text-slate-400 text-right">
-                — {selectedCase.patientName} (Paciente Verificado)
-              </p>
+              <p className="text-xs text-slate-400 text-right">— {selectedCase.patientName}</p>
             </div>
 
             <button
               type="button"
               onClick={() => setSelectedCase(null)}
-              className="w-full py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs transition-all cursor-pointer"
+              className="w-full min-h-[44px] py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs transition-all cursor-pointer"
             >
               Entendido
             </button>
