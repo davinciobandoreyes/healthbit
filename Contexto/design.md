@@ -4,7 +4,7 @@ Detalle visual: [`../DESIGNHealthBit.md`](../DESIGNHealthBit.md). Leer ese archi
 
 ## Usuarios y vistas (`App.tsx`)
 
-1. **Paciente** — `public_directory`: busca especialistas, abre ficha, “reserva” demo. Card del directorio: foto, nombre, especialidad, sellos RETHUS y REPS (REPS solo si está aceptado), ciudad y departamento, y dos acciones secundarias: **Ver doctor** y **WhatsApp**. Filtro de ciudades además del de especialidad.
+1. **Paciente** — `public_directory`: el inventario es la página. Header: marca e Ingresar. Debajo, hero corto: “Encuentra doctores verificados” y la foto. Sigue en todas las especialidades. Se oculta al buscar o al elegir ciudad. Búsqueda en el contenido (en vivo, sin botón Buscar). En móvil, especialidad (scroll táctil) y ciudad (select a ancho completo) van en filas distintas; en `sm+` comparten fila. Debajo, “N médicos” y la grilla. La card abre la ficha; WhatsApp es un icono. Sello REPS solo si está aceptado. La ficha no lleva hero.
 2. **Médico** — `verification_flow` (7 pasos) luego `portal` (Inicio / Pacientes / Documentos / Citas+Opiniones en web, Cita en móvil / Perfil).
 3. **Super admin** — `admin_review`: cola RETHUS (pendientes, aceptadas, negadas) + pausar/reactivar.
 

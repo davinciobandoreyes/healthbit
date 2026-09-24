@@ -2,6 +2,7 @@
 
 ## Hecho
 
+- Buscador público: hero corto “Encuentra doctores verificados” y foto; sigue en todas las especialidades y se oculta al buscar o al elegir ciudad. Búsqueda bajo el header, especialidades con médicos y ciudad en un select. La card abre la ficha; WhatsApp es icono. La ficha no lleva hero.
 - Ficha pública del médico (`DoctorOnePager`): cabecera compacta, pestañas (Experiencia / Verificación / Credenciales / Opiniones) y agenda sticky. Sin catálogo de precios ni EPS.
 - Sandbox Verifik RETHUS: `GET /test` + `POST /api/verifik-rethus`. Token en servidor. Registro no lo llama.
 - Alta de paciente: one-pager de una columna. Sidebar solo en profundidad 1 (`shouldShowSidebar` en `nav.ts`). Alertas médicas = sección propia con pills (input abierto, sin rose).

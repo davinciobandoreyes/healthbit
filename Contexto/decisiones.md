@@ -17,5 +17,7 @@ Cada ítem apunta a `decisions/`. No copiar el razonamiento aquí.
 | 2026-09-21 | Ficha pública: layout de lectura (pestañas + agenda sticky), no marketplace | [`../decisions/2026-09-21-ficha-publica-layout.md`](../decisions/2026-09-21-ficha-publica-layout.md) |
 | 2026-09-23 | Portal: un Guardar en Perfil; Citas/Opiniones en web, Cita en móvil | [`../decisions/2026-09-23-portal-citas-opiniones.md`](../decisions/2026-09-23-portal-citas-opiniones.md) |
 | 2026-09-24 | Paso 3 REPS: sede y grupos de servicio, revisión humana, no abre el buscador | [`../decisions/2026-09-24-paso-reps.md`](../decisions/2026-09-24-paso-reps.md) |
+| 2026-09-24 | Home público: inventario primero; la card abre la ficha | [`../decisions/2026-09-24-home-marketplace.md`](../decisions/2026-09-24-home-marketplace.md) |
+| 2026-09-24 | Landing: hero corto “Encuentra doctores verificados” y foto; sigue en las especialidades | [`../decisions/2026-09-24-landing-hero.md`](../decisions/2026-09-24-landing-hero.md) |
 
-Supersedidas: la verificación automática en el paso 2 (20 ago) quedó anulada el 21 ago. `/api/rethus-check` sigue en `server.ts` pero la UI no lo usa.
+Supersedidas: la verificación automática en el paso 2 (20 ago) quedó anulada el 21 ago. `/api/rethus-check` sigue en `server.ts` pero la UI no lo usa. “Sin hero” del home (24 sep, marketplace) quedó reemplazado el mismo día por el hero corto del landing.
