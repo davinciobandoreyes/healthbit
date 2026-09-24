@@ -11,10 +11,10 @@ import {
   Award,
   Search,
   FileCheck,
-  X,
 } from 'lucide-react';
 import { DoctorDocument } from '../types';
 import { INITIAL_DOCTOR_DOCUMENTS } from '../data/portalData';
+import { SheetPopover } from './SheetPopover';
 
 export const DocumentsSection: React.FC = () => {
   const [documents, setDocuments] = useState<DoctorDocument[]>(INITIAL_DOCTOR_DOCUMENTS);
@@ -161,7 +161,19 @@ export const DocumentsSection: React.FC = () => {
           {filteredDocuments.map((doc) => (
             <div
               key={doc.id}
-              className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-2xs hover:border-violet-300 hover:shadow-xs transition-all flex flex-col justify-between gap-3 group"
+              role="button"
+              tabIndex={0}
+              onClick={() => {
+                if (window.innerWidth < 1024) setPreviewDoc(doc);
+              }}
+              onKeyDown={(e) => {
+                if (window.innerWidth >= 1024) return;
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setPreviewDoc(doc);
+                }
+              }}
+              className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-2xs hover:border-violet-300 hover:shadow-xs transition-all flex flex-col justify-between gap-3 group cursor-pointer lg:cursor-default min-h-[44px]"
             >
               {/* Header: Icono + Título + Status Badge */}
               <div className="flex items-start justify-between gap-2.5">
@@ -215,11 +227,11 @@ export const DocumentsSection: React.FC = () => {
                 <span className="text-[10px] text-slate-400 font-medium truncate max-w-[180px]">
                   {doc.verificationBadge || `Cargado: ${doc.uploadDate}`}
                 </span>
-                <div className="flex items-center gap-1.5 shrink-0">
+                <div className="flex items-center gap-1.5 shrink-0" onClick={(e) => e.stopPropagation()}>
                   <button
                     type="button"
                     onClick={() => setPreviewDoc(doc)}
-                    className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all cursor-pointer whitespace-nowrap"
+                    className="hidden lg:inline-flex items-center gap-1 min-h-[44px] px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all cursor-pointer whitespace-nowrap"
                   >
                     <Eye className="w-3.5 h-3.5 text-slate-500" />
                     <span>Ver</span>
@@ -227,7 +239,7 @@ export const DocumentsSection: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => alert(`Descargando soporte: ${doc.title}`)}
-                    className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-violet-50 hover:bg-violet-100 text-violet-700 text-xs font-bold transition-all border border-violet-200/60 cursor-pointer whitespace-nowrap"
+                    className="inline-flex items-center gap-1 min-h-[44px] px-2.5 py-1.5 rounded-lg bg-violet-50 hover:bg-violet-100 text-violet-700 text-xs font-bold transition-all border border-violet-200/60 cursor-pointer whitespace-nowrap"
                   >
                     <Download className="w-3.5 h-3.5 text-violet-600" />
                     <span>Descargar</span>
@@ -253,27 +265,25 @@ export const DocumentsSection: React.FC = () => {
         </div>
       </div>
 
-      {/* 5. Modal de Subida de Documentos */}
       {isUploadModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl border border-slate-200 animate-scaleUp">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-violet-50 text-violet-600 flex items-center justify-center">
-                  <Upload className="w-4 h-4" />
-                </div>
-                <div>
-                  <h3 className="text-base font-bold text-slate-900">Subir Soporte Médico</h3>
-                  <p className="text-xs text-slate-500">Agrega diplomas, actas o certificados</p>
-                </div>
+        <SheetPopover
+          titleId="upload-document-title"
+          title="Subir Soporte Médico"
+          closeLabel="Cerrar subida"
+          onClose={() => setIsUploadModalOpen(false)}
+          offsetTabBar
+        >
+          <div className="bg-white border border-slate-200/80 rounded-3xl p-5 sm:p-6 space-y-4">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-violet-50 text-violet-600 flex items-center justify-center">
+                <Upload className="w-4 h-4" />
               </div>
-              <button
-                type="button"
-                onClick={() => setIsUploadModalOpen(false)}
-                className="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 flex items-center justify-center cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
+              <div>
+                <h3 id="upload-document-title" className="text-base font-bold text-slate-900">
+                  Subir Soporte Médico
+                </h3>
+                <p className="text-xs text-slate-500">Agrega diplomas, actas o certificados</p>
+              </div>
             </div>
 
             <form onSubmit={handleUploadSubmit} className="space-y-3.5 text-xs">
@@ -377,54 +387,41 @@ export const DocumentsSection: React.FC = () => {
               </div>
             </form>
           </div>
-        </div>
+        </SheetPopover>
       )}
 
-      {/* 6. Document Preview Modal */}
       {previewDoc && (
-        <div className="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-xl w-full p-5 shadow-2xl border border-slate-200 animate-scaleUp max-h-[90vh] flex flex-col">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
-              <div className="flex items-center gap-2.5 min-w-0">
-                <FileCheck className="w-5 h-5 text-violet-600 shrink-0" />
-                <div className="min-w-0">
-                  <h3 className="font-bold text-slate-900 text-sm truncate">{previewDoc.title}</h3>
-                  <span className="text-xs text-slate-500 truncate block">
-                    {previewDoc.issuer} • {previewDoc.issueYear}
-                  </span>
-                </div>
+        <SheetPopover
+          titleId="preview-document-title"
+          title={previewDoc.title}
+          closeLabel="Cerrar visor"
+          onClose={() => setPreviewDoc(null)}
+          offsetTabBar
+        >
+          <div className="bg-white border border-slate-200/80 rounded-3xl p-5 space-y-4">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <FileCheck className="w-5 h-5 text-violet-600 shrink-0" />
+              <div className="min-w-0">
+                <h3 id="preview-document-title" className="font-bold text-slate-900 text-sm truncate">
+                  {previewDoc.title}
+                </h3>
+                <span className="text-xs text-slate-500 truncate block">
+                  {previewDoc.issuer} • {previewDoc.issueYear}
+                </span>
               </div>
-              <button
-                type="button"
-                onClick={() => setPreviewDoc(null)}
-                className="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 flex items-center justify-center shrink-0 cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
             </div>
-
-            <div className="flex-1 my-3 bg-slate-100 rounded-xl overflow-hidden flex items-center justify-center p-3 border border-slate-200">
+            <div className="bg-slate-100 rounded-xl overflow-hidden flex items-center justify-center p-3 border border-slate-200">
               <img
                 src={previewDoc.fileUrl}
                 alt={previewDoc.title}
                 className="max-h-[45vh] object-contain rounded-lg shadow-xs"
               />
             </div>
-
-            <div className="flex items-center justify-between pt-2">
-              <span className="text-[11px] text-violet-700 font-semibold flex items-center gap-1">
-                <ShieldCheck className="w-3.5 h-3.5" /> Acreditado oficialmente
-              </span>
-              <button
-                type="button"
-                onClick={() => setPreviewDoc(null)}
-                className="px-4 py-1.5 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 cursor-pointer"
-              >
-                Cerrar Visor
-              </button>
-            </div>
+            <span className="text-[11px] text-violet-700 font-semibold flex items-center gap-1">
+              <ShieldCheck className="w-3.5 h-3.5" /> Acreditado oficialmente
+            </span>
           </div>
-        </div>
+        </SheetPopover>
       )}
     </div>
   );

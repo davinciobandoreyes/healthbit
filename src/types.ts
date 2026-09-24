@@ -81,11 +81,27 @@ export interface PendingRethusReview {
   isPaused?: boolean;
 }
 
+export type DoctorTitlePrefix = 'Dr.' | 'Dra.' | '';
+
+export type WeekdayKey = 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat';
+
+export interface DayAvailability {
+  enabled: boolean;
+  start: string;
+  end: string;
+}
+
+export type WeeklyAvailability = Record<WeekdayKey, DayAvailability>;
+
 export interface DoctorProfile {
   id: string;
   fullName: string;
+  firstName?: string;
+  lastName?: string;
+  titlePrefix?: DoctorTitlePrefix;
   specialty: string;
   subspecialty?: string;
+  focusAreas?: string[];
   rethusCode: string;
   idNumber: string;
   institution: string;
@@ -97,8 +113,12 @@ export interface DoctorProfile {
   biography: string;
   diplomaUrl?: string;
   location: string;
+  officeCity?: string;
+  officeAddress?: string;
   phone: string;
+  whatsappPhone?: string;
   email: string;
+  weeklyAvailability?: WeeklyAvailability;
   verifiedStatus: {
     identityFront: boolean;
     identityBack: boolean;
@@ -110,7 +130,40 @@ export interface DoctorProfile {
   isPaused?: boolean;
 }
 
-export type DoctorPortalTab = 'home' | 'documents' | 'patients' | 'patient-photos' | 'settings';
+export interface PublicReview {
+  id: string;
+  doctorEmail: string;
+  patientName: string;
+  location: string;
+  rating: number;
+  timeAgo: string;
+  comment: string;
+  visible: boolean;
+}
+
+export type AppointmentStatus = 'pending_confirm' | 'confirmed' | 'cancelled';
+
+export interface AppointmentBooking {
+  id: string;
+  doctorEmail: string;
+  refCode: string;
+  patientName: string;
+  patientPhone: string;
+  dateISO: string;
+  time: string;
+  reason: string;
+  createdAt: string;
+  status: AppointmentStatus;
+}
+
+export type DoctorPortalTab =
+  | 'home'
+  | 'documents'
+  | 'patients'
+  | 'patient-photos'
+  | 'appointments'
+  | 'reviews'
+  | 'settings';
 
 export type DateRangePreset = '7d' | '3d' | '30d' | '90d' | 'custom';
 

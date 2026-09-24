@@ -1,4 +1,4 @@
-# Estado actual — 2026-09-21
+# Estado actual — 2026-09-23
 
 ## Hecho
 
@@ -13,6 +13,7 @@
 - Design system en `DESIGNHealthBit.md` (primario `violet-600`, companion indigo; ámbar = pendiente). Mapa humano en `dashboard.html`.
 - Pacientes: fichas SOAP, cirugías, fotos (datos mock, estado local del componente).
 - Historia clínica: wizard de 7 one-pagers (`ClinicalHistoryFlow`). Reemplaza el modal SOAP. CIE-10 local + `POST /api/categorize-illness` (fallback no se vende como IA). Sin RIPS.
+- Portal: Perfil guarda identidad + disponibilidad juntos. Web: Citas (Agendadas/Realizadas/Por agendar/Canceladas + Hoy/Mañana/7 días; WhatsApp demo) y Opiniones (Mostradas/Pendientes + ±estrellas). Móvil: Cita. Las reseñas nuevas no salen en la ficha hasta Mostrar.
 
 ## Pendiente (producto)
 

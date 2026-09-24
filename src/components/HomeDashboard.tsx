@@ -30,14 +30,11 @@ import {
 import {
   ResponsiveContainer,
   BarChart,
-  LineChart,
   Bar,
-  Line,
   XAxis,
   YAxis,
   Tooltip,
   CartesianGrid,
-  Legend,
 } from 'recharts';
 import { DateRangePreset, DoctorProfile, DoctorPortalTab } from '../types';
 import { INITIAL_PATIENTS } from '../data/mockPatients';
@@ -48,8 +45,6 @@ interface HomeDashboardProps {
   emailNotice?: string | null;
   onDismissEmailNotice?: () => void;
 }
-
-type ChartViewType = 'bars' | 'lines';
 
 export const HomeDashboard: React.FC<HomeDashboardProps> = ({
   doctor,
@@ -65,7 +60,6 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
     end: '2026-08-13',
   });
   const [isCustomApplied, setIsCustomApplied] = useState<boolean>(false);
-  const [chartView, setChartView] = useState<ChartViewType>('bars');
 
   const patientStats = useMemo(() => {
     const total = INITIAL_PATIENTS.length;
@@ -560,184 +554,63 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
             </div>
           </div>
 
-          {/* Column 2: Gráfico de Dinámica de Citas y Tráfico */}
           <div className="bg-white border border-slate-200/80 rounded-2xl p-4 sm:p-5 shadow-2xs flex flex-col justify-between">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
               <div className="flex items-center gap-2.5 min-w-0">
                 <div className="w-8 h-8 rounded-xl bg-violet-50 text-violet-600 flex items-center justify-center shrink-0">
-                  <Activity className="w-4 h-4" />
+                  <BarChart3 className="w-4 h-4" />
                 </div>
                 <div className="min-w-0">
-                  <h3 className="text-sm font-bold text-slate-900 truncate">Dinámica y Tráfico</h3>
-                  <p className="text-[11px] text-slate-400 truncate">Comparativa de demanda en el tiempo</p>
+                  <h3 className="text-sm font-bold text-slate-900 truncate">
+                    {selectedRange === '3d'
+                      ? 'Citas en 3 días'
+                      : selectedRange === '90d'
+                        ? 'Citas en 3 meses'
+                        : selectedRange === 'custom'
+                          ? 'Citas en el rango'
+                          : 'Citas esta semana'}
+                  </h3>
+                  <p className="text-[11px] text-slate-400 truncate">Cuántas citas se agendaron en cada periodo</p>
                 </div>
               </div>
-
-              {/* Chart Mode Toggle */}
-              <div className="flex items-center bg-slate-100 p-0.5 rounded-lg gap-0.5 shrink-0">
-                <button
-                  type="button"
-                  onClick={() => setChartView('bars')}
-                  className={`min-h-[28px] px-2 py-1 rounded-md text-[11px] font-bold transition-all cursor-pointer whitespace-nowrap ${
-                    chartView === 'bars'
-                      ? 'bg-white text-violet-700 shadow-2xs'
-                      : 'text-slate-500 hover:text-slate-900'
-                  }`}
-                  title="Gráfico de Barras"
-                >
-                  Barras
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setChartView('lines')}
-                  className={`min-h-[28px] px-2 py-1 rounded-md text-[11px] font-bold transition-all cursor-pointer whitespace-nowrap ${
-                    chartView === 'lines'
-                      ? 'bg-white text-violet-700 shadow-2xs'
-                      : 'text-slate-500 hover:text-slate-900'
-                  }`}
-                  title="Gráfico de Líneas"
-                >
-                  Líneas
-                </button>
-              </div>
+              <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-violet-800 bg-violet-50 px-2.5 py-1 rounded-full border border-violet-200/80 whitespace-nowrap">
+                <span className="w-2 h-2 rounded-full bg-violet-600" />
+                Citas agendadas
+              </span>
             </div>
 
-            {/* Interactive Graph */}
             <div className="w-full h-44 sm:h-48 select-none">
               <ResponsiveContainer width="100%" height="100%">
-                {chartView === 'bars' ? (
-                  <BarChart
-                    data={metricsData.chartData}
-                    margin={{ top: 5, right: 5, left: -25, bottom: 0 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
-                    <XAxis
-                      dataKey="label"
-                      tick={{ fill: '#64748b', fontSize: 10, fontWeight: 600 }}
-                      axisLine={{ stroke: '#e2e8f0' }}
-                      tickLine={false}
-                    />
-                    <YAxis
-                      yAxisId="left"
-                      orientation="left"
-                      tick={{ fill: '#7c3aed', fontSize: 9, fontWeight: 700 }}
-                      axisLine={false}
-                      tickLine={false}
-                      allowDecimals={false}
-                    />
-                    <YAxis
-                      yAxisId="right"
-                      orientation="right"
-                      tick={{ fill: '#4f46e5', fontSize: 9, fontWeight: 600 }}
-                      axisLine={false}
-                      tickLine={false}
-                    />
-                    <Tooltip
-                      content={({ active, payload, label }) => {
-                        if (active && payload && payload.length) {
-                          const apts = payload.find((p) => p.dataKey === 'appointments')?.value as number ?? 0;
-                          const views = payload.find((p) => p.dataKey === 'views')?.value as number ?? 0;
-                          return (
-                            <div className="bg-slate-900 text-white p-2.5 rounded-xl shadow-lg border border-slate-700 text-[11px] space-y-1 font-['Plus_Jakarta_Sans',sans-serif]">
-                              <div className="font-bold text-slate-200 border-b border-slate-700/80 pb-1">{label}</div>
-                              <div className="flex justify-between gap-3 text-violet-300">
-                                <span>Citas:</span>
-                                <strong className="font-mono">{apts}</strong>
-                              </div>
-                              <div className="flex justify-between gap-3 text-indigo-300">
-                                <span>Vistas:</span>
-                                <strong className="font-mono">{views}</strong>
-                              </div>
-                            </div>
-                          );
-                        }
-                        return null;
-                      }}
-                    />
-                    <Bar
-                      yAxisId="left"
-                      dataKey="appointments"
-                      name="Citas"
-                      fill="#8b5cf6"
-                      radius={[4, 4, 0, 0]}
-                      maxBarSize={22}
-                    />
-                    <Bar
-                      yAxisId="right"
-                      dataKey="views"
-                      name="Vistas"
-                      fill="#4f46e5"
-                      radius={[4, 4, 0, 0]}
-                      maxBarSize={22}
-                    />
-                  </BarChart>
-                ) : (
-                  <LineChart
-                    data={metricsData.chartData}
-                    margin={{ top: 5, right: 5, left: -25, bottom: 0 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
-                    <XAxis
-                      dataKey="label"
-                      tick={{ fill: '#64748b', fontSize: 10, fontWeight: 600 }}
-                      axisLine={{ stroke: '#e2e8f0' }}
-                      tickLine={false}
-                    />
-                    <YAxis
-                      yAxisId="left"
-                      orientation="left"
-                      tick={{ fill: '#7c3aed', fontSize: 9, fontWeight: 700 }}
-                      axisLine={false}
-                      tickLine={false}
-                      allowDecimals={false}
-                    />
-                    <YAxis
-                      yAxisId="right"
-                      orientation="right"
-                      tick={{ fill: '#4f46e5', fontSize: 9, fontWeight: 600 }}
-                      axisLine={false}
-                      tickLine={false}
-                    />
-                    <Tooltip
-                      content={({ active, payload, label }) => {
-                        if (active && payload && payload.length) {
-                          const apts = payload.find((p) => p.dataKey === 'appointments')?.value as number ?? 0;
-                          const views = payload.find((p) => p.dataKey === 'views')?.value as number ?? 0;
-                          return (
-                            <div className="bg-slate-900 text-white p-2.5 rounded-xl shadow-lg border border-slate-700 text-[11px] space-y-1 font-['Plus_Jakarta_Sans',sans-serif]">
-                              <div className="font-bold text-slate-200 border-b border-slate-700/80 pb-1">{label}</div>
-                              <div className="flex justify-between gap-3 text-violet-300">
-                                <span>Citas:</span>
-                                <strong className="font-mono">{apts}</strong>
-                              </div>
-                              <div className="flex justify-between gap-3 text-indigo-300">
-                                <span>Vistas:</span>
-                                <strong className="font-mono">{views}</strong>
-                              </div>
-                            </div>
-                          );
-                        }
-                        return null;
-                      }}
-                    />
-                    <Line
-                      yAxisId="left"
-                      type="monotone"
-                      dataKey="appointments"
-                      stroke="#8b5cf6"
-                      strokeWidth={2.5}
-                      dot={{ r: 3, fill: '#8b5cf6' }}
-                    />
-                    <Line
-                      yAxisId="right"
-                      type="monotone"
-                      dataKey="views"
-                      stroke="#4f46e5"
-                      strokeWidth={2.5}
-                      dot={{ r: 3, fill: '#4f46e5' }}
-                    />
-                  </LineChart>
-                )}
+                <BarChart data={metricsData.chartData} margin={{ top: 5, right: 8, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+                  <XAxis
+                    dataKey="label"
+                    tick={{ fill: '#64748b', fontSize: 10, fontWeight: 600 }}
+                    axisLine={{ stroke: '#e2e8f0' }}
+                    tickLine={false}
+                  />
+                  <YAxis
+                    tick={{ fill: '#7c3aed', fontSize: 9, fontWeight: 700 }}
+                    axisLine={false}
+                    tickLine={false}
+                    allowDecimals={false}
+                  />
+                  <Tooltip
+                    cursor={{ fill: '#f5f3ff' }}
+                    content={({ active, payload, label }) => {
+                      if (!active || !payload?.length) return null;
+                      const apts = (payload[0]?.value as number) ?? 0;
+                      return (
+                        <div className="bg-slate-900 text-white p-2.5 rounded-xl shadow-lg border border-slate-700 text-[11px] font-['Plus_Jakarta_Sans',sans-serif]">
+                          <strong>
+                            {label} · {apts} {apts === 1 ? 'cita' : 'citas'}
+                          </strong>
+                        </div>
+                      );
+                    }}
+                  />
+                  <Bar dataKey="appointments" name="Citas" fill="#7c3aed" radius={[4, 4, 0, 0]} maxBarSize={28} />
+                </BarChart>
               </ResponsiveContainer>
             </div>
           </div>

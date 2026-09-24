@@ -6,13 +6,30 @@ import { HomeDashboard } from './components/HomeDashboard';
 import { DocumentsSection } from './components/DocumentsSection';
 import { PatientsSection } from './components/PatientsSection';
 import { SettingsSection } from './components/SettingsSection';
+import {
+  DoctorCitaMobileSection,
+  DoctorCitasSection,
+  DoctorOpinionesSection,
+} from './components/DoctorPracticeSections';
 import { VerificationFlow } from './components/VerificationFlow';
 import { PatientDirectory } from './components/PatientDirectory';
 import { DoctorAuthModal } from './components/DoctorAuthModal';
 import { AdminRethusQueue } from './components/AdminRethusQueue';
-import { DoctorProfile, DoctorPortalTab, PendingRethusReview, DegreeDocumentFile } from './types';
+import {
+  AppointmentBooking,
+  DoctorProfile,
+  DoctorPortalTab,
+  PendingRethusReview,
+  DegreeDocumentFile,
+  PublicReview,
+} from './types';
 import { INITIAL_DOCTORS } from './data/mockDoctors';
 import { PORTAL_NAV_ITEMS, shouldShowSidebar } from './nav';
+import {
+  hydrateDoctorProfile,
+  INITIAL_BOOKINGS,
+  INITIAL_PUBLIC_REVIEWS,
+} from './data/doctorPublic';
 import { CheckCircle2, ShieldCheck } from 'lucide-react';
 
 const isHealthbitAdminEmail = (email: string) =>
@@ -21,19 +38,19 @@ const isHealthbitAdminEmail = (email: string) =>
 const DEFAULT_DOCTOR: DoctorProfile = {
   id: 'doc-camila-restrepo',
   fullName: 'Dra. María Camila Restrepo Gómez',
-  specialty: 'Cirugía Plástica, Estética y Reconstructiva',
-  subspecialty: 'Microcirugía y Rinoplastia Ultrasónica',
+  specialty: 'Cirugía Plástica Facial & Reconstructiva',
+  subspecialty: 'Rinoplastia Ultrasónica y Perfiloplastia',
   rethusCode: 'RTH-2021-89412',
   idNumber: '1.020.485.912',
-  institution: 'Hospital Universitario San Ignacio • Pontificia Univ. Javeriana',
+  institution: 'Universidad de Antioquia — SCCP',
   avatarUrl: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=300',
   verificationLevel: 4,
   verificationDate: '13 Ago 2026',
   rating: 4.9,
   reviewsCount: 36,
-  biography: 'Especialista en cirugía plástica facial y reconstructiva certificada por RETHUS y la Sociedad Colombiana de Cirugía Plástica (SCCP).',
-  location: 'Bogotá D.C., Colombia',
-  phone: '+57 312 456 7890',
+  biography: 'Cirujana plástica con especialización en procedimientos faciales mínimamente invasivos y armonización estructural con más de 10 años de trayectoria.',
+  location: 'Medellín, Colombia — Torre Médica El Tesoro',
+  phone: '+57 (604) 448-9210',
   email: 'dra.restrepo@javeriana.edu.co',
   verifiedStatus: {
     identityFront: true,
@@ -44,6 +61,8 @@ const DEFAULT_DOCTOR: DoctorProfile = {
   },
   rethusReviewStatus: 'approved',
 };
+
+const SEEDED_DEFAULT_DOCTOR = hydrateDoctorProfile(DEFAULT_DOCTOR);
 
 const normalizeEmail = (value: string) => value.trim().toLowerCase();
 
@@ -72,11 +91,19 @@ export default function App() {
   const [verificationInitialStep, setVerificationInitialStep] = useState<number>(1);
   const [verificationSuccess, setVerificationSuccess] = useState<boolean>(false);
 
-  const [doctor, setDoctor] = useState<DoctorProfile>(DEFAULT_DOCTOR);
+  const [doctor, setDoctor] = useState<DoctorProfile>(SEEDED_DEFAULT_DOCTOR);
   const [sessionDoctors, setSessionDoctors] = useState<Record<string, DoctorProfile>>({
-    [normalizeEmail(DEFAULT_DOCTOR.email)]: DEFAULT_DOCTOR,
+    [normalizeEmail(SEEDED_DEFAULT_DOCTOR.email)]: SEEDED_DEFAULT_DOCTOR,
   });
-  const [directoryDoctors, setDirectoryDoctors] = useState<DoctorProfile[]>(INITIAL_DOCTORS);
+  const [directoryDoctors, setDirectoryDoctors] = useState<DoctorProfile[]>(() =>
+    INITIAL_DOCTORS.map((item) =>
+      normalizeEmail(item.email) === normalizeEmail(SEEDED_DEFAULT_DOCTOR.email)
+        ? { ...hydrateDoctorProfile(item), ...SEEDED_DEFAULT_DOCTOR, id: item.id }
+        : hydrateDoctorProfile(item)
+    )
+  );
+  const [publicReviews, setPublicReviews] = useState<PublicReview[]>(INITIAL_PUBLIC_REVIEWS);
+  const [bookings, setBookings] = useState<AppointmentBooking[]>(INITIAL_BOOKINGS);
   const [pendingRethusReviews, setPendingRethusReviews] = useState<PendingRethusReview[]>(() =>
     reviewsFromListedDoctors(INITIAL_DOCTORS)
   );
@@ -90,10 +117,21 @@ export default function App() {
     setSessionDoctors((prev) => ({ ...prev, [normalizeEmail(profile.email)]: profile }));
   };
 
+  const handleUpdateBooking = (id: string, patch: Partial<AppointmentBooking>) => {
+    setBookings((prev) => prev.map((item) => (item.id === id ? { ...item, ...patch } : item)));
+  };
+
   const handleUpdateDoctor = (updated: Partial<DoctorProfile>) => {
     setDoctor((prev) => {
-      const next = { ...prev, ...updated };
+      const next = hydrateDoctorProfile({ ...prev, ...updated });
       upsertSessionDoctor(next);
+      setDirectoryDoctors((list) =>
+        list.map((doc) =>
+          normalizeEmail(doc.email) === normalizeEmail(prev.email)
+            ? hydrateDoctorProfile({ ...doc, ...updated, email: updated.email ?? doc.email })
+            : doc
+        )
+      );
       return next;
     });
   };
@@ -115,7 +153,7 @@ export default function App() {
     }
 
     const known = sessionDoctors[normalized];
-    if (known) setDoctor(known);
+    if (known) setDoctor(hydrateDoctorProfile(known));
     setViewMode('portal');
   };
 
@@ -278,6 +316,10 @@ export default function App() {
         <PatientDirectory
           doctors={directoryDoctors}
           onOpenDoctorAuth={() => setIsAuthModalOpen(true)}
+          reviews={publicReviews}
+          onAddReview={(review) => setPublicReviews((prev) => [review, ...prev])}
+          bookings={bookings}
+          onAddBooking={(booking) => setBookings((prev) => [booking, ...prev])}
         />
         <DoctorAuthModal
           isOpen={isAuthModalOpen}
@@ -437,6 +479,66 @@ export default function App() {
             <PatientsSection onDepthChange={setNavDepth} />
           )}
           {currentTab === 'documents' && <DocumentsSection />}
+          {currentTab === 'appointments' && (
+            <>
+              <div className="lg:hidden">
+                <DoctorCitaMobileSection
+                  bookings={bookings.filter(
+                    (item) => normalizeEmail(item.doctorEmail) === doctorEmailKey
+                  )}
+                  onUpdateBooking={handleUpdateBooking}
+                  reviews={publicReviews.filter(
+                    (item) => normalizeEmail(item.doctorEmail) === doctorEmailKey
+                  )}
+                  onToggleReview={(id, visible) =>
+                    setPublicReviews((prev) =>
+                      prev.map((item) => (item.id === id ? { ...item, visible } : item))
+                    )
+                  }
+                />
+              </div>
+              <div className="hidden lg:block">
+                <DoctorCitasSection
+                  bookings={bookings.filter(
+                    (item) => normalizeEmail(item.doctorEmail) === doctorEmailKey
+                  )}
+                  onUpdateBooking={handleUpdateBooking}
+                />
+              </div>
+            </>
+          )}
+          {currentTab === 'reviews' && (
+            <>
+              <div className="lg:hidden">
+                <DoctorCitaMobileSection
+                  bookings={bookings.filter(
+                    (item) => normalizeEmail(item.doctorEmail) === doctorEmailKey
+                  )}
+                  onUpdateBooking={handleUpdateBooking}
+                  reviews={publicReviews.filter(
+                    (item) => normalizeEmail(item.doctorEmail) === doctorEmailKey
+                  )}
+                  onToggleReview={(id, visible) =>
+                    setPublicReviews((prev) =>
+                      prev.map((item) => (item.id === id ? { ...item, visible } : item))
+                    )
+                  }
+                />
+              </div>
+              <div className="hidden lg:block">
+                <DoctorOpinionesSection
+                  reviews={publicReviews.filter(
+                    (item) => normalizeEmail(item.doctorEmail) === doctorEmailKey
+                  )}
+                  onToggleReview={(id, visible) =>
+                    setPublicReviews((prev) =>
+                      prev.map((item) => (item.id === id ? { ...item, visible } : item))
+                    )
+                  }
+                />
+              </div>
+            </>
+          )}
           {currentTab === 'settings' && (
             <SettingsSection
               doctor={doctor}

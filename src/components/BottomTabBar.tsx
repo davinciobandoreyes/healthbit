@@ -1,6 +1,6 @@
 import React from 'react';
 import { DoctorPortalTab } from '../types';
-import { PORTAL_NAV_ITEMS, isPortalNavActive } from '../nav';
+import { PORTAL_NAV_MOBILE, isPortalNavActive } from '../nav';
 
 interface BottomTabBarProps {
   currentTab: DoctorPortalTab;
@@ -15,7 +15,7 @@ export const BottomTabBar: React.FC<BottomTabBarProps> = ({ currentTab, onSelect
     >
       <div className="max-w-md md:max-w-lg mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-around h-16 sm:h-18">
-          {PORTAL_NAV_ITEMS.map((tab) => {
+          {PORTAL_NAV_MOBILE.map((tab) => {
             const Icon = tab.icon;
             const isActive = isPortalNavActive(tab.id, currentTab);
 

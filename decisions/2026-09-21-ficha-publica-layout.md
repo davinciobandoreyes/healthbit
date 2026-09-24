@@ -2,4 +2,4 @@
 
 **Vigente.**
 
-La ficha que ve el paciente (`DoctorOnePager`) copia de Doctoralia solo el layout: cabecera de identidad, pestañas y agenda fija a la derecha. Paleta HealthBit (violet/slate). No se añaden servicios/precios, aseguradoras ni calendario de slots; los datos siguen siendo los de `DoctorProfile`. RETHUS y credenciales viven en pestañas, el sello RETHUS permanece en la cabecera.
+La ficha que ve el paciente (`DoctorOnePager`) copia de Doctoralia solo el layout: cabecera de identidad, pestañas y agenda fija a la derecha. Paleta HealthBit (violet/slate). Agenda: visita presencial con slots demo; WhatsApp verde solo en la intro (`#25D366`, excepción de marca). No hay servicios/precios ni EPS. RETHUS y credenciales viven en pestañas.

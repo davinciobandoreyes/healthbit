@@ -19,15 +19,26 @@ import {
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
-import { DoctorProfile } from '../types';
+import { AppointmentBooking, DoctorProfile, PublicReview } from '../types';
 import { DoctorOnePager } from './DoctorOnePager';
 
 interface PatientDirectoryProps {
   onOpenDoctorAuth?: () => void;
   doctors: DoctorProfile[];
+  reviews: PublicReview[];
+  onAddReview: (review: PublicReview) => void;
+  bookings: AppointmentBooking[];
+  onAddBooking: (booking: AppointmentBooking) => void;
 }
 
-export const PatientDirectory: React.FC<PatientDirectoryProps> = ({ onOpenDoctorAuth, doctors }) => {
+export const PatientDirectory: React.FC<PatientDirectoryProps> = ({
+  onOpenDoctorAuth,
+  doctors,
+  reviews,
+  onAddReview,
+  bookings,
+  onAddBooking,
+}) => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedSpecialty, setSelectedSpecialty] = useState<string>('TODAS');
   const [selectedDoctor, setSelectedDoctor] = useState<DoctorProfile | null>(null);
@@ -113,6 +124,14 @@ export const PatientDirectory: React.FC<PatientDirectoryProps> = ({ onOpenDoctor
           setSelectedDoctor(null);
           setBookingSuccess(false);
         }}
+        reviews={reviews.filter(
+          (item) => item.doctorEmail.trim().toLowerCase() === selectedDoctor.email.trim().toLowerCase()
+        )}
+        onAddReview={onAddReview}
+        bookings={bookings.filter(
+          (item) => item.doctorEmail.trim().toLowerCase() === selectedDoctor.email.trim().toLowerCase()
+        )}
+        onAddBooking={onAddBooking}
       />
     );
   }

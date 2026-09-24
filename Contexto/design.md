@@ -5,7 +5,7 @@ Detalle visual: [`../DESIGNHealthBit.md`](../DESIGNHealthBit.md). Leer ese archi
 ## Usuarios y vistas (`App.tsx`)
 
 1. **Paciente** — `public_directory`: busca especialistas, abre ficha, “reserva” demo.
-2. **Médico** — `verification_flow` (6 pasos) luego `portal` (Inicio / Pacientes / Documentos / Ajustes).
+2. **Médico** — `verification_flow` (6 pasos) luego `portal` (Inicio / Pacientes / Documentos / Citas+Opiniones en web, Cita en móvil / Perfil).
 3. **Super admin** — `admin_review`: cola RETHUS (pendientes, aceptadas, negadas) + pausar/reactivar.
 
 ## Registro (pasos)
@@ -22,12 +22,16 @@ Al terminar: identidad OK, RETHUS pendiente, **no sale en el buscador** hasta qu
 
 - Primario: `violet-600` / hover `violet-700`. Pendiente: ámbar. Fondo: `slate-50`. Tarjetas: `white` + `border-slate-200/80`.
 - Iconos: `lucide-react`. Radios: `rounded-3xl` contenedor, `rounded-2xl` tarjeta, `rounded-xl` input.
-- Touch ≥ 44px. Badges: `whitespace-nowrap`. Móvil: tabs inferiores (`BottomTabBar`) siempre. Web `lg+`: `AppSidebar` solo en profundidad 1 (`shouldShowSidebar`). En alta/ficha (2+) no hay menú izquierdo; la marca vuelve al header. CTA de Documentos: `fixed` a la derecha, no centrado.
+- Touch ≥ 44px. Badges: `whitespace-nowrap`. Móvil: tabs inferiores (`BottomTabBar`) siempre. Web `lg+`: `AppSidebar` solo en profundidad 1 (`shouldShowSidebar`). En alta/ficha (2+) no hay menú izquierdo; la marca vuelve al header. CTA de Documentos: `fixed` a la derecha, no centrado. Sheets del portal en móvil: mismo bottom sheet de la ficha pública (`p-8`).
 - Fuentes: `index.html` carga Inter; el portal pide Plus Jakarta Sans en clase (no está en el HTML). No añadir una tercera.
 
 ## Ficha pública del médico (`DoctorOnePager`)
 
-Layout tipo directorio: identidad compacta (foto, RETHUS, rating, dos CTAs) + pestañas a la izquierda + **Agendar cita** sticky a la derecha (`lg+`). Móvil: una columna y barra fija inferior. Tabs: Experiencia (default), Verificación, Credenciales, Opiniones. Contenido existente; no hay servicios/precios ni aseguradoras. Reserva sigue siendo demo en memoria.
+Layout tipo directorio: identidad compacta + pestañas a la izquierda + **Agendar cita** sticky a la derecha (`lg+`). Móvil: intro 2×2 (foto+sellos | identidad / Agendar | Escríbenos); **Agendar** abre popover (bottom sheet) con el calendario. Desktop: agenda sticky. Tabs: Experiencia (default), Verificación, Credenciales; Opiniones es tab en `sm+` y en móvil va al final de Experiencia. Verificación y credenciales: la card abre el mismo bottom sheet de Agendar (overlay fijo, no empuja el layout). Móvil: todos los sheets/modales van al fondo con padding 32px. Agenda solo **visita presencial**, con slots demo tipo Calendly (sin API). Un CTA WhatsApp en la intro: “Escríbenos” (`#128C7E` + icono de marca). Reserva demo en memoria (`HB-######`). Opiniones: lista (sin foto) con badge “Cita verificada”, buscador y filtro Todas/Positivas/Negativas; alta demo como paciente ya logueado. Móvil: FAB fijo “+ Reseña” abajo a la derecha.
+
+## Portal del médico
+
+Inicio: gráfica de **solo barras de citas** + leyenda. Documentos: card clickeable en móvil; **Ver** desde `lg+`; sheets con 32px. **Perfil**: identidad, WhatsApp aparte, especialista en (chips) y plantilla semanal Lun–Sáb; un solo **Guardar perfil público** (aparece si hay cambios, fijo abajo a la derecha). **Citas** (web) y **Cita** (móvil: reservas + opiniones). Citas: tabs Agendadas / Realizadas / Por agendar / Canceladas; estados Pendiente por confirmar / Confirmada / Cancelada; en agendadas filtros Hoy / Mañana / 7 días. Confirmar o cancelar avisa por WhatsApp (demo). **Opiniones** solo en `lg+`: tabs Mostradas / Pendientes + filtro Todas / Positivas / Negativas (≤2★). Las nuevas llegan a Pendientes. Guardar syncs la ficha del directorio (memoria).
 
 ## Pacientes (portal)
 

@@ -36,7 +36,9 @@ No leer de entrada: `dashboard.html`, `src/data/mock*.ts`, `DESIGNHealthBit.md` 
 | Directorio pacientes | `src/components/PatientDirectory.tsx` | Solo `verifiedStatus.rethus && !isPaused` |
 | Ficha pública médico | `src/components/DoctorOnePager.tsx` | Cabecera compacta + pestañas + agenda sticky. Reserva demo, sin API. |
 | Cola admin | `src/components/AdminRethusQueue.tsx` | Filtros pending / approved / denied + pausa |
-| Home médico | `src/components/HomeDashboard.tsx` | Chip RETHUS pendiente / aprobado / denegado |
+| Home médico | `src/components/HomeDashboard.tsx` | Chip RETHUS; gráfica solo barras de citas |
+| Perfil médico | `src/components/SettingsSection.tsx` | Identidad pública, WhatsApp, disponibilidad; un Guardar |
+| Citas / Opiniones | `src/components/DoctorPracticeSections.tsx` | Citas: cola + estados + WhatsApp demo. Opiniones: Mostradas/Pendientes |
 | Alta / ficha paciente | `PatientsSection.tsx` + `PatientCreateView.tsx` + `PatientDetailView.tsx` | Profundidad 2: sin sidebar. Alta = una columna. `city` = procedencia. Alertas = pills en sección propia |
 | Historia clínica | `ClinicalHistoryFlow.tsx` | 7 one-pagers, sin modal, sin RIPS. Entra desde la ficha. |
 | Gemini cédula / selfie | `server.ts` | `/api/verify-document`, `/api/verify-biometrics` |

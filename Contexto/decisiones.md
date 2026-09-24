@@ -15,5 +15,6 @@ Cada ítem apunta a `decisions/`. No copiar el razonamiento aquí.
 | 2026-09-06 | Sandbox Verifik en `/test`; registro sigue sin API | [`../decisions/2026-09-06-verifik-rethus-sandbox.md`](../decisions/2026-09-06-verifik-rethus-sandbox.md) |
 | 2026-09-06 | Historia clínica en 7 one-pagers; sin modal SOAP ni RIPS | [`../decisions/2026-09-06-historia-clinica-wizard.md`](../decisions/2026-09-06-historia-clinica-wizard.md) |
 | 2026-09-21 | Ficha pública: layout de lectura (pestañas + agenda sticky), no marketplace | [`../decisions/2026-09-21-ficha-publica-layout.md`](../decisions/2026-09-21-ficha-publica-layout.md) |
+| 2026-09-23 | Portal: un Guardar en Perfil; Citas/Opiniones en web, Cita en móvil | [`../decisions/2026-09-23-portal-citas-opiniones.md`](../decisions/2026-09-23-portal-citas-opiniones.md) |
 
 Supersedidas: la verificación automática en el paso 2 (20 ago) quedó anulada el 21 ago. `/api/rethus-check` sigue en `server.ts` pero la UI no lo usa.
