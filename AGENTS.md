@@ -35,7 +35,7 @@ No leer de entrada: `dashboard.html`, `src/data/mock*.ts`, `DESIGNHealthBit.md` 
 | Login | `src/components/DoctorAuthModal.tsx` | Submit → `onLoginSuccess(email)` |
 | Directorio pacientes | `src/components/PatientDirectory.tsx` | Solo `verifiedStatus.rethus && !isPaused` |
 | Ficha pública médico | `src/components/DoctorOnePager.tsx` | Cabecera compacta + pestañas + agenda sticky. Reserva demo, sin API. |
-| Cola admin | `src/components/AdminRethusQueue.tsx` | Filtros pending / approved / denied + pausa |
+| Cola admin | `src/components/AdminRethusQueue.tsx` | RETHUS + Analítica. Cifras demo: `src/data/adminAnalytics.ts` |
 | Home médico | `src/components/HomeDashboard.tsx` | Chip RETHUS; gráfica solo barras de citas |
 | Perfil médico | `src/components/SettingsSection.tsx` | Identidad pública, WhatsApp, disponibilidad; un Guardar |
 | Citas / Opiniones | `src/components/DoctorPracticeSections.tsx` | Citas: cola + estados + WhatsApp demo. Opiniones: Mostradas/Pendientes |

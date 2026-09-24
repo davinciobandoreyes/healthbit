@@ -6,7 +6,7 @@ Detalle visual: [`../DESIGNHealthBit.md`](../DESIGNHealthBit.md). Leer ese archi
 
 1. **Paciente** — `public_directory`: el inventario es la página. Header: marca e Ingresar. Debajo, hero corto: “Encuentra doctores verificados” y la foto. Sigue en todas las especialidades. Se oculta al buscar o al elegir ciudad. Búsqueda en el contenido (en vivo, sin botón Buscar). En móvil, especialidad (scroll táctil) y ciudad (select a ancho completo) van en filas distintas; en `sm+` comparten fila. Debajo, “N médicos” y la grilla. La card abre la ficha; WhatsApp es un icono. Sello REPS solo si está aceptado. La ficha no lleva hero. Footer del directorio: Privacidad y Términos (Ley 1581, fase 1).
 2. **Médico** — `verification_flow` (7 pasos) luego `portal` (Inicio / Pacientes / Documentos / Citas+Opiniones en web, Cita en móvil / Perfil).
-3. **Super admin** — `admin_review`: cola RETHUS (pendientes, aceptadas, negadas) + pausar/reactivar.
+3. **Super admin** — `admin_review`: cola RETHUS (pendientes, aceptadas, negadas) + pausar/reactivar. Sidebar: Revisión RETHUS y Analítica. En móvil el sidebar no está; un control bajo el header cambia de sección. Analítica (demo, periodo y ciudad) tiene pestañas UX y Negocio. UX abre con la caída; Negocio con visitas, reservas y visitas por médico. El detalle sigue cerrado.
 
 ## Registro (pasos)
 

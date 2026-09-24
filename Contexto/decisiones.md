@@ -20,5 +20,6 @@ Cada ítem apunta a `decisions/`. No copiar el razonamiento aquí.
 | 2026-09-24 | Home público: inventario primero; la card abre la ficha | [`../decisions/2026-09-24-home-marketplace.md`](../decisions/2026-09-24-home-marketplace.md) |
 | 2026-09-24 | Landing: hero corto “Encuentra doctores verificados” y foto; sigue en las especialidades | [`../decisions/2026-09-24-landing-hero.md`](../decisions/2026-09-24-landing-hero.md) |
 | 2026-09-24 | Directorio: footer con Privacidad y Términos de la fase 1 | [`../decisions/2026-09-24-privacidad-terminos.md`](../decisions/2026-09-24-privacidad-terminos.md) |
+| 2026-09-24 | Analítica admin: cohorte demo en memoria, no eventos reales | [`../decisions/2026-09-24-analitica-admin.md`](../decisions/2026-09-24-analitica-admin.md) |
 
 Supersedidas: la verificación automática en el paso 2 (20 ago) quedó anulada el 21 ago. `/api/rethus-check` sigue en `server.ts` pero la UI no lo usa. “Sin hero” del home (24 sep, marketplace) quedó reemplazado el mismo día por el hero corto del landing.

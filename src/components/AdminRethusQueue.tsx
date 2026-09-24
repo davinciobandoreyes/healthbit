@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { PendingRethusReview, RethusReviewStatus } from '../types';
 import { AdminReviewOnePager } from './AdminReviewOnePager';
+import { AdminAnalytics } from './AdminAnalytics';
 import { AppSidebar } from './AppSidebar';
 import { ADMIN_NAV_ITEMS } from '../nav';
 
@@ -66,6 +67,16 @@ export const AdminRethusQueue: React.FC<AdminRethusQueueProps> = ({
     action: 'approve' | 'deny' | 'approveReps' | 'denyReps' | 'pause' | 'unpause';
   } | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [section, setSection] = useState<'rethus' | 'analitica'>('rethus');
+
+  const selectSection = (id: string) => {
+    if (id === 'analitica') {
+      setSection('analitica');
+      setSelectedReviewId(null);
+      return;
+    }
+    setSection('rethus');
+  };
 
   const normalizeStr = (str: string) =>
     str
@@ -115,8 +126,8 @@ export const AdminRethusQueue: React.FC<AdminRethusQueueProps> = ({
     <div className="min-h-screen bg-slate-50 text-slate-900 flex font-['Plus_Jakarta_Sans',sans-serif]">
       <AppSidebar
         items={ADMIN_NAV_ITEMS}
-        currentId="rethus"
-        onSelect={() => {}}
+        currentId={section}
+        onSelect={selectSection}
         collapsed={sidebarCollapsed}
         onToggleCollapsed={() => setSidebarCollapsed((prev) => !prev)}
       />
@@ -142,7 +153,29 @@ export const AdminRethusQueue: React.FC<AdminRethusQueueProps> = ({
         </div>
       </header>
 
-      {selectedReview ? (
+      <div className="lg:hidden border-b border-slate-200/80 bg-white px-4 py-2 flex gap-2">
+        {ADMIN_NAV_ITEMS.map((item) => {
+          const Icon = item.icon;
+          const active = item.id === section;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => selectSection(item.id)}
+              className={`min-h-[44px] flex-1 inline-flex items-center justify-center gap-2 rounded-xl px-3 text-xs font-bold whitespace-nowrap cursor-pointer transition-colors ${
+                active ? 'bg-violet-50 text-violet-700' : 'bg-slate-100 text-slate-600'
+              }`}
+            >
+              <Icon className="w-4 h-4 shrink-0" />
+              {item.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {section === 'analitica' ? (
+        <AdminAnalytics />
+      ) : selectedReview ? (
         <AdminReviewOnePager
           review={selectedReview}
           onBack={() => setSelectedReviewId(null)}

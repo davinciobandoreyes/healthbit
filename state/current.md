@@ -10,7 +10,7 @@
 - Portal/admin en `lg+`: sidebar izquierdo colapsable. Móvil: barra inferior (portal). Copy de navegación en español (Inicio).
 - Paso 3 REPS: sede, ciudad, dirección y tipos de servicio. El admin acepta o rechaza en el expediente. No filtra el buscador.
 - Paso 7 Validación de grado: diplomas y actas, opcional (omitir o continuar con 0–N archivos). Sin Gemini.
-- RETHUS: revisión humana. Admin `@healthbit.co`. Cola con 3 estados + pausa.
+- RETHUS: revisión humana. Admin `@healthbit.co`. Cola con 3 estados + pausa. Analítica demo: primero la caída y visitas por médico; el detalle se abre aparte.
 - Gemini multimodal para cédula y selfie (con fallback que no rompe la demo).
 - Design system en `DESIGNHealthBit.md` (primario `violet-600`, companion indigo; ámbar = pendiente). Mapa humano en `dashboard.html`.
 - Pacientes: fichas SOAP, cirugías, fotos (datos mock, estado local del componente).

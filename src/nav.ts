@@ -1,4 +1,4 @@
-import { Calendar, FileText, Home, Settings, ShieldCheck, Star, Users, type LucideIcon } from 'lucide-react';
+import { BarChart3, Calendar, FileText, Home, Settings, ShieldCheck, Star, Users, type LucideIcon } from 'lucide-react';
 import { DoctorPortalTab } from './types';
 
 export interface AppNavItem {
@@ -26,6 +26,7 @@ export const PORTAL_NAV_MOBILE: AppNavItem[] = [
 
 export const ADMIN_NAV_ITEMS: AppNavItem[] = [
   { id: 'rethus', label: 'Revisión RETHUS', icon: ShieldCheck },
+  { id: 'analitica', label: 'Analítica', icon: BarChart3 },
 ];
 
 export const isPortalNavActive = (itemId: string, currentTab: DoctorPortalTab): boolean =>
