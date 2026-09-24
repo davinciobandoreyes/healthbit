@@ -199,22 +199,42 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
               {doctor.specialty} • {doctor.institution}
             </p>
           </div>
-          <span
-            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap shrink-0 ${
-              doctor.verifiedStatus.rethus
-                ? 'bg-violet-500/20 text-violet-300 border border-violet-400/30'
-                : 'bg-amber-500/20 text-amber-200 border border-amber-400/30'
-            }`}
-          >
-            <ShieldCheck className="w-3.5 h-3.5" />
-            <span>
-              {doctor.verifiedStatus.rethus
-                ? 'Habilitación RETHUS Verificada'
-                : doctor.rethusReviewStatus === 'denied'
-                  ? 'RETHUS no confirmado'
-                  : 'RETHUS pendiente de verificación'}
+          <div className="flex flex-wrap items-center gap-2 shrink-0 max-w-full">
+            <span
+              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap ${
+                doctor.verifiedStatus.rethus
+                  ? 'bg-violet-500/20 text-violet-300 border border-violet-400/30'
+                  : 'bg-amber-500/20 text-amber-200 border border-amber-400/30'
+              }`}
+            >
+              <ShieldCheck className="w-3.5 h-3.5" />
+              <span>
+                {doctor.verifiedStatus.rethus
+                  ? 'Habilitación RETHUS Verificada'
+                  : doctor.rethusReviewStatus === 'denied'
+                    ? 'RETHUS no confirmado'
+                    : 'RETHUS pendiente de verificación'}
+              </span>
             </span>
-          </span>
+            {(doctor.repsReviewStatus || doctor.repsPractice) && (
+              <span
+                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap ${
+                  doctor.repsReviewStatus === 'approved'
+                    ? 'bg-violet-500/20 text-violet-300 border border-violet-400/30'
+                    : 'bg-amber-500/20 text-amber-200 border border-amber-400/30'
+                }`}
+              >
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span>
+                  {doctor.repsReviewStatus === 'approved'
+                    ? 'Habilitación REPS aceptada'
+                    : doctor.repsReviewStatus === 'denied'
+                      ? 'REPS no confirmado'
+                      : 'REPS pendiente de verificación'}
+                </span>
+              </span>
+            )}
+          </div>
         </div>
       </div>
 

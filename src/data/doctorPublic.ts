@@ -72,6 +72,20 @@ export const composeLocation = (doctor: Pick<DoctorProfile, 'location' | 'office
   return doctor.location;
 };
 
+export const composeCardCity = (
+  doctor: Pick<DoctorProfile, 'location' | 'officeCity' | 'department'>
+): string => {
+  const raw = (doctor.officeCity || doctor.location.split('—')[0] || doctor.location).trim();
+  return raw.replace(/,\s*Colombia$/i, '').trim();
+};
+
+export const composeCardPlace = (
+  doctor: Pick<DoctorProfile, 'location' | 'officeCity' | 'department'>
+): string => {
+  const city = composeCardCity(doctor);
+  return doctor.department ? `${city}, ${doctor.department}` : city;
+};
+
 export const composeFocusAreas = (doctor: DoctorProfile): string[] => {
   if (doctor.focusAreas && doctor.focusAreas.length > 0) return doctor.focusAreas;
   return [doctor.specialty, doctor.subspecialty].filter(Boolean) as string[];

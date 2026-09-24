@@ -4,19 +4,20 @@ Detalle visual: [`../DESIGNHealthBit.md`](../DESIGNHealthBit.md). Leer ese archi
 
 ## Usuarios y vistas (`App.tsx`)
 
-1. **Paciente** — `public_directory`: busca especialistas, abre ficha, “reserva” demo.
-2. **Médico** — `verification_flow` (6 pasos) luego `portal` (Inicio / Pacientes / Documentos / Citas+Opiniones en web, Cita en móvil / Perfil).
+1. **Paciente** — `public_directory`: busca especialistas, abre ficha, “reserva” demo. Card del directorio: foto, nombre, especialidad, sellos RETHUS y REPS (REPS solo si está aceptado), ciudad y departamento, y dos acciones secundarias: **Ver doctor** y **WhatsApp**. Filtro de ciudades además del de especialidad.
+2. **Médico** — `verification_flow` (7 pasos) luego `portal` (Inicio / Pacientes / Documentos / Citas+Opiniones en web, Cita en móvil / Perfil).
 3. **Super admin** — `admin_review`: cola RETHUS (pendientes, aceptadas, negadas) + pausar/reactivar.
 
 ## Registro (pasos)
 
 1. Cuenta (nombre, email, password ≥6, términos).
 2. Datos profesionales + RETHUS → aviso “en revisión” → puede seguir. **No llama API.** Laboratorio Verifik aparte: `/test`.
-3–4. Cédula frente / dorso (cámara, upload o preset). Gemini o fallback.
-5. Selfie / liveness. Gemini o fallback.
-6. Validación de grado (diplomas y actas). Opcional: omitir o continuar con 0–N archivos. **Sin Gemini.**
+3. REPS: sede, ciudad, dirección y grupos de servicio. Aviso “en revisión”. **No llama API.** No abre el buscador; eso sigue siendo RETHUS.
+4–5. Cédula frente / dorso (cámara, upload o preset). Gemini o fallback.
+6. Selfie / liveness. Gemini o fallback.
+7. Validación de grado (diplomas y actas). Opcional: omitir o continuar con 0–N archivos. **Sin Gemini.**
 
-Al terminar: identidad OK, RETHUS pendiente, **no sale en el buscador** hasta que admin apruebe.
+Al terminar: pantalla “Identidad Verificada” con RETHUS y REPS en pendiente. **No sale en el buscador** hasta que admin apruebe RETHUS.
 
 ## Visual (no inventar)
 
@@ -31,7 +32,7 @@ Layout tipo directorio: identidad compacta + pestañas a la izquierda + **Agenda
 
 ## Portal del médico
 
-Inicio: gráfica de **solo barras de citas** + leyenda. Documentos: card clickeable en móvil; **Ver** desde `lg+`; sheets con 32px. **Perfil**: identidad, WhatsApp aparte, especialista en (chips) y plantilla semanal Lun–Sáb; un solo **Guardar perfil público** (aparece si hay cambios, fijo abajo a la derecha). **Citas** (web) y **Cita** (móvil: reservas + opiniones). Citas: tabs Agendadas / Realizadas / Por agendar / Canceladas; estados Pendiente por confirmar / Confirmada / Cancelada; en agendadas filtros Hoy / Mañana / 7 días. Confirmar o cancelar avisa por WhatsApp (demo). **Opiniones** solo en `lg+`: tabs Mostradas / Pendientes + filtro Todas / Positivas / Negativas (≤2★). Las nuevas llegan a Pendientes. Guardar syncs la ficha del directorio (memoria).
+Inicio: chip RETHUS y, si hubo alta con REPS, chip REPS (pendiente en ámbar). Gráfica de **solo barras de citas** + leyenda. Documentos: card clickeable en móvil; **Ver** desde `lg+`; sheets con 32px. **Perfil**: identidad, WhatsApp aparte, especialista en (chips) y plantilla semanal Lun–Sáb; un solo **Guardar perfil público** (aparece si hay cambios, fijo abajo a la derecha). **Citas** (web) y **Cita** (móvil: reservas + opiniones). Citas: tabs Agendadas / Realizadas / Por agendar / Canceladas; estados Pendiente por confirmar / Confirmada / Cancelada; en agendadas filtros Hoy / Mañana / 7 días. Confirmar o cancelar avisa por WhatsApp (demo). **Opiniones** solo en `lg+`: tabs Mostradas / Pendientes + filtro Todas / Positivas / Negativas (≤2★). Las nuevas llegan a Pendientes. Guardar syncs la ficha del directorio (memoria).
 
 ## Pacientes (portal)
 

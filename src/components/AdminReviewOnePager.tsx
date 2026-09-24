@@ -22,6 +22,8 @@ interface AdminReviewOnePagerProps {
   onBack: () => void;
   onConfirm: () => void;
   onDeny: () => void;
+  onConfirmReps: () => void;
+  onDenyReps: () => void;
   onTogglePause?: () => void;
 }
 
@@ -30,6 +32,8 @@ export const AdminReviewOnePager: React.FC<AdminReviewOnePagerProps> = ({
   onBack,
   onConfirm,
   onDeny,
+  onConfirmReps,
+  onDenyReps,
   onTogglePause,
 }) => {
   const [preview, setPreview] = useState<{ title: string; src: string } | null>(null);
@@ -137,6 +141,60 @@ export const AdminReviewOnePager: React.FC<AdminReviewOnePagerProps> = ({
                 <strong className="text-slate-800">{review.institution}</strong>
               </div>
             </div>
+            {review.repsPractice && (
+              <div className="sm:col-span-2 space-y-2">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-slate-400 block">REPS · sede y servicios</span>
+                  <span
+                    className={`text-[11px] font-bold uppercase tracking-wider border px-2 py-0.5 rounded-full whitespace-nowrap ${
+                      review.repsReviewStatus === 'approved'
+                        ? 'text-violet-700 bg-violet-50 border-violet-200/80'
+                        : review.repsReviewStatus === 'denied'
+                          ? 'text-slate-600 bg-slate-100 border-slate-200/80'
+                          : 'text-amber-700 bg-amber-50 border-amber-200/80'
+                    }`}
+                  >
+                    {review.repsReviewStatus === 'approved'
+                      ? 'Aceptado'
+                      : review.repsReviewStatus === 'denied'
+                        ? 'Rechazado'
+                        : 'Pendiente'}
+                  </span>
+                </div>
+                <strong className="text-slate-800 block">
+                  {review.repsPractice.siteName} · {review.repsPractice.city}
+                </strong>
+                <span className="text-slate-600 block">{review.repsPractice.address}</span>
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {review.repsPractice.serviceTypes.map((service) => (
+                    <span
+                      key={service}
+                      className="inline-flex items-center min-h-[32px] px-3 rounded-full bg-amber-50 text-amber-800 border border-amber-200/80 text-[11px] font-bold whitespace-nowrap"
+                    >
+                      {service}
+                    </span>
+                  ))}
+                </div>
+                {review.repsReviewStatus !== 'approved' && review.repsReviewStatus !== 'denied' && (
+                  <div className="flex items-center gap-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={onDenyReps}
+                      className="flex-1 min-h-[44px] rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer"
+                    >
+                      Rechazar REPS
+                    </button>
+                    <button
+                      type="button"
+                      onClick={onConfirmReps}
+                      className="flex-1 min-h-[44px] rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs cursor-pointer"
+                    >
+                      Aceptar REPS
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </section>
 

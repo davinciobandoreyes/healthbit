@@ -1,4 +1,4 @@
-# Estado actual — 2026-09-23
+# Estado actual — 2026-09-24
 
 ## Hecho
 
@@ -7,7 +7,8 @@
 - Alta de paciente: one-pager de una columna. Sidebar solo en profundidad 1 (`shouldShowSidebar` en `nav.ts`). Alertas médicas = sección propia con pills (input abierto, sin rose).
 - Arranque en el buscador público (`public_directory`), no en el portal.
 - Portal/admin en `lg+`: sidebar izquierdo colapsable. Móvil: barra inferior (portal). Copy de navegación en español (Inicio).
-- Paso 6 Validación de grado: diplomas y actas, opcional (omitir o continuar con 0–N archivos). Sin Gemini.
+- Paso 3 REPS: sede, ciudad, dirección y tipos de servicio. El admin acepta o rechaza en el expediente. No filtra el buscador.
+- Paso 7 Validación de grado: diplomas y actas, opcional (omitir o continuar con 0–N archivos). Sin Gemini.
 - RETHUS: revisión humana. Admin `@healthbit.co`. Cola con 3 estados + pausa.
 - Gemini multimodal para cédula y selfie (con fallback que no rompe la demo).
 - Design system en `DESIGNHealthBit.md` (primario `violet-600`, companion indigo; ámbar = pendiente). Mapa humano en `dashboard.html`.
@@ -38,5 +39,5 @@ npm run dev   # http://localhost:3000
 
 - Arranque: buscador público. Portal médico: botón de médico → `dra.restrepo@javeriana.edu.co` → Ingresar.
 - Admin: mismo modal → `admin@healthbit.co` → Ingresar.
-- Registro: Registrarse → paso 2 envía a revisión → paso 6 se puede omitir → Home con chip pendiente → no aparece en buscador hasta aprobar.
+- Registro: Registrarse → paso 2 RETHUS y paso 3 REPS envían a revisión → paso 7 se puede omitir → Home con chip pendiente → no aparece en buscador hasta aprobar RETHUS.
 - Verifik: http://localhost:3000/test (hace falta `VERIFIK_TOKEN` en `.env.local`).

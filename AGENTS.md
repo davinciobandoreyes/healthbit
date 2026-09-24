@@ -31,7 +31,7 @@ No leer de entrada: `dashboard.html`, `src/data/mock*.ts`, `DESIGNHealthBit.md` 
 |---|---|---|
 | Orquestación / 4 vistas | `src/App.tsx` | `portal` \| `public_directory` \| `verification_flow` \| `admin_review` |
 | Tipos | `src/types.ts` | Fuente de datos de dominio |
-| Registro 6 pasos | `src/components/VerificationFlow.tsx` | Paso 2 = RETHUS a revisión. Paso 6 = diplomas/actas, opcional |
+| Registro 7 pasos | `src/components/VerificationFlow.tsx` | Paso 2 = RETHUS a revisión. Paso 3 = REPS (sede y servicios) a revisión. Paso 7 = diplomas/actas, opcional |
 | Login | `src/components/DoctorAuthModal.tsx` | Submit → `onLoginSuccess(email)` |
 | Directorio pacientes | `src/components/PatientDirectory.tsx` | Solo `verifiedStatus.rethus && !isPaused` |
 | Ficha pública médico | `src/components/DoctorOnePager.tsx` | Cabecera compacta + pestañas + agenda sticky. Reserva demo, sin API. |

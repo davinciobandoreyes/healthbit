@@ -22,6 +22,8 @@ interface AdminRethusQueueProps {
   onClearMailNotice: () => void;
   onConfirm: (review: PendingRethusReview) => void;
   onDeny: (review: PendingRethusReview) => void;
+  onConfirmReps: (review: PendingRethusReview) => void;
+  onDenyReps: (review: PendingRethusReview) => void;
   onTogglePause: (review: PendingRethusReview, paused: boolean) => void;
   onLogout: () => void;
 }
@@ -51,6 +53,8 @@ export const AdminRethusQueue: React.FC<AdminRethusQueueProps> = ({
   onClearMailNotice,
   onConfirm,
   onDeny,
+  onConfirmReps,
+  onDenyReps,
   onTogglePause,
   onLogout,
 }) => {
@@ -59,7 +63,7 @@ export const AdminRethusQueue: React.FC<AdminRethusQueueProps> = ({
   const [selectedReviewId, setSelectedReviewId] = useState<string | null>(null);
   const [pendingAction, setPendingAction] = useState<{
     review: PendingRethusReview;
-    action: 'approve' | 'deny' | 'pause' | 'unpause';
+    action: 'approve' | 'deny' | 'approveReps' | 'denyReps' | 'pause' | 'unpause';
   } | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
@@ -144,6 +148,8 @@ export const AdminRethusQueue: React.FC<AdminRethusQueueProps> = ({
           onBack={() => setSelectedReviewId(null)}
           onConfirm={() => setPendingAction({ review: selectedReview, action: 'approve' })}
           onDeny={() => setPendingAction({ review: selectedReview, action: 'deny' })}
+          onConfirmReps={() => setPendingAction({ review: selectedReview, action: 'approveReps' })}
+          onDenyReps={() => setPendingAction({ review: selectedReview, action: 'denyReps' })}
           onTogglePause={() =>
             setPendingAction({
               review: selectedReview,
@@ -255,6 +261,20 @@ export const AdminRethusQueue: React.FC<AdminRethusQueueProps> = ({
                         <span className="text-slate-400 block">Correo</span>
                         <strong className="text-slate-800 truncate block">{review.email}</strong>
                       </div>
+                      {review.repsPractice && (
+                        <div>
+                          <span className="text-slate-400 block">REPS</span>
+                          <strong className="text-slate-800">
+                            {review.repsPractice.siteName}
+                            {' · '}
+                            {review.repsReviewStatus === 'approved'
+                              ? 'Aceptado'
+                              : review.repsReviewStatus === 'denied'
+                                ? 'Rechazado'
+                                : 'Pendiente'}
+                          </strong>
+                        </div>
+                      )}
                     </div>
                     <div className="flex items-center gap-2 pt-1">
                       <button
@@ -318,9 +338,13 @@ export const AdminRethusQueue: React.FC<AdminRethusQueueProps> = ({
                   ? 'Confirmar RETHUS'
                   : pendingAction.action === 'deny'
                     ? 'Negar RETHUS'
-                    : pendingAction.action === 'pause'
-                      ? 'Pausar perfil'
-                      : 'Reactivar perfil'}
+                    : pendingAction.action === 'approveReps'
+                      ? 'Aceptar REPS'
+                      : pendingAction.action === 'denyReps'
+                        ? 'Rechazar REPS'
+                        : pendingAction.action === 'pause'
+                          ? 'Pausar perfil'
+                          : 'Reactivar perfil'}
               </h2>
             </div>
             <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
@@ -328,9 +352,13 @@ export const AdminRethusQueue: React.FC<AdminRethusQueueProps> = ({
                 ? `¿Confirmas aprobar a ${pendingAction.review.fullName}? Aparecerá en el buscador y se le avisará por correo (demo).`
                 : pendingAction.action === 'deny'
                   ? `¿Confirmas negar a ${pendingAction.review.fullName}? No aparecerá en el buscador de pacientes.`
-                  : pendingAction.action === 'pause'
-                    ? `¿Pausar a ${pendingAction.review.fullName}? Dejará de aparecer en el buscador hasta que lo reactives.`
-                    : `¿Reactivar a ${pendingAction.review.fullName}? Volverá a aparecer en el buscador de pacientes.`}
+                  : pendingAction.action === 'approveReps'
+                    ? `¿Aceptas el REPS de ${pendingAction.review.fullName}? La sede queda habilitada en la ficha. El buscador sigue dependiendo de RETHUS.`
+                    : pendingAction.action === 'denyReps'
+                      ? `¿Rechazas el REPS de ${pendingAction.review.fullName}? La sede no queda habilitada. El buscador no cambia por esta decisión.`
+                      : pendingAction.action === 'pause'
+                        ? `¿Pausar a ${pendingAction.review.fullName}? Dejará de aparecer en el buscador hasta que lo reactives.`
+                        : `¿Reactivar a ${pendingAction.review.fullName}? Volverá a aparecer en el buscador de pacientes.`}
             </p>
             <div className="flex flex-col gap-2 mt-6">
               <button
@@ -338,6 +366,8 @@ export const AdminRethusQueue: React.FC<AdminRethusQueueProps> = ({
                 onClick={() => {
                   if (pendingAction.action === 'approve') onConfirm(pendingAction.review);
                   else if (pendingAction.action === 'deny') onDeny(pendingAction.review);
+                  else if (pendingAction.action === 'approveReps') onConfirmReps(pendingAction.review);
+                  else if (pendingAction.action === 'denyReps') onDenyReps(pendingAction.review);
                   else onTogglePause(pendingAction.review, pendingAction.action === 'pause');
                   setPendingAction(null);
                   if (pendingAction.action === 'approve' || pendingAction.action === 'deny') {
@@ -350,9 +380,13 @@ export const AdminRethusQueue: React.FC<AdminRethusQueueProps> = ({
                   ? 'Sí, confirmar'
                   : pendingAction.action === 'deny'
                     ? 'Sí, negar'
-                    : pendingAction.action === 'pause'
-                      ? 'Sí, pausar'
-                      : 'Sí, reactivar'}
+                    : pendingAction.action === 'approveReps'
+                      ? 'Sí, aceptar REPS'
+                      : pendingAction.action === 'denyReps'
+                        ? 'Sí, rechazar REPS'
+                        : pendingAction.action === 'pause'
+                          ? 'Sí, pausar'
+                          : 'Sí, reactivar'}
               </button>
               <button
                 type="button"

@@ -25,11 +25,13 @@ import {
 } from 'lucide-react';
 import { CameraModal } from './CameraModal';
 import { DegreeValidationStep } from './DegreeValidationStep';
+import { RepsVerificationStep } from './RepsVerificationStep';
 import {
   DoctorPersonalData,
   DocumentAnalysisResult,
   BiometricResult,
   DegreeDocumentFile,
+  RepsPractice,
 } from '../types';
 import { SAMPLE_FRONT_ID_SVG, SAMPLE_BACK_ID_SVG } from '../utils/sampleDocuments';
 
@@ -81,8 +83,15 @@ export const VerificationFlow: React.FC<VerificationFlowProps> = ({
   const [biometricResult, setBiometricResult] = useState<BiometricResult | null>(null);
   const [isAnalyzingBiometric, setIsAnalyzingBiometric] = useState<boolean>(false);
 
-  // RETHUS is submitted for HealthBit team review (no API lookup)
+  // RETHUS and REPS are submitted for HealthBit team review (no API lookup)
   const [rethusSubmitted, setRethusSubmitted] = useState<boolean>(false);
+  const [repsPractice, setRepsPractice] = useState<RepsPractice>({
+    siteName: 'Consultorio Chapinero',
+    city: 'Bogotá',
+    address: 'Calle 72 # 10-20',
+    serviceTypes: ['Consulta externa'],
+  });
+  const [repsSubmitted, setRepsSubmitted] = useState<boolean>(false);
 
   // Step 6: Degree documents (optional)
   const [diplomas, setDiplomas] = useState<DegreeDocumentFile[]>([]);
@@ -252,6 +261,8 @@ export const VerificationFlow: React.FC<VerificationFlowProps> = ({
       backAnalysis,
       biometricResult,
       rethusSubmitted: true,
+      repsPractice,
+      repsSubmitted: true,
       degreeDocuments,
     });
   };
@@ -262,7 +273,12 @@ export const VerificationFlow: React.FC<VerificationFlowProps> = ({
       return;
     }
 
-    if (currentStep < 6) {
+    if (currentStep === 3 && !repsSubmitted) {
+      setRepsSubmitted(true);
+      return;
+    }
+
+    if (currentStep < 7) {
       setCurrentStep((prev) => prev + 1);
     } else {
       completeRegistration([...diplomas, ...actas]);
@@ -279,8 +295,13 @@ export const VerificationFlow: React.FC<VerificationFlowProps> = ({
     }
   };
 
-  // Calculate Progress Percentage for 6 steps
-  const progressPercent = Math.round((currentStep / 6) * 100);
+  const progressPercent = Math.round((currentStep / 7) * 100);
+
+  const isRepsValid =
+    Boolean(repsPractice.siteName.trim()) &&
+    Boolean(repsPractice.city.trim()) &&
+    Boolean(repsPractice.address.trim()) &&
+    repsPractice.serviceTypes.length > 0;
 
   // Validation checks for Step 1
   const isStep1Valid =
@@ -298,7 +319,7 @@ export const VerificationFlow: React.FC<VerificationFlowProps> = ({
       <div className="sticky top-0 z-30 bg-slate-50/95 backdrop-blur-md pt-3 pb-3 border-b border-slate-200/80 mb-4">
         <div className="flex items-center justify-between mb-2">
           <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-            Paso {currentStep} de 6
+            Paso {currentStep} de 7
           </span>
           <span className="text-xs font-bold text-violet-700 bg-violet-50 border border-violet-200/60 px-2.5 py-0.5 rounded-full">
             {progressPercent}% Completado
@@ -556,8 +577,16 @@ export const VerificationFlow: React.FC<VerificationFlowProps> = ({
           </div>
         )}
 
-        {/* STEP 3: FRONT DOCUMENT CAPTURE */}
         {currentStep === 3 && (
+          <RepsVerificationStep
+            practice={repsPractice}
+            submitted={repsSubmitted}
+            onChange={setRepsPractice}
+          />
+        )}
+
+        {/* STEP 4: FRONT DOCUMENT CAPTURE */}
+        {currentStep === 4 && (
           <div className="space-y-4 animate-fadeIn">
             <div className="text-center space-y-1">
               <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
@@ -658,8 +687,8 @@ export const VerificationFlow: React.FC<VerificationFlowProps> = ({
           </div>
         )}
 
-        {/* STEP 4: REAR DOCUMENT CAPTURE */}
-        {currentStep === 4 && (
+        {/* STEP 5: REAR DOCUMENT CAPTURE */}
+        {currentStep === 5 && (
           <div className="space-y-4 animate-fadeIn">
             <div className="text-center space-y-1">
               <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
@@ -750,8 +779,8 @@ export const VerificationFlow: React.FC<VerificationFlowProps> = ({
           </div>
         )}
 
-        {/* STEP 5: BIOMETRIC VALIDATION & DESATURATED CONFIRMATION CARD */}
-        {currentStep === 5 && (
+        {/* STEP 6: BIOMETRIC VALIDATION */}
+        {currentStep === 6 && (
           <div className="space-y-4 animate-fadeIn">
             <div className="text-center space-y-1">
               <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
@@ -874,7 +903,7 @@ export const VerificationFlow: React.FC<VerificationFlowProps> = ({
           </div>
         )}
 
-        {currentStep === 6 && (
+        {currentStep === 7 && (
           <DegreeValidationStep
             diplomas={diplomas}
             actas={actas}
@@ -892,33 +921,48 @@ export const VerificationFlow: React.FC<VerificationFlowProps> = ({
             (currentStep === 1 && !isStep1Valid) ||
             (currentStep === 2 &&
               (!personalData.fullName?.trim() || !personalData.idNumber?.trim())) ||
-            (currentStep === 3 && !frontImage) ||
-            (currentStep === 4 && !backImage) ||
-            (currentStep === 5 && !selfieImage)
+            (currentStep === 3 && !isRepsValid) ||
+            (currentStep === 4 && !frontImage) ||
+            (currentStep === 5 && !backImage) ||
+            (currentStep === 6 && !selfieImage)
           }
           className="w-full min-h-[48px] bg-violet-600 hover:bg-violet-700 text-white font-bold py-3 px-6 rounded-2xl shadow-xs transition-all flex justify-center items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed text-xs sm:text-sm cursor-pointer"
         >
           <span>
-            {currentStep === 6
+            {currentStep === 7
               ? 'Finalizar y Activar Cuenta Médica'
               : currentStep === 2 && !rethusSubmitted
                 ? 'Enviar RETHUS a revisión'
-                : 'Continuar al Siguiente Paso'}
+                : currentStep === 3 && !repsSubmitted
+                  ? 'Enviar REPS a revisión'
+                  : 'Continuar al Siguiente Paso'}
           </span>
           <ArrowRight className="w-4 h-4" />
         </button>
 
+        {currentStep === 1 && onCancel && (
+          <button
+            type="button"
+            onClick={onCancel}
+            className="w-full min-h-[44px] py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold flex items-center justify-center gap-1.5 rounded-2xl text-xs transition-colors cursor-pointer"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>Atrás</span>
+          </button>
+        )}
+
         {currentStep > 1 && (
           <button
+            type="button"
             onClick={handlePrevStep}
-            className="w-full min-h-[42px] py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold flex items-center justify-center gap-1.5 rounded-2xl text-xs transition-colors cursor-pointer"
+            className="w-full min-h-[44px] py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold flex items-center justify-center gap-1.5 rounded-2xl text-xs transition-colors cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Paso Anterior</span>
           </button>
         )}
 
-        {currentStep === 6 && (
+        {currentStep === 7 && (
           <button
             type="button"
             onClick={handleSkipDegree}

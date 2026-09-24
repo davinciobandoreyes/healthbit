@@ -1,4 +1,22 @@
-export type VerificationStepNumber = 1 | 2 | 3 | 4 | 5 | 6;
+export type VerificationStepNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7;
+
+export const REPS_SERVICE_TYPES = [
+  'Consulta externa',
+  'Apoyo diagnóstico y complementación terapéutica',
+  'Internación',
+  'Quirúrgicos',
+  'Atención inmediata',
+  'Transporte asistencial',
+] as const;
+
+export type RepsServiceType = (typeof REPS_SERVICE_TYPES)[number];
+
+export interface RepsPractice {
+  siteName: string;
+  city: string;
+  address: string;
+  serviceTypes: RepsServiceType[];
+}
 
 export type DegreeDocumentKind = 'diploma' | 'acta';
 export type DegreeDocumentScope = 'medico' | 'especializacion';
@@ -70,6 +88,8 @@ export interface PendingRethusReview {
   email: string;
   phone: string;
   institution: string;
+  repsPractice?: RepsPractice;
+  repsReviewStatus?: RethusReviewStatus;
   submittedAt: string;
   status: RethusReviewStatus;
   frontImage?: string | null;
@@ -105,6 +125,8 @@ export interface DoctorProfile {
   rethusCode: string;
   idNumber: string;
   institution: string;
+  repsPractice?: RepsPractice;
+  repsReviewStatus?: RethusReviewStatus;
   avatarUrl: string;
   verificationLevel: 1 | 2 | 3 | 4;
   verificationDate: string;
@@ -113,6 +135,7 @@ export interface DoctorProfile {
   biography: string;
   diplomaUrl?: string;
   location: string;
+  department?: string;
   officeCity?: string;
   officeAddress?: string;
   phone: string;

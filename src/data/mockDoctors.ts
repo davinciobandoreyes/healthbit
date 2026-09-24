@@ -18,6 +18,14 @@ export const INITIAL_DOCTORS: DoctorProfile[] = [
     biography: 'Cirujana plástica con especialización en procedimientos faciales mínimamente invasivos y armonización estructural con más de 10 años de trayectoria.',
     diplomaUrl: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&q=80&w=800',
     location: 'Medellín, Colombia — Torre Médica El Tesoro',
+    department: 'Antioquia',
+    repsPractice: {
+      siteName: 'Torre Médica El Tesoro',
+      city: 'Medellín',
+      address: 'Torre Médica El Tesoro',
+      serviceTypes: ['Consulta externa'],
+    },
+    repsReviewStatus: 'approved',
     phone: '+57 (604) 448-9210',
     email: 'dra.restrepo@javeriana.edu.co',
     verifiedStatus: {
@@ -44,6 +52,14 @@ export const INITIAL_DOCTORS: DoctorProfile[] = [
     biography: 'Miembro de la Sociedad Colombiana de Cirugía Plástica. Especialista en alta definición corporal y técnicas avanzadas de recuperación postquirúrgica.',
     diplomaUrl: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&q=80&w=800',
     location: 'Bogotá, Colombia — Edificio ScotiaBank Torre Médica',
+    department: 'D.C.',
+    repsPractice: {
+      siteName: 'Edificio ScotiaBank Torre Médica',
+      city: 'Bogotá',
+      address: 'Edificio ScotiaBank Torre Médica',
+      serviceTypes: ['Consulta externa'],
+    },
+    repsReviewStatus: 'approved',
     phone: '+57 (601) 625-3344',
     email: 'dr.mendoza@healthbit.co',
     verifiedStatus: {
@@ -70,6 +86,14 @@ export const INITIAL_DOCTORS: DoctorProfile[] = [
     biography: 'Fellow internacional en microcirugía estética y reconstructiva. Pionera en técnicas híbridas de preservación tisular y armonía anatómica.',
     diplomaUrl: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&q=80&w=800',
     location: 'Cali, Colombia — Centro Médico Imbanaco',
+    department: 'Valle del Cauca',
+    repsPractice: {
+      siteName: 'Centro Médico Imbanaco',
+      city: 'Cali',
+      address: 'Centro Médico Imbanaco',
+      serviceTypes: ['Consulta externa'],
+    },
+    repsReviewStatus: 'approved',
     phone: '+57 (602) 685-1100',
     email: 'dra.arango@healthbit.co',
     verifiedStatus: {
@@ -96,6 +120,14 @@ export const INITIAL_DOCTORS: DoctorProfile[] = [
     biography: 'Especialista en envejecimiento facial anatómico y técnicas avanzadas de plano profundo para resultados naturales y duraderos.',
     diplomaUrl: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&q=80&w=800',
     location: 'Barranquilla, Colombia — Clínica Portoazul',
+    department: 'Atlántico',
+    repsPractice: {
+      siteName: 'Clínica Portoazul',
+      city: 'Barranquilla',
+      address: 'Clínica Portoazul',
+      serviceTypes: ['Consulta externa'],
+    },
+    repsReviewStatus: 'approved',
     phone: '+57 (605) 385-9000',
     email: 'dr.morales@healthbit.co',
     verifiedStatus: {
@@ -124,6 +156,14 @@ export const INITIAL_DOCTORS: DoctorProfile[] = [
     biography: 'Cardiólogo clínico verificado con énfasis en prevención de riesgo cardiovascular, ecocardiografía de estrés e insuficiencia cardíaca.',
     diplomaUrl: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&q=80&w=800',
     location: 'Medellín, Colombia — Clínica Las Américas',
+    department: 'Antioquia',
+    repsPractice: {
+      siteName: 'Clínica Las Américas',
+      city: 'Medellín',
+      address: 'Clínica Las Américas',
+      serviceTypes: ['Consulta externa'],
+    },
+    repsReviewStatus: 'approved',
     phone: '+57 (604) 312-8800',
     email: 'dr.gomez@healthbit.co',
     verifiedStatus: {
@@ -150,6 +190,14 @@ export const INITIAL_DOCTORS: DoctorProfile[] = [
     biography: 'Atención a cardiopatías congénitas desde la etapa prenatal hasta la adolescencia. Enfoque multidisciplinario de alta precisión.',
     diplomaUrl: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&q=80&w=800',
     location: 'Bogotá, Colombia — Fundación Cardioinfantil',
+    department: 'D.C.',
+    repsPractice: {
+      siteName: 'Fundación Cardioinfantil',
+      city: 'Bogotá',
+      address: 'Fundación Cardioinfantil',
+      serviceTypes: ['Consulta externa'],
+    },
+    repsReviewStatus: 'approved',
     phone: '+57 (601) 667-2727',
     email: 'dra.osorio@healthbit.co',
     verifiedStatus: {
@@ -178,6 +226,14 @@ export const INITIAL_DOCTORS: DoctorProfile[] = [
     biography: 'Experta en diagnóstico temprano de lesiones melanocíticas, acné severo, alopecia y tratamientos con tecnología láser avanzada.',
     diplomaUrl: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&q=80&w=800',
     location: 'Bogotá, Colombia — Centro Dermatológico Federico Lleras',
+    department: 'D.C.',
+    repsPractice: {
+      siteName: 'Centro Dermatológico Federico Lleras',
+      city: 'Bogotá',
+      address: 'Centro Dermatológico Federico Lleras',
+      serviceTypes: ['Consulta externa'],
+    },
+    repsReviewStatus: 'approved',
     phone: '+57 (601) 242-8100',
     email: 'dra.fonseca@healthbit.co',
     verifiedStatus: {
@@ -206,6 +262,14 @@ export const INITIAL_DOCTORS: DoctorProfile[] = [
     biography: 'Atención pediátrica integral con enfoque en patologías respiratorias y nutrición pediátrica. Consultas presenciales y telemedicina certificada.',
     diplomaUrl: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&q=80&w=800',
     location: 'Cali, Colombia — Centro Pediátrico Imbanaco',
+    department: 'Valle del Cauca',
+    repsPractice: {
+      siteName: 'Centro Pediátrico Imbanaco',
+      city: 'Cali',
+      address: 'Centro Pediátrico Imbanaco',
+      serviceTypes: ['Consulta externa'],
+    },
+    repsReviewStatus: 'approved',
     phone: '+57 (602) 680-1122',
     email: 'dra.martinez@healthbit.co',
     verifiedStatus: {
@@ -234,6 +298,14 @@ export const INITIAL_DOCTORS: DoctorProfile[] = [
     biography: 'Neurólogo con amplia experiencia en trastornos neuromusculares, epilepsia refractaria y programas integrales de rehabilitación cognitiva.',
     diplomaUrl: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&q=80&w=800',
     location: 'Bucaramanga, Colombia — Hospital Internacional de Colombia',
+    department: 'Santander',
+    repsPractice: {
+      siteName: 'Hospital Internacional de Colombia',
+      city: 'Bucaramanga',
+      address: 'Hospital Internacional de Colombia',
+      serviceTypes: ['Consulta externa'],
+    },
+    repsReviewStatus: 'approved',
     phone: '+57 (607) 638-0505',
     email: 'dr.carvajal@healthbit.co',
     verifiedStatus: {

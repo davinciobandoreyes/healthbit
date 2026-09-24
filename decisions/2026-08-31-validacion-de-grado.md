@@ -8,4 +8,4 @@
 - Nada es obligatorio. `Omitir por ahora` cierra sin archivos; Finalizar guarda lo que haya (incluido vacío).
 - `verifiedStatus.diploma` sigue en `false` al salir (enviado ≠ aprobado).
 
-**Detectable:** el stepper dice “Paso X de 6”; el paso 5 ya no finaliza la cuenta.
+**Detectable:** el paso de grado no finaliza en el selfie; se puede omitir. Desde 2026-09-24 el grado es el paso 7 y el stepper dice “Paso X de 7”.

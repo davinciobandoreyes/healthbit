@@ -50,6 +50,14 @@ const DEFAULT_DOCTOR: DoctorProfile = {
   reviewsCount: 36,
   biography: 'Cirujana plástica con especialización en procedimientos faciales mínimamente invasivos y armonización estructural con más de 10 años de trayectoria.',
   location: 'Medellín, Colombia — Torre Médica El Tesoro',
+  department: 'Antioquia',
+  repsPractice: {
+    siteName: 'Torre Médica El Tesoro',
+    city: 'Medellín',
+    address: 'Torre Médica El Tesoro',
+    serviceTypes: ['Consulta externa'],
+  },
+  repsReviewStatus: 'approved',
   phone: '+57 (604) 448-9210',
   email: 'dra.restrepo@javeriana.edu.co',
   verifiedStatus: {
@@ -177,6 +185,11 @@ export default function App() {
       specialty: personal?.specialty || DEFAULT_DOCTOR.specialty,
       institution: personal?.institution || DEFAULT_DOCTOR.institution,
       idNumber: personal?.idNumber || DEFAULT_DOCTOR.idNumber,
+      repsPractice: data?.repsPractice,
+      repsReviewStatus: 'pending',
+      location: data?.repsPractice?.city || DEFAULT_DOCTOR.location,
+      officeCity: data?.repsPractice?.city || DEFAULT_DOCTOR.officeCity,
+      officeAddress: data?.repsPractice?.address || DEFAULT_DOCTOR.officeAddress,
       rethusCode: personal?.medicalLicenseNumber || DEFAULT_DOCTOR.rethusCode,
       avatarUrl: data?.selfieImage || DEFAULT_DOCTOR.avatarUrl,
       diplomaUrl: firstDiploma?.previewUrl || DEFAULT_DOCTOR.diplomaUrl,
@@ -210,6 +223,8 @@ export default function App() {
         email: registered.email,
         phone: registered.phone,
         institution: registered.institution,
+        repsPractice: registered.repsPractice,
+        repsReviewStatus: registered.repsPractice ? 'pending' : undefined,
         submittedAt: new Date().toISOString(),
         status: 'pending',
         frontImage: data?.frontImage || null,
@@ -285,6 +300,37 @@ export default function App() {
     }
   };
 
+  const applyRepsDecision = (review: PendingRethusReview, approved: boolean) => {
+    const emailKey = normalizeEmail(review.email);
+    const nextStatus = approved ? 'approved' : 'denied';
+
+    setPendingRethusReviews((prev) =>
+      prev.map((item) => (item.id === review.id ? { ...item, repsReviewStatus: nextStatus } : item))
+    );
+
+    const patchProfile = (profile: DoctorProfile): DoctorProfile => ({
+      ...profile,
+      repsReviewStatus: nextStatus,
+    });
+
+    setSessionDoctors((prev) => {
+      const current = prev[emailKey];
+      if (!current) return prev;
+      return { ...prev, [emailKey]: patchProfile(current) };
+    });
+    setDoctor((prev) => (normalizeEmail(prev.email) === emailKey ? patchProfile(prev) : prev));
+    setDirectoryDoctors((prev) =>
+      prev.map((doc) =>
+        doc.id === review.id || normalizeEmail(doc.email) === emailKey ? patchProfile(doc) : doc
+      )
+    );
+    setAdminMailNotice(
+      approved
+        ? `REPS de ${review.fullName} aceptado. El buscador sigue dependiendo de RETHUS. En esta demo no se envía un correo real.`
+        : `REPS de ${review.fullName} rechazado. En esta demo no se envía un correo real.`
+    );
+  };
+
   const toggleDoctorPause = (review: PendingRethusReview, paused: boolean) => {
     const emailKey = normalizeEmail(review.email);
     const patch = (profile: DoctorProfile): DoctorProfile => ({ ...profile, isPaused: paused });
@@ -339,6 +385,8 @@ export default function App() {
         onClearMailNotice={() => setAdminMailNotice(null)}
         onConfirm={(review) => applyRethusDecision(review, true)}
         onDeny={(review) => applyRethusDecision(review, false)}
+        onConfirmReps={(review) => applyRepsDecision(review, true)}
+        onDenyReps={(review) => applyRepsDecision(review, false)}
         onTogglePause={toggleDoctorPause}
         onLogout={handleLogout}
       />
@@ -394,7 +442,7 @@ export default function App() {
             </h2>
             <p className="text-xs text-slate-500 max-w-xs mx-auto leading-relaxed">
               {rethusPending
-                ? 'Tu cuenta está lista. El equipo HealthBit revisará tu RETHUS. Mientras tanto no apareces en el buscador.'
+                ? 'Tu cuenta está lista. El equipo HealthBit revisará tu RETHUS y tu REPS. Mientras tanto no apareces en el buscador.'
                 : 'Tu cuenta y registro profesional han sido autenticados exitosamente.'}
             </p>
           </div>
@@ -408,14 +456,32 @@ export default function App() {
               <span className="text-slate-400">Especialidad</span>
               <span className="font-semibold text-slate-800 truncate max-w-[200px]">{doctor.specialty}</span>
             </div>
-            <div className="flex items-center justify-between pt-0.5">
-              <span className="text-slate-400">Estado de Acreditación</span>
+            <div className="flex items-center justify-between gap-2 border-b border-slate-200/60 pb-2">
+              <span className="text-slate-400">RETHUS</span>
               <span
                 className={`font-bold px-2 py-0.5 rounded-full text-[11px] whitespace-nowrap ${
                   rethusPending ? 'text-amber-700 bg-amber-100/60' : 'text-violet-700 bg-violet-100/60'
                 }`}
               >
-                {rethusPending ? 'Pendiente RETHUS' : 'Habilitado Oficial'}
+                {rethusPending ? 'Pendiente' : 'Habilitado'}
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2 pt-0.5">
+              <span className="text-slate-400">REPS</span>
+              <span
+                className={`font-bold px-2 py-0.5 rounded-full text-[11px] whitespace-nowrap ${
+                  doctor.repsReviewStatus === 'approved'
+                    ? 'text-violet-700 bg-violet-100/60'
+                    : doctor.repsReviewStatus === 'denied'
+                      ? 'text-slate-600 bg-slate-200/70'
+                      : 'text-amber-700 bg-amber-100/60'
+                }`}
+              >
+                {doctor.repsReviewStatus === 'approved'
+                  ? 'Aceptado'
+                  : doctor.repsReviewStatus === 'denied'
+                    ? 'Rechazado'
+                    : 'Pendiente'}
               </span>
             </div>
           </div>
