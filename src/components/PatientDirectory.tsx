@@ -12,6 +12,7 @@ import {
 import { AppointmentBooking, DoctorProfile, PublicReview } from '../types';
 import { composeCardCity, composeCardPlace } from '../data/doctorPublic';
 import { DoctorOnePager } from './DoctorOnePager';
+import { LegalPage, LegalPageId, SiteFooter } from './LegalPages';
 
 const WhatsAppIcon: React.FC<{ className?: string }> = ({ className }) => (
   <svg viewBox="0 0 24 24" aria-hidden="true" className={className} fill="currentColor">
@@ -50,6 +51,7 @@ export const PatientDirectory: React.FC<PatientDirectoryProps> = ({
   const [selectedCity, setSelectedCity] = useState<string>('TODAS');
   const [selectedDoctor, setSelectedDoctor] = useState<DoctorProfile | null>(null);
   const [bookingSuccess, setBookingSuccess] = useState<boolean>(false);
+  const [legalPage, setLegalPage] = useState<LegalPageId | null>(null);
 
   const scrollNavRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState<boolean>(false);
@@ -191,6 +193,10 @@ export const PatientDirectory: React.FC<PatientDirectoryProps> = ({
       </header>
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-4 space-y-4 animate-fadeIn">
+        {legalPage ? (
+          <LegalPage page={legalPage} onBack={() => setLegalPage(null)} />
+        ) : (
+        <>
         {heroVisible && (
           <section className="bg-white border border-slate-200/80 rounded-3xl overflow-hidden">
             <div className="flex flex-col-reverse sm:flex-row sm:items-stretch">
@@ -382,7 +388,10 @@ export const PatientDirectory: React.FC<PatientDirectoryProps> = ({
             ))}
           </div>
         )}
+        </>
+        )}
       </main>
+      <SiteFooter onOpen={setLegalPage} />
     </div>
   );
 };
