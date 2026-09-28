@@ -9,8 +9,9 @@ import {
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
-import { AppointmentBooking, DoctorProfile, PublicReview } from '../types';
+import { AppointmentBooking, DoctorProfile, PublicReview, RethusLookup } from '../types';
 import { composeCardCity, composeCardPlace } from '../data/doctorPublic';
+import { buildRethusLookup } from '../data/rethusLookup';
 import { DoctorOnePager } from './DoctorOnePager';
 import { LegalPage, LegalPageId, SiteFooter } from './LegalPages';
 
@@ -29,6 +30,99 @@ const doctorWhatsAppLink = (doc: DoctorProfile) => {
   return `https://wa.me/${cleanPhone}?text=${message}`;
 };
 
+const LookupRow: React.FC<{ label: string; value: string }> = ({ label, value }) => (
+  <div className="flex items-baseline justify-between gap-3">
+    <dt className="text-slate-500 shrink-0">{label}</dt>
+    <dd className="font-medium text-slate-900 text-right">{value}</dd>
+  </div>
+);
+
+const RethusSearchFeedback: React.FC<{
+  phase: 'searching' | 'found';
+  progress: number;
+  name: string;
+}> = ({ phase, progress, name }) => {
+  const step =
+    progress < 34 ? 'Consultando RETHUS' : progress < 67 ? 'Revisando habilitación' : 'Confirmando códigos';
+
+  if (phase === 'found') {
+    return (
+      <section
+        className="bg-white border border-violet-200 rounded-3xl p-6 max-w-lg text-center space-y-3"
+        style={{ animation: 'rethus-pop 0.45s ease' }}
+        aria-live="polite"
+      >
+        <div className="mx-auto w-16 h-16 rounded-2xl bg-violet-50 text-violet-600 flex items-center justify-center">
+          <ShieldCheck className="w-8 h-8" />
+        </div>
+        <h2 className="text-base font-bold text-slate-900">Sí aparece en RETHUS</h2>
+        <p className="text-sm text-slate-600">{name}</p>
+      </section>
+    );
+  }
+
+  return (
+    <section className="bg-white border border-slate-200/80 rounded-3xl p-5 max-w-lg space-y-3" aria-live="polite">
+      <p className="text-sm font-bold text-slate-900">{step}</p>
+      <div className="h-2 rounded-full bg-slate-100 overflow-hidden" role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100}>
+        <div className="h-full bg-violet-600 rounded-full" style={{ width: `${progress}%` }} />
+      </div>
+      <p className="text-xs text-slate-500">Consulta demo. No abre un perfil en HealthBit.</p>
+    </section>
+  );
+};
+
+const RethusLookupPanel: React.FC<{ lookup: RethusLookup }> = ({ lookup }) => (
+  <section className="bg-white border border-slate-200/80 rounded-3xl p-4 sm:p-5 shadow-xs space-y-4 max-w-lg">
+    <div className="space-y-2">
+      <h2 className="font-bold text-base text-slate-900">{lookup.fullName}</h2>
+      <div className="flex flex-wrap items-center gap-1.5">
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-violet-50 text-violet-800 border border-violet-200/80 text-[11px] font-bold whitespace-nowrap">
+          <ShieldCheck className="w-3.5 h-3.5 text-violet-600" />
+          En RETHUS
+        </span>
+        <span
+          className={`inline-flex items-center px-2 py-0.5 rounded-full border text-[11px] font-bold whitespace-nowrap ${
+            lookup.enabled
+              ? 'bg-violet-50 text-violet-800 border-violet-200/80'
+              : 'bg-slate-100 text-slate-600 border-slate-200'
+          }`}
+        >
+          {lookup.enabled ? 'Habilitado' : 'No habilitado'}
+        </span>
+      </div>
+      <p className="text-xs text-slate-500">
+        Consulta demo. Esta persona está en RETHUS y no tiene perfil en HealthBit.
+      </p>
+    </div>
+    <div className="space-y-1">
+      <h3 className="text-xs font-bold text-slate-900">Códigos</h3>
+      <dl className="grid grid-cols-1 gap-1 text-xs">
+        <LookupRow label="Código RETHUS" value={lookup.rethusCode} />
+        <LookupRow label="Código profesión" value={lookup.professionCode} />
+      </dl>
+    </div>
+    <div className="space-y-1">
+      <h3 className="text-xs font-bold text-slate-900">Formación</h3>
+      <dl className="grid grid-cols-1 gap-1 text-xs">
+        <LookupRow label="Profesión" value={lookup.formation.profession} />
+        <LookupRow label="Tipo" value={lookup.formation.type} />
+        <LookupRow label="Origen" value={lookup.formation.origin} />
+        <LookupRow label="Entidad" value={lookup.formation.entity} />
+        <LookupRow label="Acto" value={lookup.formation.act} />
+      </dl>
+    </div>
+    <div className="space-y-1">
+      <h3 className="text-xs font-bold text-slate-900">Prestación</h3>
+      <dl className="grid grid-cols-1 gap-1 text-xs">
+        <LookupRow label="Programa" value={lookup.benefit.program} />
+        <LookupRow label="Lugar" value={lookup.benefit.place} />
+        <LookupRow label="Entidad" value={lookup.benefit.entity} />
+      </dl>
+    </div>
+  </section>
+);
+
 interface PatientDirectoryProps {
   onOpenDoctorAuth?: () => void;
   doctors: DoctorProfile[];
@@ -46,7 +140,10 @@ export const PatientDirectory: React.FC<PatientDirectoryProps> = ({
   bookings,
   onAddBooking,
 }) => {
+  const [searchDraft, setSearchDraft] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [rethusLookups, setRethusLookups] = useState<Record<string, RethusLookup>>({});
+  const [rethusRun, setRethusRun] = useState<{ key: string; phase: 'searching' | 'found' | 'ready'; progress: number } | null>(null);
   const [selectedSpecialty, setSelectedSpecialty] = useState<string>('TODAS');
   const [selectedCity, setSelectedCity] = useState<string>('TODAS');
   const [selectedDoctor, setSelectedDoctor] = useState<DoctorProfile | null>(null);
@@ -136,10 +233,78 @@ export const PatientDirectory: React.FC<PatientDirectoryProps> = ({
       .sort((a, b) => a.localeCompare(b, 'es')),
   ];
 
+  const queryText = searchQuery.trim();
+  const queryKey = normalizeStr(queryText);
+  const matchesHealthBitQuery = (doc: DoctorProfile) =>
+    normalizeStr(doc.fullName).includes(queryKey) ||
+    normalizeStr(doc.rethusCode).includes(queryKey) ||
+    normalizeStr(doc.specialty).includes(queryKey) ||
+    Boolean(doc.subspecialty && normalizeStr(doc.subspecialty).includes(queryKey)) ||
+    normalizeStr(doc.location).includes(queryKey) ||
+    Boolean(doc.department && normalizeStr(doc.department).includes(queryKey)) ||
+    normalizeStr(composeCardPlace(doc)).includes(queryKey);
+
+  const healthBitQueryMatch = queryKey.length > 0 && visibleDoctors.some(matchesHealthBitQuery);
+  const lookupEligible = queryText.length >= 3 && !healthBitQueryMatch;
+  const activeLookup = lookupEligible
+    ? rethusLookups[queryKey] ?? buildRethusLookup(queryText)
+    : null;
+
+  useEffect(() => {
+    if (!lookupEligible || rethusLookups[queryKey]) return;
+    setRethusLookups((current) =>
+      current[queryKey] ? current : { ...current, [queryKey]: buildRethusLookup(queryText) }
+    );
+  }, [lookupEligible, queryKey, queryText, rethusLookups]);
+
+  useEffect(() => {
+    if (!lookupEligible) return;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const duration = reduceMotion ? 400 : 2000;
+    const started = performance.now();
+    let frame = 0;
+    setRethusRun({ key: queryKey, phase: 'searching', progress: 0 });
+    const tick = (now: number) => {
+      const ratio = Math.min(1, (now - started) / duration);
+      if (ratio < 1) {
+        setRethusRun({ key: queryKey, phase: 'searching', progress: Math.round(ratio * 100) });
+        frame = requestAnimationFrame(tick);
+        return;
+      }
+      setRethusRun({ key: queryKey, phase: 'found', progress: 100 });
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [lookupEligible, queryKey]);
+
+  useEffect(() => {
+    if (!rethusRun || rethusRun.phase !== 'found' || rethusRun.key !== queryKey) return;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const timer = window.setTimeout(
+      () => setRethusRun({ key: queryKey, phase: 'ready', progress: 100 }),
+      reduceMotion ? 200 : 900
+    );
+    return () => window.clearTimeout(timer);
+  }, [rethusRun, queryKey]);
+
+  const returnHome = () => {
+    setSearchDraft('');
+    setSearchQuery('');
+    setSelectedSpecialty('TODAS');
+    setSelectedCity('TODAS');
+    setRethusRun(null);
+  };
+
+  const searchApplied = searchQuery.trim() !== '';
+  const rethusRunMatches = Boolean(rethusRun && rethusRun.key === queryKey);
+  const rethusReady = lookupEligible && rethusRunMatches && rethusRun?.phase === 'ready';
+
   const specialtyCount = (cat: string) =>
     cat === 'TODAS'
       ? visibleDoctors.length
       : visibleDoctors.filter((d) => normalizeStr(d.specialty).includes(normalizeStr(cat))).length;
+
+  const resultCount = filteredDoctors.length;
 
   const specialtyOptions = specialties.filter((cat) => specialtyCount(cat) > 0);
 
@@ -168,6 +333,7 @@ export const PatientDirectory: React.FC<PatientDirectoryProps> = ({
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-['Plus_Jakarta_Sans',sans-serif]">
+      <style>{`@keyframes rethus-pop { from { transform: scale(0.86); opacity: 0; } to { transform: scale(1); opacity: 1; } }`}</style>
       <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2 shrink-0">
@@ -217,17 +383,42 @@ export const PatientDirectory: React.FC<PatientDirectoryProps> = ({
           </section>
         )}
 
-        <label className="flex items-center gap-2 min-h-[44px] px-3 rounded-2xl bg-white border border-slate-200/80">
-          <Search className="w-4 h-4 text-violet-600 shrink-0" />
-          <span className="sr-only">Buscar médicos</span>
-          <input
-            type="search"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Nombre, especialidad o cédula"
-            className="w-full min-w-0 bg-transparent text-sm font-medium text-slate-800 outline-none placeholder:text-slate-400"
-          />
-        </label>
+        {searchApplied && (
+          <button
+            type="button"
+            onClick={returnHome}
+            className="inline-flex items-center gap-1.5 min-h-[44px] px-3 rounded-xl text-violet-700 font-bold text-sm hover:bg-violet-50 cursor-pointer"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            Volver al inicio
+          </button>
+        )}
+
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            setSearchQuery(searchDraft);
+          }}
+          className="flex items-center gap-2"
+        >
+          <label className="flex flex-1 items-center gap-2 min-h-[44px] min-w-0 px-3 rounded-2xl bg-white border border-slate-200/80">
+            <Search className="w-4 h-4 text-violet-600 shrink-0" />
+            <span className="sr-only">Buscar médicos</span>
+            <input
+              type="search"
+              value={searchDraft}
+              onChange={(e) => setSearchDraft(e.target.value)}
+              placeholder="Nombre, especialidad o cédula"
+              className="w-full min-w-0 bg-transparent text-sm font-medium text-slate-800 outline-none placeholder:text-slate-400"
+            />
+          </label>
+          <button
+            type="submit"
+            className="min-h-[44px] shrink-0 px-4 rounded-2xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-sm cursor-pointer"
+          >
+            Buscar
+          </button>
+        </form>
 
         <div className="flex flex-col sm:flex-row sm:items-center gap-2">
           <div className="relative min-w-0 sm:flex-1">
@@ -304,11 +495,21 @@ export const PatientDirectory: React.FC<PatientDirectoryProps> = ({
           </label>
         </div>
 
+        {!lookupEligible && (
         <p className="text-sm font-bold text-slate-900">
-          {filteredDoctors.length} {filteredDoctors.length === 1 ? 'médico' : 'médicos'}
+          {resultCount} {resultCount === 1 ? 'médico' : 'médicos'}
         </p>
+        )}
 
-        {filteredDoctors.length === 0 ? (
+        {lookupEligible && !rethusReady ? (
+          <RethusSearchFeedback
+            phase={rethusRunMatches && rethusRun?.phase === 'found' ? 'found' : 'searching'}
+            progress={rethusRunMatches ? rethusRun?.progress ?? 0 : 0}
+            name={queryText}
+          />
+        ) : activeLookup && rethusReady ? (
+          <RethusLookupPanel lookup={activeLookup} />
+        ) : resultCount === 0 ? (
           <div className="bg-white border border-slate-200 rounded-3xl p-8 text-center space-y-4 max-w-lg mx-auto">
             <div className="w-16 h-16 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
               <Search className="w-8 h-8" />
@@ -320,11 +521,7 @@ export const PatientDirectory: React.FC<PatientDirectoryProps> = ({
               </p>
             </div>
             <button
-              onClick={() => {
-                setSearchQuery('');
-                setSelectedSpecialty('TODAS');
-                setSelectedCity('TODAS');
-              }}
+              onClick={returnHome}
               className="min-h-[44px] px-4 py-2 rounded-xl bg-violet-50 text-violet-700 font-bold text-xs hover:bg-violet-100 transition-colors cursor-pointer"
             >
               Restablecer filtros

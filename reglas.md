@@ -18,3 +18,4 @@ Solo reglas violables y detectables. Si no se puede señalar un diff que las rom
 14. **No dejar `AGENTS.md` por encima de 300 líneas.** Comprimir o mover detalle a `Contexto/`, `decisions/`, `gotchas/`.
 15. **No copiar historial de chat a archivos de memoria.** En `logs/` solo un resumen de lo que cambió y por qué.
 16. **No editar `reglas.md` con consejos blandos** (“haz buen diseño”, “sé consistente”). Si no es detectable, no entra.
+17. **No abrir `DoctorOnePager` desde la consulta RETHUS de alguien que no está en HealthBit.** El panel sale de `buildRethusLookup` en memoria de la visita. No es `DoctorProfile` y no tiene agenda, WhatsApp ni ficha. No persistir esa consulta en `localStorage`.

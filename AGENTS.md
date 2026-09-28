@@ -33,7 +33,7 @@ No leer de entrada: `dashboard.html`, `src/data/mock*.ts`, `DESIGNHealthBit.md` 
 | Tipos | `src/types.ts` | Fuente de datos de dominio |
 | Registro 7 pasos | `src/components/VerificationFlow.tsx` | Paso 2 = RETHUS a revisión. Paso 3 = REPS (sede y servicios) a revisión. Paso 7 = diplomas/actas, opcional |
 | Login | `src/components/DoctorAuthModal.tsx` | Submit → `onLoginSuccess(email)` |
-| Directorio pacientes | `src/components/PatientDirectory.tsx` | Solo `verifiedStatus.rethus && !isPaused` |
+| Directorio pacientes | `src/components/PatientDirectory.tsx` | HealthBit: `verifiedStatus.rethus && !isPaused`. Nombre ausente: panel RETHUS demo en memoria (`rethusLookup.ts`), no abre ficha |
 | Ficha pública médico | `src/components/DoctorOnePager.tsx` | Cabecera compacta + pestañas + agenda sticky. Reserva demo, sin API. |
 | Cola admin | `src/components/AdminRethusQueue.tsx` | RETHUS + Analítica. Cifras demo: `src/data/adminAnalytics.ts` |
 | Home médico | `src/components/HomeDashboard.tsx` | Chip RETHUS; gráfica solo barras de citas |
@@ -58,7 +58,7 @@ Componentes no montados (no usar como base): `SpecialistDashboard.tsx`, `MobileF
 ## Invariantes (también en `reglas.md`)
 
 1. RETHUS del registro es revisión humana. El paso 2 no llama `/api/rethus-check` ni `/api/verifik-rethus`.
-2. Un médico no aparece en el buscador hasta RETHUS aprobado y no pausado.
+2. Un médico HealthBit no aparece en el buscador hasta RETHUS aprobado y no pausado. El panel RETHUS de un nombre ausente no abre la ficha y no se persiste.
 3. El sello / análisis de Gemini no es prueba: si el API falla, el server inventa `success: true`. No tratar fallback como verificación real.
 4. “Correo enviado” es aviso en pantalla. No hay SMTP.
 5. UI nueva sigue `DESIGNHealthBit.md`: violet/slate, lucide-react, `min-h-[44px]`, badges `whitespace-nowrap`.

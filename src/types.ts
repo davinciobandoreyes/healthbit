@@ -153,6 +153,27 @@ export interface DoctorProfile {
   isPaused?: boolean;
 }
 
+/** Consulta demo de alguien que no está en HealthBit. Vive solo en memoria. */
+export interface RethusLookup {
+  queryKey: string;
+  fullName: string;
+  enabled: boolean;
+  rethusCode: string;
+  professionCode: string;
+  formation: {
+    profession: string;
+    type: string;
+    origin: string;
+    entity: string;
+    act: string;
+  };
+  benefit: {
+    program: string;
+    place: string;
+    entity: string;
+  };
+}
+
 export interface PublicReview {
   id: string;
   doctorEmail: string;
