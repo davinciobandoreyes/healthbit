@@ -41,21 +41,47 @@ const RethusSearchFeedback: React.FC<{
   phase: 'searching' | 'found';
   progress: number;
   name: string;
-}> = ({ phase, progress, name }) => {
+  outcome: RethusLookup['outcome'];
+}> = ({ phase, progress, name, outcome }) => {
   const step =
     progress < 34 ? 'Consultando RETHUS' : progress < 67 ? 'Revisando habilitación' : 'Confirmando códigos';
 
   if (phase === 'found') {
+    const scene =
+      outcome === 'absent'
+        ? {
+            title: 'No aparece en RETHUS',
+            border: 'border-slate-200/80',
+            iconClass: 'bg-slate-100 text-slate-400',
+            icon: <Search className="w-8 h-8" />,
+            scan: true,
+          }
+        : outcome === 'not_enabled'
+          ? {
+              title: 'Aparece en RETHUS, no habilitado',
+              border: 'border-amber-200',
+              iconClass: 'rethus-to-amber',
+              icon: <ShieldCheck className="w-8 h-8" />,
+              scan: false,
+            }
+          : {
+              title: 'Sí aparece en RETHUS',
+              border: 'border-violet-200',
+              iconClass: 'bg-violet-50 text-violet-600',
+              icon: <ShieldCheck className="w-8 h-8" />,
+              scan: false,
+            };
+
     return (
       <section
-        className="bg-white border border-violet-200 rounded-3xl p-6 max-w-lg w-full mx-auto text-center space-y-3"
-        style={{ animation: 'rethus-pop 0.45s ease' }}
+        className={`bg-white border ${scene.border} rounded-3xl p-6 max-w-lg w-full mx-auto text-center space-y-3 rethus-pop`}
         aria-live="polite"
       >
-        <div className="mx-auto w-16 h-16 rounded-2xl bg-violet-50 text-violet-600 flex items-center justify-center">
-          <ShieldCheck className="w-8 h-8" />
+        <div className={`relative mx-auto w-16 h-16 rounded-2xl flex items-center justify-center overflow-hidden ${scene.iconClass}`}>
+          {scene.icon}
+          {scene.scan && <span className="rethus-scan absolute left-2 right-2 h-0.5 bg-slate-400" />}
         </div>
-        <h2 className="text-base font-bold text-slate-900">Sí aparece en RETHUS</h2>
+        <h2 className="text-base font-bold text-slate-900">{scene.title}</h2>
         <p className="text-sm text-slate-600">{name}</p>
       </section>
     );
@@ -76,25 +102,35 @@ const RethusLookupPanel: React.FC<{ lookup: RethusLookup }> = ({ lookup }) => (
   <section className="bg-white border border-slate-200/80 rounded-3xl p-4 sm:p-5 shadow-xs space-y-4 max-w-lg w-full mx-auto">
     <div className="space-y-2">
       <h2 className="font-bold text-base text-slate-900">{lookup.fullName}</h2>
-      <div className="flex flex-wrap items-center gap-1.5">
-        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-violet-50 text-violet-800 border border-violet-200/80 text-[11px] font-bold whitespace-nowrap">
-          <ShieldCheck className="w-3.5 h-3.5 text-violet-600" />
-          En RETHUS
-        </span>
-        <span
-          className={`inline-flex items-center px-2 py-0.5 rounded-full border text-[11px] font-bold whitespace-nowrap ${
-            lookup.enabled
-              ? 'bg-violet-50 text-violet-800 border-violet-200/80'
-              : 'bg-slate-100 text-slate-600 border-slate-200'
-          }`}
-        >
-          {lookup.enabled ? 'Habilitado' : 'No habilitado'}
-        </span>
-      </div>
-      <p className="text-xs text-slate-500">
-        Consulta demo. Esta persona está en RETHUS y no tiene perfil en HealthBit.
-      </p>
+      {lookup.outcome === 'absent' ? (
+        <p className="text-xs text-slate-500">No aparece en RETHUS. Consulta demo. No tiene perfil en HealthBit.</p>
+      ) : (
+        <>
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-violet-50 text-violet-800 border border-violet-200/80 text-[11px] font-bold whitespace-nowrap">
+              <ShieldCheck className="w-3.5 h-3.5 text-violet-600" />
+              En RETHUS
+            </span>
+            <span
+              className={`inline-flex items-center px-2 py-0.5 rounded-full border text-[11px] font-bold whitespace-nowrap ${
+                lookup.enabled
+                  ? 'bg-violet-50 text-violet-800 border-violet-200/80'
+                  : 'bg-amber-50 text-amber-800 border-amber-200/80'
+              }`}
+            >
+              {lookup.enabled ? 'Habilitado' : 'No habilitado'}
+            </span>
+          </div>
+          <p className="text-xs text-slate-500">
+            {lookup.outcome === 'not_enabled'
+              ? 'El registro existe y no tiene facultad para ejercer. Consulta demo. No tiene perfil en HealthBit.'
+              : 'Consulta demo. Esta persona está en RETHUS y no tiene perfil en HealthBit.'}
+          </p>
+        </>
+      )}
     </div>
+    {lookup.outcome !== 'absent' && (
+    <>
     <div className="space-y-1">
       <h3 className="text-xs font-bold text-slate-900">Códigos</h3>
       <dl className="grid grid-cols-1 gap-1 text-xs">
@@ -120,6 +156,8 @@ const RethusLookupPanel: React.FC<{ lookup: RethusLookup }> = ({ lookup }) => (
         <LookupRow label="Entidad" value={lookup.benefit.entity} />
       </dl>
     </div>
+    </>
+    )}
   </section>
 );
 
@@ -335,7 +373,18 @@ export const PatientDirectory: React.FC<PatientDirectoryProps> = ({
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-['Plus_Jakarta_Sans',sans-serif]">
-      <style>{`@keyframes rethus-pop { from { transform: scale(0.86); opacity: 0; } to { transform: scale(1); opacity: 1; } }`}</style>
+      <style>{`
+        @keyframes rethus-pop { from { transform: scale(0.86); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes rethus-scan { from { top: 8px; opacity: 0.95; } to { top: 48px; opacity: 0; } }
+        @keyframes rethus-amber { to { background-color: #fffbeb; color: #b45309; } }
+        .rethus-pop { animation: rethus-pop 0.45s ease; }
+        .rethus-scan { animation: rethus-scan 0.9s ease forwards; }
+        .rethus-to-amber { background-color: #f5f3ff; color: #7c3aed; animation: rethus-pop 0.45s ease, rethus-amber 0.55s ease 0.35s forwards; }
+        @media (prefers-reduced-motion: reduce) {
+          .rethus-pop, .rethus-scan, .rethus-to-amber { animation: none; }
+          .rethus-to-amber { background-color: #fffbeb; color: #b45309; }
+        }
+      `}</style>
       <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2 shrink-0">
@@ -523,6 +572,7 @@ export const PatientDirectory: React.FC<PatientDirectoryProps> = ({
             phase={rethusRunMatches && rethusRun?.phase === 'found' ? 'found' : 'searching'}
             progress={rethusRunMatches ? rethusRun?.progress ?? 0 : 0}
             name={queryText}
+            outcome={activeLookup?.outcome ?? 'enabled'}
           />
         ) : activeLookup && rethusReady ? (
           <RethusLookupPanel lookup={activeLookup} />

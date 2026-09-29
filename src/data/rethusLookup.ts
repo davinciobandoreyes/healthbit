@@ -46,11 +46,13 @@ export const buildRethusLookup = (rawName: string): RethusLookup => {
   const year = 2008 + (hash % 16);
   const serial = String(10000 + (hash % 90000)).padStart(5, '0');
   const profession = pick(PROFESSIONS, hash, 3);
+  const outcome = (['absent', 'not_enabled', 'enabled'] as const)[hash % 3];
 
   return {
     queryKey,
     fullName,
-    enabled: hash % 7 !== 0,
+    outcome,
+    enabled: outcome === 'enabled',
     rethusCode: `RTH-${year}-${serial}`,
     professionCode: `PROF-MED-${1000 + (hash % 9000)}`,
     formation: {

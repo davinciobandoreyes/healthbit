@@ -153,10 +153,13 @@ export interface DoctorProfile {
   isPaused?: boolean;
 }
 
+export type RethusLookupOutcome = 'absent' | 'enabled' | 'not_enabled';
+
 /** Consulta demo de alguien que no está en HealthBit. Vive solo en memoria. */
 export interface RethusLookup {
   queryKey: string;
   fullName: string;
+  outcome: RethusLookupOutcome;
   enabled: boolean;
   rethusCode: string;
   professionCode: string;
