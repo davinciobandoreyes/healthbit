@@ -48,7 +48,7 @@ const RethusSearchFeedback: React.FC<{
   if (phase === 'found') {
     return (
       <section
-        className="bg-white border border-violet-200 rounded-3xl p-6 max-w-lg text-center space-y-3"
+        className="bg-white border border-violet-200 rounded-3xl p-6 max-w-lg w-full mx-auto text-center space-y-3"
         style={{ animation: 'rethus-pop 0.45s ease' }}
         aria-live="polite"
       >
@@ -62,7 +62,7 @@ const RethusSearchFeedback: React.FC<{
   }
 
   return (
-    <section className="bg-white border border-slate-200/80 rounded-3xl p-5 max-w-lg space-y-3" aria-live="polite">
+    <section className="bg-white border border-slate-200/80 rounded-3xl p-5 max-w-lg w-full mx-auto text-center space-y-3" aria-live="polite">
       <p className="text-sm font-bold text-slate-900">{step}</p>
       <div className="h-2 rounded-full bg-slate-100 overflow-hidden" role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100}>
         <div className="h-full bg-violet-600 rounded-full" style={{ width: `${progress}%` }} />
@@ -73,7 +73,7 @@ const RethusSearchFeedback: React.FC<{
 };
 
 const RethusLookupPanel: React.FC<{ lookup: RethusLookup }> = ({ lookup }) => (
-  <section className="bg-white border border-slate-200/80 rounded-3xl p-4 sm:p-5 shadow-xs space-y-4 max-w-lg">
+  <section className="bg-white border border-slate-200/80 rounded-3xl p-4 sm:p-5 shadow-xs space-y-4 max-w-lg w-full mx-auto">
     <div className="space-y-2">
       <h2 className="font-bold text-base text-slate-900">{lookup.fullName}</h2>
       <div className="flex flex-wrap items-center gap-1.5">
@@ -298,6 +298,8 @@ export const PatientDirectory: React.FC<PatientDirectoryProps> = ({
   const searchApplied = searchQuery.trim() !== '';
   const rethusRunMatches = Boolean(rethusRun && rethusRun.key === queryKey);
   const rethusReady = lookupEligible && rethusRunMatches && rethusRun?.phase === 'ready';
+  const rethusSearching = lookupEligible && !rethusReady;
+  const showCancel = searchApplied && !rethusSearching;
 
   const specialtyCount = (cat: string) =>
     cat === 'TODAS'
@@ -394,6 +396,7 @@ export const PatientDirectory: React.FC<PatientDirectoryProps> = ({
           </button>
         )}
 
+        {!lookupEligible && (
         <form
           onSubmit={(event) => {
             event.preventDefault();
@@ -412,14 +415,27 @@ export const PatientDirectory: React.FC<PatientDirectoryProps> = ({
               className="w-full min-w-0 bg-transparent text-sm font-medium text-slate-800 outline-none placeholder:text-slate-400"
             />
           </label>
-          <button
-            type="submit"
-            className="min-h-[44px] shrink-0 px-4 rounded-2xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-sm cursor-pointer"
-          >
-            Buscar
-          </button>
+          {showCancel ? (
+            <button
+              type="button"
+              onClick={returnHome}
+              className="min-h-[44px] shrink-0 px-4 rounded-2xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-sm cursor-pointer"
+            >
+              Cancelar
+            </button>
+          ) : (
+            <button
+              type="submit"
+              disabled={rethusSearching}
+              className="min-h-[44px] shrink-0 px-4 rounded-2xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-sm cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-violet-600"
+            >
+              Buscar
+            </button>
+          )}
         </form>
+        )}
 
+        {!searchApplied && (
         <div className="flex flex-col sm:flex-row sm:items-center gap-2">
           <div className="relative min-w-0 sm:flex-1">
             {canScrollLeft && (
@@ -494,6 +510,7 @@ export const PatientDirectory: React.FC<PatientDirectoryProps> = ({
             </select>
           </label>
         </div>
+        )}
 
         {!lookupEligible && (
         <p className="text-sm font-bold text-slate-900">
