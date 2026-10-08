@@ -27,7 +27,7 @@ import {
   isTimeInRange,
   defaultWeeklyAvailability,
 } from '../data/doctorPublic';
-import { isPlasticSurgeonSpecialty } from '../data/plasticProcedures';
+import { groupVisibleProcedures, isPlasticSurgeonSpecialty, visibleProcedureLabels } from '../data/plasticProcedures';
 
 interface DoctorOnePagerProps {
   doctor: DoctorProfile;
@@ -631,6 +631,12 @@ export const DoctorOnePager: React.FC<DoctorOnePagerProps> = ({
   const publicLocation = composeLocation(doctor);
   const [newLocation, setNewLocation] = useState(publicLocation);
   const focusAreas = composeFocusAreas(doctor);
+  const plasticGroups = isPlasticSurgeonSpecialty(doctor.specialty)
+    ? groupVisibleProcedures(focusAreas)
+    : [];
+  const publicFocus = isPlasticSurgeonSpecialty(doctor.specialty)
+    ? visibleProcedureLabels(focusAreas)
+    : focusAreas;
 
   const [copiedLink, setCopiedLink] = useState(false);
 
@@ -877,9 +883,9 @@ export const DoctorOnePager: React.FC<DoctorOnePagerProps> = ({
                     {doctor.fullName}
                   </h1>
                   <p className="text-xs sm:text-sm font-bold text-violet-700">{doctor.specialty}</p>
-                  {focusAreas[1] && (
+                  {publicFocus.length > 0 && (
                     <p className="hidden md:block text-xs text-slate-500 font-medium line-clamp-2">
-                      {focusAreas.slice(1).join(' · ')}
+                      {publicFocus.join(' · ')}
                     </p>
                   )}
                   <div className="flex items-start gap-1.5 text-[11px] sm:text-xs text-slate-500">
@@ -942,14 +948,23 @@ export const DoctorOnePager: React.FC<DoctorOnePagerProps> = ({
                   <div>
                     <h3 className="text-sm font-bold text-slate-900 mb-2">Especialista en</h3>
                     {isPlasticSurgeonSpecialty(doctor.specialty) ? (
-                      <div className="flex flex-wrap gap-2">
-                        {focusAreas.map((area) => (
-                          <span
-                            key={area}
-                            className="inline-flex items-center min-h-[36px] px-3 rounded-full bg-violet-50 text-violet-800 border border-violet-200/80 text-xs font-bold whitespace-nowrap"
-                          >
-                            {area}
-                          </span>
+                      <div className="space-y-4">
+                        {plasticGroups.map((group) => (
+                          <div key={group.id}>
+                            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">
+                              {group.label}
+                            </p>
+                            <div className="flex flex-wrap gap-2">
+                              {group.items.map((item) => (
+                                <span
+                                  key={item.id}
+                                  className="inline-flex items-center min-h-[36px] px-3 rounded-full bg-violet-50 text-violet-800 border border-violet-200/80 text-xs font-bold whitespace-nowrap"
+                                >
+                                  {item.label}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
                         ))}
                       </div>
                     ) : (

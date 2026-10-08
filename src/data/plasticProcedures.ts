@@ -73,3 +73,14 @@ export const isPlasticSurgeonSpecialty = (specialty: string) =>
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .includes('plastic');
+
+export const groupVisibleProcedures = (focusAreas: string[]): PlasticProcedureGroup[] => {
+  const selected = new Set(focusAreas);
+  return PLASTIC_PROCEDURE_GROUPS.map((group) => ({
+    ...group,
+    items: group.items.filter((item) => selected.has(item.label)),
+  })).filter((group) => group.items.length > 0);
+};
+
+export const visibleProcedureLabels = (focusAreas: string[]): string[] =>
+  groupVisibleProcedures(focusAreas).flatMap((group) => group.items.map((item) => item.label));

@@ -34,6 +34,64 @@ const WhatsAppIcon: React.FC<{ className?: string }> = ({ className }) => (
   </svg>
 );
 
+const shortDoctorName = (fullName: string) => {
+  const parts = fullName.trim().split(/\s+/);
+  const hasPrefix = /^(Dr\.|Dra\.)$/i.test(parts[0] || '');
+  const prefix = hasPrefix ? parts[0] : '';
+  const names = hasPrefix ? parts.slice(1) : parts;
+  const shown = [prefix, ...names.slice(0, 3)].filter(Boolean).join(' ');
+  return { shown, truncated: names.length > 3 };
+};
+
+const catalogPills = (focusAreas: string[] | undefined) => {
+  const selected = new Set(focusAreas || []);
+  const groups: string[] = [];
+  const items: string[] = [];
+  for (const group of PLASTIC_PROCEDURE_GROUPS) {
+    const matched = group.items.filter((item) => selected.has(item.label));
+    if (matched.length === 0) continue;
+    groups.push(group.label);
+    items.push(...matched.map((item) => item.label));
+  }
+  return [...groups, ...items];
+};
+
+const SpecialtyMore: React.FC<{ items: string[] }> = ({ items }) => {
+  const [box, setBox] = useState<{ top: number; left: number } | null>(null);
+  const place = (el: HTMLElement) => {
+    const rect = el.getBoundingClientRect();
+    setBox({ top: rect.bottom + 6, left: rect.left });
+  };
+  return (
+    <span
+      tabIndex={0}
+      className="inline-flex items-center px-2.5 py-1 rounded-full bg-slate-100 text-slate-500 text-[11px] font-semibold cursor-default"
+      onMouseEnter={(e) => place(e.currentTarget)}
+      onMouseLeave={() => setBox(null)}
+      onFocus={(e) => place(e.currentTarget)}
+      onBlur={() => setBox(null)}
+      onClick={(e) => e.stopPropagation()}
+      onKeyDown={(e) => e.stopPropagation()}
+    >
+      Ver más
+      {box && (
+        <span
+          style={{ top: box.top, left: box.left }}
+          className="fixed z-50 w-max max-w-[220px] rounded-xl border border-slate-200 bg-white px-3 py-2 shadow-md"
+        >
+          <ul className="space-y-1">
+            {items.map((item) => (
+              <li key={item} className="text-xs font-medium text-slate-700">
+                {item}
+              </li>
+            ))}
+          </ul>
+        </span>
+      )}
+    </span>
+  );
+};
+
 const doctorWhatsAppLink = (doc: DoctorProfile) => {
   const message = encodeURIComponent(
     `Hola Dr./Dra. ${doc.fullName}, vi su perfil verificado en CiruPlastify y me gustaría agendar una cita presencial de valoración en ${doc.specialty}.`
@@ -622,8 +680,11 @@ export const PatientDirectory: React.FC<PatientDirectoryProps> = ({
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 animate-fadeIn">
-            {filteredDoctors.map((doc) => (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 animate-fadeIn">
+            {filteredDoctors.map((doc) => {
+              const name = shortDoctorName(doc.fullName);
+              const specialties = catalogPills(doc.focusAreas);
+              return (
               <article
                 key={doc.id}
                 role="button"
@@ -635,17 +696,37 @@ export const PatientDirectory: React.FC<PatientDirectoryProps> = ({
                     setSelectedDoctor(doc);
                   }
                 }}
-                className="bg-white border border-slate-200/80 rounded-3xl p-4 shadow-xs hover:shadow-md transition-all space-y-3 cursor-pointer text-left"
+                className="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-xs hover:shadow-md transition-all space-y-4 cursor-pointer text-left"
               >
-                <div className="flex items-start gap-3">
+                <div className="flex items-start gap-4">
                   <img
                     src={doc.avatarUrl}
                     alt=""
-                    className="w-14 h-14 rounded-2xl object-cover border-2 border-violet-500/80 shadow-xs shrink-0"
+                    className="w-28 h-28 rounded-2xl object-cover border-2 border-violet-500/80 shadow-xs shrink-0"
                   />
-                  <div className="space-y-1 overflow-hidden min-w-0 flex-1">
-                    <h2 className="font-bold text-base text-slate-900 truncate">{doc.fullName}</h2>
-                    <p className="text-xs font-semibold text-violet-600 truncate">{doc.specialty}</p>
+                  <div className="space-y-2 overflow-hidden min-w-0 flex-1">
+                    <h2
+                      className="relative font-bold text-lg text-slate-900 truncate group/name"
+                      title={name.truncated ? doc.fullName : undefined}
+                    >
+                      {name.shown}
+                      {name.truncated && (
+                        <span className="pointer-events-none absolute left-0 top-full z-10 mt-1 hidden max-w-xs rounded-lg bg-slate-900 px-2.5 py-1.5 text-xs font-medium text-white shadow-md group-hover/name:block">
+                          {doc.fullName}
+                        </span>
+                      )}
+                    </h2>
+                    <div className="flex flex-wrap gap-1.5">
+                      {specialties.slice(0, 3).map((item) => (
+                        <span
+                          key={item}
+                          className="inline-flex items-center px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 text-[11px] font-semibold"
+                        >
+                          {item}
+                        </span>
+                      ))}
+                      {specialties.length > 3 && <SpecialtyMore items={specialties} />}
+                    </div>
                     <div className="flex flex-wrap items-center gap-1.5">
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-violet-50 text-violet-800 border border-violet-200/80 text-[11px] font-bold whitespace-nowrap">
                         <ShieldCheck className="w-3.5 h-3.5 text-violet-600" />
@@ -659,24 +740,26 @@ export const PatientDirectory: React.FC<PatientDirectoryProps> = ({
                       )}
                     </div>
                   </div>
-                  <a
-                    href={doctorWhatsAppLink(doc)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`WhatsApp de ${doc.fullName}`}
-                    onClick={(e) => e.stopPropagation()}
-                    onKeyDown={(e) => e.stopPropagation()}
-                    className="min-h-[44px] min-w-[44px] rounded-xl bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 transition-all inline-flex items-center justify-center shrink-0"
-                  >
-                    <WhatsAppIcon className="w-5 h-5 text-[#128C7E]" />
-                  </a>
                 </div>
-                <div className="flex items-center gap-2 text-xs text-slate-500">
-                  <MapPin className="w-3.5 h-3.5 text-violet-600 shrink-0" />
+                <div className="flex items-center gap-2 text-sm text-slate-500">
+                  <MapPin className="w-4 h-4 text-violet-600 shrink-0" />
                   <span className="truncate">{composeCardPlace(doc)}</span>
                 </div>
+                <a
+                  href={doctorWhatsAppLink(doc)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`Escríbeme a ${doc.fullName}`}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  className="min-h-[44px] w-full rounded-xl bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 transition-all inline-flex items-center justify-center gap-2 text-sm font-bold"
+                >
+                  <WhatsAppIcon className="w-5 h-5 text-[#128C7E]" />
+                  Escríbeme
+                </a>
               </article>
-            ))}
+              );
+            })}
           </div>
         )}
         </>
