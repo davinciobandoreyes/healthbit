@@ -137,7 +137,7 @@ export const AdminRethusQueue: React.FC<AdminRethusQueueProps> = ({
         <div className="max-w-7xl mx-auto px-3.5 sm:px-6 h-16 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2.5 min-w-0 lg:hidden">
             <span className="font-extrabold text-lg sm:text-xl tracking-tight text-slate-900">
-              Health<span className="text-violet-600">Bit</span>
+              Ciru<span className="text-violet-600">Plastify</span>
             </span>
             <span className="text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-200/80 px-2 py-0.5 rounded-full whitespace-nowrap">
               Súper administrador

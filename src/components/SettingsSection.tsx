@@ -31,6 +31,7 @@ import {
   defaultWeeklyAvailability,
   hydrateDoctorProfile,
 } from '../data/doctorPublic';
+import { isPlasticSurgeonSpecialty, PLASTIC_PROCEDURE_GROUPS } from '../data/plasticProcedures';
 
 interface SettingsSectionProps {
   doctor: DoctorProfile;
@@ -324,40 +325,81 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({
 
           <div>
             <label className="text-xs font-bold text-slate-700 block mb-1">Especialista en</label>
-            <div className="flex flex-wrap gap-2 mb-2">
-              {focusAreas.map((area) => (
-                <span
-                  key={area}
-                  className="inline-flex items-center gap-1.5 min-h-[36px] px-3 rounded-full bg-violet-50 text-violet-800 border border-violet-200/80 text-xs font-bold"
-                >
-                  {area}
-                  <button type="button" onClick={() => setFocusAreas((prev) => prev.filter((item) => item !== area))} aria-label={`Quitar ${area}`}>
-                    <X className="w-3.5 h-3.5" />
+            {isPlasticSurgeonSpecialty(specialty) ? (
+              <div className="space-y-4">
+                <p className="text-xs text-slate-500">
+                  Marca las subcategorías que prestas. Se muestran en tu ficha.
+                </p>
+                {PLASTIC_PROCEDURE_GROUPS.map((group) => (
+                  <div key={group.id}>
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">{group.label}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {group.items.map((item) => {
+                        const selected = focusAreas.includes(item.label);
+                        return (
+                          <button
+                            key={item.id}
+                            type="button"
+                            aria-pressed={selected}
+                            onClick={() =>
+                              setFocusAreas((prev) =>
+                                prev.includes(item.label)
+                                  ? prev.filter((area) => area !== item.label)
+                                  : [...prev, item.label]
+                              )
+                            }
+                            className={`min-h-[44px] px-3.5 rounded-full text-xs font-bold whitespace-nowrap cursor-pointer ${
+                              selected
+                                ? 'bg-violet-600 text-white'
+                                : 'bg-slate-50 text-slate-600 border border-slate-200/80'
+                            }`}
+                          >
+                            {item.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {focusAreas.map((area) => (
+                    <span
+                      key={area}
+                      className="inline-flex items-center gap-1.5 min-h-[36px] px-3 rounded-full bg-violet-50 text-violet-800 border border-violet-200/80 text-xs font-bold"
+                    >
+                      {area}
+                      <button type="button" onClick={() => setFocusAreas((prev) => prev.filter((item) => item !== area))} aria-label={`Quitar ${area}`}>
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <input
+                    value={focusDraft}
+                    onChange={(e) => setFocusDraft(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        addFocusArea();
+                      }
+                    }}
+                    placeholder="Ej. Ecocardiografía"
+                    className={inputClass}
+                  />
+                  <button
+                    type="button"
+                    onClick={addFocusArea}
+                    className="inline-flex items-center justify-center min-h-[44px] min-w-[44px] px-3 rounded-xl bg-violet-600 text-white cursor-pointer"
+                  >
+                    <Plus className="w-4 h-4" />
                   </button>
-                </span>
-              ))}
-            </div>
-            <div className="flex gap-2">
-              <input
-                value={focusDraft}
-                onChange={(e) => setFocusDraft(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    addFocusArea();
-                  }
-                }}
-                placeholder="Ej. Rinoplastia ultrasónica"
-                className={inputClass}
-              />
-              <button
-                type="button"
-                onClick={addFocusArea}
-                className="inline-flex items-center justify-center min-h-[44px] min-w-[44px] px-3 rounded-xl bg-violet-600 text-white cursor-pointer"
-              >
-                <Plus className="w-4 h-4" />
-              </button>
-            </div>
+                </div>
+              </>
+            )}
           </div>
 
           <div>

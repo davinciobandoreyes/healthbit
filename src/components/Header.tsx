@@ -1,5 +1,5 @@
 import React from 'react';
-import { Activity, ShieldCheck, LogOut } from 'lucide-react';
+import { Sparkles, ShieldCheck, LogOut } from 'lucide-react';
 
 interface HeaderProps {
   doctorName?: string;
@@ -21,12 +21,12 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="max-w-7xl mx-auto px-3.5 sm:px-6 h-15 sm:h-16 flex items-center justify-between gap-2.5 sm:gap-4">
         <div className={`flex items-center gap-2.5 sm:gap-3 min-w-0 ${hideBrandOnLg ? 'lg:hidden' : ''}`}>
           <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-violet-600 to-indigo-400 text-white flex items-center justify-center shadow-xs shadow-violet-200 shrink-0">
-            <Activity className="w-5 h-5 sm:w-6 sm:h-6 text-white stroke-[2.5]" />
+            <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-white stroke-[2.5]" />
           </div>
           <div className="flex flex-col min-w-0">
             <div className="flex items-center gap-1.5 leading-none">
               <span className="font-extrabold text-lg sm:text-xl tracking-tight text-slate-900">
-                Health<span className="text-violet-600">Bit</span>
+                Ciru<span className="text-violet-600">Plastify</span>
               </span>
               <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider bg-violet-50 text-violet-700 border border-violet-200/80 px-2 py-0.5 rounded-full whitespace-nowrap shrink-0">
                 <ShieldCheck className="w-3 h-3 text-violet-600" /> RETHUS

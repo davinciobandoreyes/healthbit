@@ -1,17 +1,30 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Search,
   ShieldCheck,
   MapPin,
-  Activity,
+  Sparkles,
   Stethoscope,
   ArrowRight,
   ChevronLeft,
-  ChevronRight,
+  ScanFace,
+  PersonStanding,
+  HeartPulse,
+  Syringe,
+  LayoutGrid,
+  type LucideIcon,
 } from 'lucide-react';
 import { AppointmentBooking, DoctorProfile, PublicReview, RethusLookup } from '../types';
 import { composeCardCity, composeCardPlace } from '../data/doctorPublic';
 import { buildRethusLookup } from '../data/rethusLookup';
+import { isPlasticSurgeonSpecialty, PLASTIC_PROCEDURE_GROUPS } from '../data/plasticProcedures';
+
+const CATEGORY_ICONS: Record<string, LucideIcon> = {
+  facial: ScanFace,
+  corporal: PersonStanding,
+  reconstructiva: HeartPulse,
+  'no-quirurgico': Syringe,
+};
 import { DoctorOnePager } from './DoctorOnePager';
 import { LegalPage, LegalPageId, SiteFooter } from './LegalPages';
 
@@ -23,7 +36,7 @@ const WhatsAppIcon: React.FC<{ className?: string }> = ({ className }) => (
 
 const doctorWhatsAppLink = (doc: DoctorProfile) => {
   const message = encodeURIComponent(
-    `Hola Dr./Dra. ${doc.fullName}, vi su perfil verificado en HealthBit y me gustaría agendar una cita presencial de valoración en ${doc.specialty}.`
+    `Hola Dr./Dra. ${doc.fullName}, vi su perfil verificado en CiruPlastify y me gustaría agendar una cita presencial de valoración en ${doc.specialty}.`
   );
   const source = doc.whatsappPhone || doc.phone;
   const cleanPhone = source ? source.replace(/[^0-9]/g, '') : '573124567890';
@@ -93,7 +106,7 @@ const RethusSearchFeedback: React.FC<{
       <div className="h-2 rounded-full bg-slate-100 overflow-hidden" role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100}>
         <div className="h-full bg-violet-600 rounded-full" style={{ width: `${progress}%` }} />
       </div>
-      <p className="text-xs text-slate-500">Consulta demo. No abre un perfil en HealthBit.</p>
+      <p className="text-xs text-slate-500">Consulta demo. No abre un perfil en CiruPlastify.</p>
     </section>
   );
 };
@@ -103,7 +116,7 @@ const RethusLookupPanel: React.FC<{ lookup: RethusLookup }> = ({ lookup }) => (
     <div className="space-y-2">
       <h2 className="font-bold text-base text-slate-900">{lookup.fullName}</h2>
       {lookup.outcome === 'absent' ? (
-        <p className="text-xs text-slate-500">No aparece en RETHUS. Consulta demo. No tiene perfil en HealthBit.</p>
+        <p className="text-xs text-slate-500">No aparece en RETHUS. Consulta demo. No tiene perfil en CiruPlastify.</p>
       ) : (
         <>
           <div className="flex flex-wrap items-center gap-1.5">
@@ -123,8 +136,8 @@ const RethusLookupPanel: React.FC<{ lookup: RethusLookup }> = ({ lookup }) => (
           </div>
           <p className="text-xs text-slate-500">
             {lookup.outcome === 'not_enabled'
-              ? 'El registro existe y no tiene facultad para ejercer. Consulta demo. No tiene perfil en HealthBit.'
-              : 'Consulta demo. Esta persona está en RETHUS y no tiene perfil en HealthBit.'}
+              ? 'El registro existe y no tiene facultad para ejercer. Consulta demo. No tiene perfil en CiruPlastify.'
+              : 'Consulta demo. Esta persona está en RETHUS y no tiene perfil en CiruPlastify.'}
           </p>
         </>
       )}
@@ -182,58 +195,12 @@ export const PatientDirectory: React.FC<PatientDirectoryProps> = ({
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [rethusLookups, setRethusLookups] = useState<Record<string, RethusLookup>>({});
   const [rethusRun, setRethusRun] = useState<{ key: string; phase: 'searching' | 'found' | 'ready'; progress: number } | null>(null);
+  const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
   const [selectedSpecialty, setSelectedSpecialty] = useState<string>('TODAS');
   const [selectedCity, setSelectedCity] = useState<string>('TODAS');
   const [selectedDoctor, setSelectedDoctor] = useState<DoctorProfile | null>(null);
   const [bookingSuccess, setBookingSuccess] = useState<boolean>(false);
   const [legalPage, setLegalPage] = useState<LegalPageId | null>(null);
-
-  const scrollNavRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState<boolean>(false);
-  const [canScrollRight, setCanScrollRight] = useState<boolean>(true);
-
-  const specialties = [
-    'TODAS',
-    'Cirugía Plástica',
-    'Cardiología',
-    'Dermatología',
-    'Pediatría',
-    'Neurología',
-    'Oftalmología',
-    'Ginecología',
-    'Ortopedia',
-    'Medicina Interna',
-    'Otorrinolaringología',
-    'Endocrinología',
-  ];
-
-  const updateScrollButtons = () => {
-    if (scrollNavRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = scrollNavRef.current;
-      setCanScrollLeft(scrollLeft > 4);
-      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 4);
-    }
-  };
-
-  useEffect(() => {
-    updateScrollButtons();
-    const navEl = scrollNavRef.current;
-    if (navEl) {
-      navEl.addEventListener('scroll', updateScrollButtons, { passive: true });
-      window.addEventListener('resize', updateScrollButtons);
-      return () => {
-        navEl.removeEventListener('scroll', updateScrollButtons);
-        window.removeEventListener('resize', updateScrollButtons);
-      };
-    }
-  }, []);
-
-  const handleScroll = (direction: 'left' | 'right') => {
-    if (scrollNavRef.current) {
-      const scrollAmount = direction === 'left' ? -260 : 260;
-      scrollNavRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    }
-  };
 
   const normalizeStr = (str: string) =>
     str
@@ -241,22 +208,59 @@ export const PatientDirectory: React.FC<PatientDirectoryProps> = ({
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '');
 
-  const visibleDoctors = doctors.filter((doc) => doc.verifiedStatus.rethus && !doc.isPaused);
+  const visibleDoctors = doctors.filter(
+    (doc) => doc.verifiedStatus.rethus && !doc.isPaused && isPlasticSurgeonSpecialty(doc.specialty)
+  );
 
-  const filteredDoctors = visibleDoctors.filter((doc) => {
-    const normQuery = normalizeStr(searchQuery);
-    const matchesQuery =
+  const doctorOffersProcedure = (doc: DoctorProfile, procedureId: string) => {
+    const procedure = PLASTIC_PROCEDURE_GROUPS.flatMap((group) => group.items).find((item) => item.id === procedureId);
+    if (!procedure) return false;
+    const needle = normalizeStr(procedure.label);
+    const haystack = [
+      doc.specialty,
+      doc.subspecialty || '',
+      doc.biography,
+      ...(doc.focusAreas || []),
+    ]
+      .map(normalizeStr)
+      .join(' ');
+    return haystack.includes(needle);
+  };
+
+  const doctorMatchesQuery = (doc: DoctorProfile, normQuery: string) => {
+    const matchesIdentity =
       normalizeStr(doc.fullName).includes(normQuery) ||
       normalizeStr(doc.rethusCode).includes(normQuery) ||
       normalizeStr(doc.specialty).includes(normQuery) ||
-      (doc.subspecialty && normalizeStr(doc.subspecialty).includes(normQuery)) ||
+      Boolean(doc.subspecialty && normalizeStr(doc.subspecialty).includes(normQuery)) ||
       normalizeStr(doc.location).includes(normQuery) ||
-      (doc.department && normalizeStr(doc.department).includes(normQuery)) ||
+      Boolean(doc.department && normalizeStr(doc.department).includes(normQuery)) ||
       normalizeStr(composeCardPlace(doc)).includes(normQuery);
 
+    if (!normQuery) return matchesIdentity;
+
+    const matchesCatalog = PLASTIC_PROCEDURE_GROUPS.some((group) => {
+      if (normalizeStr(group.label).includes(normQuery)) {
+        return group.items.some((procedure) => doctorOffersProcedure(doc, procedure.id));
+      }
+      return group.items.some(
+        (procedure) =>
+          normalizeStr(procedure.label).includes(normQuery) && doctorOffersProcedure(doc, procedure.id)
+      );
+    });
+
+    return matchesIdentity || matchesCatalog;
+  };
+
+  const filteredDoctors = visibleDoctors.filter((doc) => {
+    const normQuery = normalizeStr(searchQuery);
+    const matchesQuery = doctorMatchesQuery(doc, normQuery);
+
+    const activeGroup = PLASTIC_PROCEDURE_GROUPS.find((group) => group.id === selectedGroup);
     const matchesSpecialty =
-      selectedSpecialty === 'TODAS' ||
-      normalizeStr(doc.specialty).includes(normalizeStr(selectedSpecialty));
+      selectedSpecialty !== 'TODAS'
+        ? doctorOffersProcedure(doc, selectedSpecialty)
+        : !activeGroup || activeGroup.items.some((procedure) => doctorOffersProcedure(doc, procedure.id));
 
     const matchesCity =
       selectedCity === 'TODAS' || normalizeStr(composeCardCity(doc)) === normalizeStr(selectedCity);
@@ -267,23 +271,23 @@ export const PatientDirectory: React.FC<PatientDirectoryProps> = ({
   const cities = [
     'TODAS',
     ...Array.from(new Set(visibleDoctors.map(composeCardCity)))
-      .filter(Boolean)
+      .filter((city): city is string => Boolean(city))
       .sort((a, b) => a.localeCompare(b, 'es')),
   ];
 
   const queryText = searchQuery.trim();
   const queryKey = normalizeStr(queryText);
-  const matchesHealthBitQuery = (doc: DoctorProfile) =>
-    normalizeStr(doc.fullName).includes(queryKey) ||
-    normalizeStr(doc.rethusCode).includes(queryKey) ||
-    normalizeStr(doc.specialty).includes(queryKey) ||
-    Boolean(doc.subspecialty && normalizeStr(doc.subspecialty).includes(queryKey)) ||
-    normalizeStr(doc.location).includes(queryKey) ||
-    Boolean(doc.department && normalizeStr(doc.department).includes(queryKey)) ||
-    normalizeStr(composeCardPlace(doc)).includes(queryKey);
+  const matchesHealthBitQuery = (doc: DoctorProfile) => doctorMatchesQuery(doc, queryKey);
 
   const healthBitQueryMatch = queryKey.length > 0 && visibleDoctors.some(matchesHealthBitQuery);
-  const lookupEligible = queryText.length >= 3 && !healthBitQueryMatch;
+  const queryIsCatalogTerm =
+    queryKey.length > 0 &&
+    PLASTIC_PROCEDURE_GROUPS.some(
+      (group) =>
+        normalizeStr(group.label).includes(queryKey) ||
+        group.items.some((procedure) => normalizeStr(procedure.label).includes(queryKey))
+    );
+  const lookupEligible = queryText.length >= 3 && !healthBitQueryMatch && !queryIsCatalogTerm;
   const activeLookup = lookupEligible
     ? rethusLookups[queryKey] ?? buildRethusLookup(queryText)
     : null;
@@ -328,6 +332,7 @@ export const PatientDirectory: React.FC<PatientDirectoryProps> = ({
   const returnHome = () => {
     setSearchDraft('');
     setSearchQuery('');
+    setSelectedGroup(null);
     setSelectedSpecialty('TODAS');
     setSelectedCity('TODAS');
     setRethusRun(null);
@@ -339,16 +344,68 @@ export const PatientDirectory: React.FC<PatientDirectoryProps> = ({
   const rethusSearching = lookupEligible && !rethusReady;
   const showCancel = searchApplied && !rethusSearching;
 
-  const specialtyCount = (cat: string) =>
-    cat === 'TODAS'
-      ? visibleDoctors.length
-      : visibleDoctors.filter((d) => normalizeStr(d.specialty).includes(normalizeStr(cat))).length;
+  const procedureCount = (procedureId: string) =>
+    visibleDoctors.filter((doc) => doctorOffersProcedure(doc, procedureId)).length;
+
+  const openGroup = PLASTIC_PROCEDURE_GROUPS.find((group) => group.id === selectedGroup) ?? null;
 
   const resultCount = filteredDoctors.length;
 
-  const specialtyOptions = specialties.filter((cat) => specialtyCount(cat) > 0);
-
   const heroVisible = searchQuery.trim() === '' && selectedCity === 'TODAS';
+
+  const searchForm = !lookupEligible ? (
+    <form
+      onSubmit={(event) => {
+        event.preventDefault();
+        setSearchQuery(searchDraft);
+      }}
+    >
+      <div className="flex items-center min-h-[44px] min-w-0 rounded-2xl bg-white border border-slate-200/80">
+        <label className="shrink-0 border-r border-slate-200/80">
+          <span className="sr-only">Ciudad</span>
+          <select
+            value={selectedCity}
+            onChange={(e) => setSelectedCity(e.target.value)}
+            className="min-h-[44px] max-w-[9.5rem] sm:max-w-[12rem] bg-transparent pl-3 pr-2 text-xs font-bold text-slate-700 cursor-pointer outline-none"
+          >
+            {cities.map((city) => (
+              <option key={city} value={city}>
+                {city === 'TODAS' ? 'Todas las ciudades' : city}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="flex flex-1 items-center gap-2 min-w-0 pl-3 pr-1.5">
+          <Search className="w-4 h-4 text-violet-600 shrink-0" />
+          <span className="sr-only">Buscar médicos</span>
+          <input
+            type="search"
+            value={searchDraft}
+            onChange={(e) => setSearchDraft(e.target.value)}
+            placeholder="Nombre, especialidad o cédula"
+            className="w-full min-w-0 bg-transparent text-sm font-medium text-slate-800 outline-none placeholder:text-slate-400"
+          />
+          {showCancel ? (
+            <button
+              type="button"
+              onClick={returnHome}
+              className="sm:hidden min-h-[32px] shrink-0 px-3 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs cursor-pointer"
+            >
+              Cancelar
+            </button>
+          ) : (
+            <button
+              type="submit"
+              disabled={rethusSearching}
+              className="sm:hidden min-h-[32px] shrink-0 px-3 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              Buscar
+            </button>
+          )}
+        </label>
+      </div>
+    </form>
+  ) : null;
 
   // If a doctor is selected, render the dedicated One-Pager view
   if (selectedDoctor) {
@@ -389,10 +446,10 @@ export const PatientDirectory: React.FC<PatientDirectoryProps> = ({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2 shrink-0">
             <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-violet-600 to-indigo-400 text-white flex items-center justify-center shadow-xs shadow-violet-200">
-              <Activity className="w-6 h-6 text-white stroke-[2.5]" />
+              <Sparkles className="w-6 h-6 text-white stroke-[2.5]" />
             </div>
             <span className="font-extrabold text-xl tracking-tight text-slate-900">
-              Health<span className="text-violet-600">Bit</span>
+              Ciru<span className="text-violet-600">Plastify</span>
             </span>
           </div>
 
@@ -415,26 +472,26 @@ export const PatientDirectory: React.FC<PatientDirectoryProps> = ({
         ) : (
         <>
         {heroVisible && (
-          <section className="bg-white border border-slate-200/80 rounded-3xl overflow-hidden">
-            <div className="flex flex-col-reverse sm:flex-row sm:items-stretch">
-              <div className="flex-1 px-4 py-3 sm:px-5 flex flex-col justify-center gap-1 min-w-0">
-                <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900">
-                  Encuentra doctores <span className="text-violet-600">verificados</span>
+          <section className="relative min-h-44 sm:min-h-52 border border-slate-200/80 rounded-3xl overflow-hidden">
+            <img
+              src="/hero-doctores-verificados.png"
+              alt=""
+              className="absolute inset-0 h-full w-full object-cover object-[center_30%]"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-slate-950/85 via-slate-950/55 to-slate-950/15" />
+            <div className="relative flex min-h-44 sm:min-h-52 flex-col justify-center gap-3 px-4 py-4 sm:px-6 max-w-xl">
+              <div className="space-y-1">
+                <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white">
+                  Encuentra cirujanos plásticos <span className="text-violet-300">verificados</span>
                 </h1>
-                <p className="text-sm text-slate-600">Especialistas con RETHUS y REPS revisados.</p>
+                <p className="text-sm text-slate-200">Especialistas con RETHUS y REPS revisados.</p>
               </div>
-              <div className="sm:w-[42%] shrink-0">
-                <img
-                  src="/hero-doctores-verificados.png"
-                  alt="Doctora con una madre, su bebé y un paciente, sonriendo en un consultorio"
-                  className="w-full h-28 sm:h-36 object-cover object-[center_30%]"
-                />
-              </div>
+              {searchForm}
             </div>
           </section>
         )}
 
-        {searchApplied && (
+        {!heroVisible && searchApplied && (
           <button
             type="button"
             onClick={returnHome}
@@ -445,82 +502,80 @@ export const PatientDirectory: React.FC<PatientDirectoryProps> = ({
           </button>
         )}
 
-        {!lookupEligible && (
-        <form
-          onSubmit={(event) => {
-            event.preventDefault();
-            setSearchQuery(searchDraft);
-          }}
-          className="flex items-center gap-2"
-        >
-          <label className="flex flex-1 items-center gap-2 min-h-[44px] min-w-0 px-3 rounded-2xl bg-white border border-slate-200/80">
-            <Search className="w-4 h-4 text-violet-600 shrink-0" />
-            <span className="sr-only">Buscar médicos</span>
-            <input
-              type="search"
-              value={searchDraft}
-              onChange={(e) => setSearchDraft(e.target.value)}
-              placeholder="Nombre, especialidad o cédula"
-              className="w-full min-w-0 bg-transparent text-sm font-medium text-slate-800 outline-none placeholder:text-slate-400"
-            />
-          </label>
-          {showCancel ? (
-            <button
-              type="button"
-              onClick={returnHome}
-              className="min-h-[44px] shrink-0 px-4 rounded-2xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-sm cursor-pointer"
-            >
-              Cancelar
-            </button>
-          ) : (
-            <button
-              type="submit"
-              disabled={rethusSearching}
-              className="min-h-[44px] shrink-0 px-4 rounded-2xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-sm cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-violet-600"
-            >
-              Buscar
-            </button>
-          )}
-        </form>
-        )}
+        {!heroVisible && searchForm}
 
         {!searchApplied && (
-        <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-          <div className="relative min-w-0 sm:flex-1">
-            {canScrollLeft && (
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedGroup(null);
+                setSelectedSpecialty('TODAS');
+              }}
+              className={`min-h-[44px] w-full rounded-full border px-3 py-2 flex items-center justify-center gap-2 cursor-pointer transition-all ${
+                !selectedGroup
+                  ? 'border-violet-600 bg-violet-50 shadow-xs'
+                  : 'border-slate-200/80 bg-white hover:bg-slate-50'
+              }`}
+            >
+              <LayoutGrid className={`w-4 h-4 shrink-0 ${!selectedGroup ? 'text-violet-700' : 'text-violet-600'}`} />
+              <span className="text-xs font-bold text-slate-900 leading-tight">Todas</span>
+            </button>
+            {PLASTIC_PROCEDURE_GROUPS.map((group) => {
+              const active = selectedGroup === group.id;
+              const Icon = CATEGORY_ICONS[group.id] ?? ScanFace;
+              return (
+                <button
+                  key={group.id}
+                  type="button"
+                  onClick={() => {
+                    setSelectedGroup(group.id);
+                    setSelectedSpecialty('TODAS');
+                  }}
+                  className={`min-h-[44px] w-full rounded-full border px-3 py-2 flex items-center justify-center gap-2 cursor-pointer transition-all ${
+                    active
+                      ? 'border-violet-600 bg-violet-50 shadow-xs'
+                      : 'border-slate-200/80 bg-white hover:bg-slate-50'
+                  }`}
+                >
+                  <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-violet-700' : 'text-violet-600'}`} />
+                  <span className="text-xs font-bold text-slate-900 leading-tight text-left">{group.label}</span>
+                </button>
+              );
+            })}
+          </div>
+          {openGroup && (
+            <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-1">
               <button
                 type="button"
-                onClick={() => handleScroll('left')}
-                aria-label="Desplazar a la izquierda"
-                className="hidden sm:flex absolute left-1 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-xl bg-white/95 text-slate-700 hover:text-violet-700 hover:bg-violet-50 border border-slate-200 shadow-md items-center justify-center transition-all cursor-pointer active:scale-90"
+                onClick={() => setSelectedSpecialty('TODAS')}
+                className={`min-h-[44px] px-3 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer shrink-0 ${
+                  selectedSpecialty === 'TODAS'
+                    ? 'bg-violet-600 text-white shadow-xs'
+                    : 'bg-white text-slate-600 border border-slate-200/80 hover:bg-slate-100 hover:text-slate-900'
+                }`}
               >
-                <ChevronLeft className="w-4 h-4" />
+                Toda la categoría
               </button>
-            )}
-            {canScrollLeft && (
-              <div className="hidden sm:block absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-slate-50 to-transparent z-10 pointer-events-none" />
-            )}
-            <div
-              ref={scrollNavRef}
-              className="flex items-center gap-2 overflow-x-auto scroll-smooth scrollbar-none select-none pb-1 sm:pb-0"
-            >
-              {specialtyOptions.map((cat) => {
-                const count = specialtyCount(cat);
+              {openGroup.items.map((procedure) => {
+                const count = procedureCount(procedure.id);
+                const active = selectedSpecialty === procedure.id;
                 return (
                   <button
-                    key={cat}
+                    key={procedure.id}
                     type="button"
-                    onClick={() => setSelectedSpecialty(cat)}
+                    onClick={() => setSelectedSpecialty(procedure.id)}
                     className={`min-h-[44px] px-3 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer flex items-center gap-2 shrink-0 ${
-                      selectedSpecialty === cat
+                      active
                         ? 'bg-violet-600 text-white shadow-xs'
                         : 'bg-white text-slate-600 border border-slate-200/80 hover:bg-slate-100 hover:text-slate-900'
                     }`}
                   >
-                    <span>{cat === 'TODAS' ? 'Todas' : cat}</span>
+                    <span>{procedure.label}</span>
                     <span
                       className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
-                        selectedSpecialty === cat ? 'bg-white/20 text-white' : 'bg-slate-200/80 text-slate-600'
+                        active ? 'bg-white/20 text-white' : 'bg-slate-200/80 text-slate-600'
                       }`}
                     >
                       {count}
@@ -529,35 +584,7 @@ export const PatientDirectory: React.FC<PatientDirectoryProps> = ({
                 );
               })}
             </div>
-            {canScrollRight && (
-              <div className="hidden sm:block absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-slate-50 to-transparent z-10 pointer-events-none" />
-            )}
-            {canScrollRight && (
-              <button
-                type="button"
-                onClick={() => handleScroll('right')}
-                aria-label="Desplazar a la derecha"
-                className="hidden sm:flex absolute right-1 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-xl bg-white/95 text-slate-700 hover:text-violet-700 hover:bg-violet-50 border border-slate-200 shadow-md items-center justify-center transition-all cursor-pointer active:scale-90"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            )}
-          </div>
-
-          <label className="block w-full sm:w-auto sm:shrink-0">
-            <span className="sr-only">Ciudad</span>
-            <select
-              value={selectedCity}
-              onChange={(e) => setSelectedCity(e.target.value)}
-              className="min-h-[44px] w-full sm:w-auto rounded-xl border border-slate-200/80 bg-white px-3 text-xs font-bold text-slate-700 cursor-pointer"
-            >
-              {cities.map((city) => (
-                <option key={city} value={city}>
-                  {city === 'TODAS' ? 'Todas las ciudades' : city}
-                </option>
-              ))}
-            </select>
-          </label>
+          )}
         </div>
         )}
 
@@ -584,7 +611,7 @@ export const PatientDirectory: React.FC<PatientDirectoryProps> = ({
             <div className="space-y-1">
               <h2 className="text-base font-bold text-slate-800">No encontramos especialistas</h2>
               <p className="text-xs text-slate-500">
-                Prueba con otra ciudad o especialidad, o limpia los términos de búsqueda.
+                Prueba con otro procedimiento o ciudad, o limpia los términos de búsqueda.
               </p>
             </div>
             <button

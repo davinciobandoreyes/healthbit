@@ -186,12 +186,12 @@ const whatsAppDigits = (phone: string) => {
 const statusWhatsAppMessage = (item: AppointmentBooking, status: AppointmentStatus) => {
   const when = item.dateISO && item.time ? ` el ${item.dateISO} a las ${item.time}` : '';
   if (status === 'confirmed') {
-    return `Hola ${item.patientName}, tu cita en HealthBit quedó confirmada${when}. Ref ${item.refCode}.`;
+    return `Hola ${item.patientName}, tu cita en CiruPlastify quedó confirmada${when}. Ref ${item.refCode}.`;
   }
   if (status === 'cancelled') {
-    return `Hola ${item.patientName}, tu cita en HealthBit${when} fue cancelada. Ref ${item.refCode}.`;
+    return `Hola ${item.patientName}, tu cita en CiruPlastify${when} fue cancelada. Ref ${item.refCode}.`;
   }
-  return `Hola ${item.patientName}, tu solicitud de cita en HealthBit quedó pendiente por confirmar. Ref ${item.refCode}.`;
+  return `Hola ${item.patientName}, tu solicitud de cita en CiruPlastify quedó pendiente por confirmar. Ref ${item.refCode}.`;
 };
 
 export const DoctorCitasSection: React.FC<{

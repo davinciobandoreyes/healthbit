@@ -23,6 +23,7 @@ import {
   UserCheck,
   Phone,
 } from 'lucide-react';
+import { isPlasticSurgeonSpecialty } from '../data/plasticProcedures';
 import { CameraModal } from './CameraModal';
 import { DegreeValidationStep } from './DegreeValidationStep';
 import { RepsVerificationStep } from './RepsVerificationStep';
@@ -267,7 +268,11 @@ export const VerificationFlow: React.FC<VerificationFlowProps> = ({
     });
   };
 
+  const plasticSurgeon = isPlasticSurgeonSpecialty(personalData.specialty);
+  const blockedFromNetwork = rethusSubmitted && !plasticSurgeon;
+
   const handlePrimaryAction = () => {
+    if (blockedFromNetwork) return;
     if (currentStep === 2 && !rethusSubmitted) {
       setRethusSubmitted(true);
       return;
@@ -489,7 +494,7 @@ export const VerificationFlow: React.FC<VerificationFlowProps> = ({
                 Registro Profesional y RETHUS
               </h2>
               <p className="text-xs text-slate-500 max-w-md mx-auto">
-                Ingresa tu información médica oficial. El equipo HealthBit revisará tu RETHUS.
+                Ingresa tu información médica oficial. El equipo CiruPlastify revisará tu RETHUS.
               </p>
             </div>
 
@@ -554,7 +559,22 @@ export const VerificationFlow: React.FC<VerificationFlowProps> = ({
               </div>
             </div>
 
-            {rethusSubmitted && (
+            {blockedFromNetwork && (
+              <div className="bg-white border border-rose-200 rounded-2xl p-5 shadow-xs">
+                <div className="bg-rose-50 border border-rose-200 rounded-xl p-4 space-y-2">
+                  <div className="flex items-center gap-1.5 text-rose-800 font-bold text-xs">
+                    <AlertCircle className="w-4 h-4 text-rose-600" />
+                    <span>No puedes unirte a la red</span>
+                  </div>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    CiruPlastify es solo para cirujanos plásticos. Tu RETHUS se puede revisar, pero esta especialidad
+                    no entra al directorio ni a la cola de registro.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {rethusSubmitted && plasticSurgeon && (
               <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs">
                 <div className="bg-amber-50 border border-amber-200/80 rounded-xl p-4 space-y-2">
                   <div className="flex items-center justify-between gap-2">
@@ -567,7 +587,7 @@ export const VerificationFlow: React.FC<VerificationFlowProps> = ({
                     </span>
                   </div>
                   <p className="text-xs text-slate-600 leading-relaxed">
-                    Tu verificación por RETHUS está siendo revisada por el equipo de HealthBit. Puedes continuar con
+                    Tu verificación por RETHUS está siendo revisada por el equipo de CiruPlastify. Puedes continuar con
                     la cédula y la prueba facial. Mientras no esté confirmado, no aparecerás en el buscador de
                     pacientes.
                   </p>
@@ -918,6 +938,7 @@ export const VerificationFlow: React.FC<VerificationFlowProps> = ({
         <button
           onClick={handlePrimaryAction}
           disabled={
+            blockedFromNetwork ||
             (currentStep === 1 && !isStep1Valid) ||
             (currentStep === 2 &&
               (!personalData.fullName?.trim() || !personalData.idNumber?.trim())) ||
@@ -931,7 +952,9 @@ export const VerificationFlow: React.FC<VerificationFlowProps> = ({
           <span>
             {currentStep === 7
               ? 'Finalizar y Activar Cuenta Médica'
-              : currentStep === 2 && !rethusSubmitted
+              : blockedFromNetwork
+                ? 'Registro no disponible'
+                : currentStep === 2 && !rethusSubmitted
                 ? 'Enviar RETHUS a revisión'
                 : currentStep === 3 && !repsSubmitted
                   ? 'Enviar REPS a revisión'

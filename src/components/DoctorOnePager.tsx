@@ -27,6 +27,7 @@ import {
   isTimeInRange,
   defaultWeeklyAvailability,
 } from '../data/doctorPublic';
+import { isPlasticSurgeonSpecialty } from '../data/plasticProcedures';
 
 interface DoctorOnePagerProps {
   doctor: DoctorProfile;
@@ -786,7 +787,7 @@ export const DoctorOnePager: React.FC<DoctorOnePagerProps> = ({
   };
 
   const whatsAppMessage = encodeURIComponent(
-    `Hola Dr./Dra. ${doctor.fullName}, vi su perfil verificado en HealthBit y me gustaría agendar una cita presencial de valoración en ${doctor.specialty}.`
+    `Hola Dr./Dra. ${doctor.fullName}, vi su perfil verificado en CiruPlastify y me gustaría agendar una cita presencial de valoración en ${doctor.specialty}.`
   );
   const whatsappSource = doctor.whatsappPhone || doctor.phone;
   const cleanPhone = whatsappSource ? whatsappSource.replace(/[^0-9]/g, '') : '573124567890';
@@ -940,14 +941,27 @@ export const DoctorOnePager: React.FC<DoctorOnePagerProps> = ({
 
                   <div>
                     <h3 className="text-sm font-bold text-slate-900 mb-2">Especialista en</h3>
-                    <ul className="space-y-1.5 text-sm text-slate-600">
-                    {focusAreas.map((area) => (
-                      <li key={area} className="flex items-start gap-2">
-                        <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-violet-600 shrink-0" />
-                        {area}
-                      </li>
-                    ))}
-                    </ul>
+                    {isPlasticSurgeonSpecialty(doctor.specialty) ? (
+                      <div className="flex flex-wrap gap-2">
+                        {focusAreas.map((area) => (
+                          <span
+                            key={area}
+                            className="inline-flex items-center min-h-[36px] px-3 rounded-full bg-violet-50 text-violet-800 border border-violet-200/80 text-xs font-bold whitespace-nowrap"
+                          >
+                            {area}
+                          </span>
+                        ))}
+                      </div>
+                    ) : (
+                      <ul className="space-y-1.5 text-sm text-slate-600">
+                        {focusAreas.map((area) => (
+                          <li key={area} className="flex items-start gap-2">
+                            <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-violet-600 shrink-0" />
+                            {area}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-3 pt-1">

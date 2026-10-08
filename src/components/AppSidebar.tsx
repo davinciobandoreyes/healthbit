@@ -1,5 +1,5 @@
 import React from 'react';
-import { Activity, PanelLeft, PanelLeftClose } from 'lucide-react';
+import { Sparkles, PanelLeft, PanelLeftClose } from 'lucide-react';
 import { AppNavItem } from '../nav';
 
 interface AppSidebarProps {
@@ -26,11 +26,11 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
     >
       <div className={`flex items-center gap-2.5 h-16 px-3 border-b border-slate-200/80 ${collapsed ? 'justify-center' : ''}`}>
         <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-violet-600 to-indigo-400 text-white flex items-center justify-center shadow-xs shadow-violet-200 shrink-0">
-          <Activity className="w-5 h-5 text-white stroke-[2.5]" />
+          <Sparkles className="w-5 h-5 text-white stroke-[2.5]" />
         </div>
         {!collapsed && (
           <span className="font-extrabold text-lg tracking-tight text-slate-900 whitespace-nowrap">
-            Health<span className="text-violet-600">Bit</span>
+            Ciru<span className="text-violet-600">Plastify</span>
           </span>
         )}
       </div>

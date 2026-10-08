@@ -617,7 +617,7 @@ export const PatientDetailView: React.FC<PatientDetailViewProps> = ({
                 <Sparkles className="w-4 h-4" /> Resumen Rápido del Caso
               </div>
               <p className="text-xs text-slate-300 leading-relaxed">
-                El paciente se encuentra bajo protocolo de seguimiento postquirúrgico en HealthBit. Todas las notas clínicas y consentimientos se encuentran sincronizados.
+                El paciente se encuentra bajo protocolo de seguimiento postquirúrgico en CiruPlastify. Todas las notas clínicas y consentimientos se encuentran sincronizados.
               </p>
               <button
                 onClick={() => setActiveTab('notes')}
