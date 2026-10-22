@@ -4,7 +4,7 @@ Producto: plataforma médica colombiana. Un paciente encuentra médicos verifica
 
 Stack: React 19 + Vite + Tailwind 4 + Express (`server.ts`, puerto 3000). Arranque: `npm run dev`. Estado de sesión vive en React (`src/App.tsx`); se pierde al recargar. No hay DB.
 
-Nombre canónico: **HealthBit**. En `index.html` / `server.ts` aún aparece “VerifyMD” / “Lovi Clinical”: leftover, no reintroducir.
+Nombre canónico: **Plasty**. En `server.ts` aún aparece “VerifyMD” / “Lovi Clinical”: leftover, no reintroducir.
 
 ## Memoria (el context window es caro y volátil)
 

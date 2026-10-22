@@ -401,7 +401,7 @@ export default function App() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center">
             <div className="flex items-center gap-2">
               <span className="font-extrabold text-lg text-slate-900">
-                Ciru<span className="text-violet-600">Plastify</span>
+                P<span className="text-violet-600">lasty</span>
               </span>
               <span className="text-xs font-bold text-slate-400">| Registro y Validación Médica</span>
             </div>
@@ -426,7 +426,7 @@ export default function App() {
         <div className="w-full max-w-md mx-auto flex items-center pt-2 pb-4">
           <div className="flex items-center gap-1.5">
             <span className="font-extrabold text-lg text-slate-900 tracking-tight">
-              Ciru<span className="text-violet-600">Plastify</span>
+              P<span className="text-violet-600">lasty</span>
             </span>
             <span className="text-[11px] font-semibold text-slate-400">| Acreditación</span>
           </div>
@@ -443,7 +443,7 @@ export default function App() {
             </h2>
             <p className="text-xs text-slate-500 max-w-xs mx-auto leading-relaxed">
               {rethusPending
-                ? 'Tu cuenta está lista. El equipo CiruPlastify revisará tu RETHUS y tu REPS. Mientras tanto no apareces en el buscador.'
+                ? 'Tu cuenta está lista. El equipo Plasty revisará tu RETHUS y tu REPS. Mientras tanto no apareces en el buscador.'
                 : 'Tu cuenta y registro profesional han sido autenticados exitosamente.'}
             </p>
           </div>
@@ -611,6 +611,9 @@ export default function App() {
               doctor={doctor}
               onUpdateDoctor={handleUpdateDoctor}
               onLogout={handleLogout}
+              reviews={publicReviews.filter(
+                (item) => normalizeEmail(item.doctorEmail) === doctorEmailKey
+              )}
             />
           )}
         </main>

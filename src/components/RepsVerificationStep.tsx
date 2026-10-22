@@ -33,7 +33,7 @@ export const RepsVerificationStep: React.FC<RepsVerificationStepProps> = ({
           Habilitación REPS
         </h2>
         <p className="text-xs text-slate-500 max-w-md mx-auto">
-          Indica la sede donde prestas el servicio y los grupos habilitados. El equipo CiruPlastify revisará tu REPS.
+          Indica la sede donde prestas el servicio y los grupos habilitados. El equipo Plasty revisará tu REPS.
         </p>
       </div>
 

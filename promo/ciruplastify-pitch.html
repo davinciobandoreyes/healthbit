@@ -1,0 +1,2032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Plasty — Pitch</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #0f172a;
+      --muted: #475569;
+      --faint: #64748b;
+      --line: #e2e8f0;
+      --violet: #7c3aed;
+      --violet-deep: #6d28d9;
+      --soft: #f5f3ff;
+      --card: #f8fafc;
+      --bg: #ffffff;
+      --ok: #5b21b6;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+      color: var(--ink);
+      background: #eceaf3;
+    }
+
+    .progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      width: 12.5%;
+      background: var(--violet);
+      z-index: 20;
+    }
+
+    .deck { min-height: 100%; }
+
+    .slide {
+      display: none;
+      min-height: 100vh;
+      min-height: 100dvh;
+      padding: 28px 48px 96px;
+      background: var(--bg);
+    }
+    .slide.is-active { display: block; }
+
+    .frame {
+      max-width: 1120px;
+      margin: 0 auto;
+      min-height: calc(100dvh - 124px);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 36px;
+    }
+    .mark {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--ink);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1;
+    }
+    .mark-tile {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      background: linear-gradient(to top right, #7c3aed, #818cf8);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 1px 2px rgba(124, 58, 237, 0.25);
+    }
+    .mark-tile svg { width: 18px; height: 18px; display: block; }
+    .mark-name { font-size: 20px; }
+    .mark-name span { color: var(--violet); }
+    .mark-lg { gap: 12px; }
+    .mark-lg .mark-tile { width: 48px; height: 48px; border-radius: 14px; }
+    .mark-lg .mark-tile svg { width: 26px; height: 26px; }
+    .mark-lg .mark-name { font-size: 36px; }
+    .kicker {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--violet);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(36px, 5vw, 60px);
+      line-height: 1.05;
+      letter-spacing: -0.035em;
+      font-weight: 800;
+    }
+    h2 {
+      margin: 0 0 12px;
+      font-size: clamp(28px, 3.4vw, 40px);
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      font-weight: 800;
+    }
+    .lead {
+      margin: 0;
+      max-width: 720px;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.45;
+    }
+
+    .title {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 22px;
+      padding-bottom: 24px;
+    }
+    .title p {
+      margin: 0;
+      max-width: 640px;
+      font-size: 20px;
+      line-height: 1.45;
+      color: var(--muted);
+    }
+    .offers {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 6px;
+    }
+    .offers li {
+      position: relative;
+      padding-left: 16px;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.35;
+    }
+    .offers li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 8px;
+      width: 7px;
+      height: 7px;
+      border-radius: 99px;
+      background: var(--violet);
+    }
+    .two {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .two h3 { margin-bottom: 10px; font-size: 18px; }
+    .two ul { margin: 0; padding: 0; list-style: none; }
+    .two li {
+      position: relative;
+      padding: 0 0 10px 16px;
+      color: var(--muted);
+      font-size: 14.5px;
+      line-height: 1.35;
+    }
+    .two li strong { color: var(--ink); font-weight: 700; }
+    .two li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 7px;
+      width: 7px;
+      height: 7px;
+      border-radius: 99px;
+      background: var(--violet);
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .stat .n {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+    .stat p { margin: 6px 0 0; font-size: 13px; line-height: 1.35; }
+    .scenarios {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .scenarios h3 { margin-bottom: 4px; }
+    .scenarios p { font-size: 14px; }
+
+    .meters {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .meter .n {
+      margin: 0;
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+    .meter p { margin: 6px 0 0; color: var(--muted); font-size: 14px; line-height: 1.35; }
+    .track {
+      height: 12px;
+      margin-top: 14px;
+      border-radius: 99px;
+      background: #e9e5f5;
+      overflow: hidden;
+    }
+    .track span {
+      display: block;
+      height: 100%;
+      border-radius: 99px;
+      background: var(--violet);
+    }
+    .meter.surgeons .track span { background: var(--ink); }
+    .glossary {
+      margin-top: 22px;
+      display: grid;
+      gap: 8px;
+    }
+    .glossary p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13.5px;
+      line-height: 1.4;
+    }
+    .glossary strong { color: var(--ink); }
+
+    .proj {
+      display: grid;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .proj-row {
+      display: grid;
+      grid-template-columns: 64px 1fr 140px minmax(240px, 1.15fr);
+      gap: 16px;
+      align-items: center;
+      padding: 12px 16px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--card);
+    }
+    .proj-row .pct {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+    .proj-row p { margin: 0; font-size: 15px; line-height: 1.35; }
+    .proj-row .track { margin-top: 0; }
+    .proj .note { margin-top: 14px; }
+
+    .br-nums {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .br-nums .n {
+      margin: 0;
+      font-size: 36px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+    .br-nums p { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
+    .pie-wrap {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 8px 22px;
+      align-items: center;
+    }
+    .pie {
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: conic-gradient(
+        #7c3aed 0 215.97deg,
+        #c4b5fd 215.97deg 284.51deg,
+        #94a3b8 284.51deg 328.09deg,
+        #0f172a 328.09deg 360deg
+      );
+    }
+    .legend {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 8px;
+    }
+    .legend li {
+      display: grid;
+      grid-template-columns: 14px 1fr auto auto;
+      gap: 10px;
+      align-items: center;
+      font-size: 15px;
+    }
+    .legend .us {
+      background: var(--soft);
+      border-radius: 10px;
+      padding: 6px 8px;
+      font-weight: 700;
+    }
+    .swatch {
+      width: 14px;
+      height: 14px;
+      border-radius: 4px;
+    }
+    .swatch.br { background: #7c3aed; }
+    .swatch.mx { background: #c4b5fd; }
+    .swatch.ar { background: #94a3b8; }
+    .swatch.co { background: #0f172a; }
+    .pie-wrap .note { grid-column: 1 / -1; margin: 4px 0 0; }
+
+    .demo {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 0 18px;
+      border-radius: 999px;
+      background: var(--ink);
+      color: #fff;
+      font-weight: 600;
+      text-decoration: none;
+      font-size: 15px;
+    }
+    .demo:hover { background: var(--violet-deep); }
+    .demo:focus-visible, .nav button:focus-visible, .dot:focus-visible {
+      outline: 2px solid var(--violet);
+      outline-offset: 3px;
+    }
+    .url {
+      display: block;
+      margin-top: 8px;
+      color: var(--faint);
+      font-size: 13px;
+      word-break: break-all;
+    }
+
+    .grid-3, .grid-2, .grid-4 {
+      display: grid;
+      gap: 16px;
+      margin-top: 28px;
+    }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid-2 { grid-template-columns: 1fr 1fr; }
+    .grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 18px 18px 20px;
+    }
+    .card h3 {
+      margin: 0 0 8px;
+      font-size: 16px;
+      letter-spacing: -0.02em;
+    }
+    .card p, .step p, .band p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14.5px;
+      line-height: 1.45;
+    }
+    .num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 28px;
+      height: 28px;
+      margin-bottom: 12px;
+      border-radius: 999px;
+      background: var(--soft);
+      color: var(--violet-deep);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .who .card { padding: 28px; }
+    .who h3 { font-size: 22px; margin-bottom: 10px; }
+    .who p { font-size: 16px; }
+    .who .pay {
+      margin-top: 16px;
+      font-weight: 700;
+      color: var(--ink);
+      font-size: 15px;
+    }
+
+    .chart {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      margin-top: 8px;
+    }
+    .chart-node {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px 16px;
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.3;
+      text-align: center;
+    }
+    .chart-node.start {
+      align-self: center;
+      min-width: 220px;
+      background: var(--ink);
+      border-color: var(--ink);
+      color: #fff;
+    }
+    .chart-node.end {
+      background: var(--soft);
+      border-color: #ddd6fe;
+      color: var(--violet-deep);
+    }
+    .chart-node small {
+      display: block;
+      margin-top: 4px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+    }
+    .stem {
+      width: 2px;
+      height: 18px;
+      margin: 0 auto;
+      background: #c4b5fd;
+    }
+    .fork {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      position: relative;
+    }
+    .fork::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 25%;
+      right: 25%;
+      height: 2px;
+      background: #c4b5fd;
+    }
+    .fork .drop {
+      width: 2px;
+      height: 18px;
+      margin: 0 auto 8px;
+      background: #c4b5fd;
+    }
+    .lane { padding: 0 28px; }
+    .lane-name {
+      margin: 0 0 14px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--violet);
+    }
+    .lane .chart-node { width: 100%; }
+    .v-arrow {
+      width: 2px;
+      height: 28px;
+      margin: 0 auto;
+      background: #c4b5fd;
+      position: relative;
+    }
+    .v-arrow::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -5px;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: var(--violet);
+    }
+    .api-tag {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: var(--soft);
+      color: var(--violet-deep);
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .lane .api-tag { display: block; width: fit-content; margin-left: auto; margin-right: auto; }
+    .h-row {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+    }
+    .h-row .chart-node { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+    .h-arrow {
+      flex: 0 0 36px;
+      align-self: center;
+      height: 2px;
+      background: #c4b5fd;
+      position: relative;
+    }
+    .h-arrow::after {
+      content: "";
+      position: absolute;
+      right: -5px;
+      top: 50%;
+      transform: translateY(-50%);
+      border: 6px solid transparent;
+      border-left-color: var(--violet);
+    }
+    .flow-grid {
+      display: grid;
+      grid-template-columns: 1fr 36px 1fr 36px 1fr;
+      align-items: center;
+    }
+    .flow-grid .chart-node { min-height: 72px; display: flex; flex-direction: column; justify-content: center; }
+    .flow-grid .h-arrow { width: auto; flex: none; }
+    .elbow-r {
+      height: 22px;
+      position: relative;
+    }
+    .elbow-r::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 2px;
+      height: 100%;
+      background: #c4b5fd;
+      transform: translateX(-50%);
+    }
+    .elbow-r::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      right: 50%;
+      width: calc(200% + 72px);
+      height: 2px;
+      background: #c4b5fd;
+    }
+    .elbow-l {
+      height: 22px;
+      position: relative;
+    }
+    .elbow-l::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 2px;
+      height: calc(100% + 48px);
+      background: #c4b5fd;
+      transform: translateX(-50%);
+    }
+    .elbow-l::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -54px;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: var(--violet);
+    }
+    .flow-grid + .lane-name { margin-top: 22px; }
+
+    .split {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 28px;
+      margin-top: 8px;
+      align-items: start;
+    }
+    .points { margin: 18px 0 0; padding: 0; list-style: none; }
+    .points li {
+      position: relative;
+      padding: 0 0 14px 18px;
+      color: var(--muted);
+      font-size: 15.5px;
+      line-height: 1.4;
+    }
+    .points li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 8px;
+      width: 7px;
+      height: 7px;
+      border-radius: 99px;
+      background: var(--violet);
+    }
+    .shots {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    figure { margin: 0; }
+    figure img {
+      width: 100%;
+      height: 320px;
+      object-fit: cover;
+      object-position: top;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: var(--card);
+      display: block;
+    }
+    .shot {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .shot img {
+      width: auto;
+      max-width: 100%;
+      height: auto;
+      max-height: calc(100dvh - 240px);
+      object-fit: contain;
+      object-position: top center;
+    }
+    figcaption {
+      margin-top: 8px;
+      font-size: 13px;
+      color: var(--faint);
+    }
+
+    .table-wrap {
+      margin-top: 22px;
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th, td {
+      text-align: left;
+      padding: 11px 12px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      line-height: 1.35;
+    }
+    th {
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--faint);
+      font-weight: 700;
+    }
+    td:first-child, th:first-child { padding-left: 14px; }
+    tr.us td {
+      background: var(--soft);
+      font-weight: 600;
+      color: var(--ink);
+    }
+    tr.us td:first-child {
+      box-shadow: inset 3px 0 0 var(--violet);
+      border-radius: 8px 0 0 8px;
+    }
+    .note {
+      margin: 14px 0 0;
+      color: var(--faint);
+      font-size: 13px;
+    }
+    .opp { margin-top: 18px; }
+    .opp td:first-child { font-weight: 800; font-size: 18px; }
+
+    .price .amount {
+      margin: 0 0 6px;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+    .price .amount span {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+    .price.featured {
+      background: var(--ink);
+      color: #fff;
+      border-color: var(--ink);
+    }
+    .price.featured p { color: #cbd5e1; }
+    .price.featured .amount .per { color: #c4b5fd; }
+    .annual {
+      margin-top: 16px;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      padding: 16px 18px;
+      border-radius: 16px;
+      background: var(--soft);
+      border: 1px solid #ddd6fe;
+    }
+    .annual strong { display: block; margin-bottom: 4px; }
+    .annual p { margin: 0; color: var(--muted); font-size: 14px; }
+
+    .step .when {
+      margin: 0 0 6px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--violet);
+    }
+    .band .when {
+      margin: 0 0 8px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--violet);
+    }
+    .close-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      margin-top: 22px;
+    }
+
+    .nav {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      box-shadow: 0 8px 30px rgba(15, 23, 42, 0.08);
+      z-index: 20;
+    }
+    .nav button {
+      min-width: 44px;
+      min-height: 44px;
+      border: 0;
+      border-radius: 999px;
+      background: var(--card);
+      color: var(--ink);
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .lang {
+      display: flex;
+      padding: 2px;
+      border-radius: 999px;
+      background: var(--card);
+    }
+    .lang button {
+      min-width: 44px;
+      background: transparent;
+      color: var(--muted);
+    }
+    .lang button[aria-pressed="true"] {
+      background: var(--ink);
+      color: #fff;
+    }
+    .nav button:disabled { opacity: 0.35; cursor: default; }
+    .dots { display: flex; gap: 6px; padding: 0 4px; }
+    .dot {
+      width: 8px;
+      height: 8px;
+      padding: 0;
+      border: 0;
+      border-radius: 99px;
+      background: #cbd5e1;
+      cursor: pointer;
+    }
+    .dot.is-active { background: var(--violet); width: 18px; }
+    .count {
+      min-width: 72px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    @media (max-width: 900px) {
+      .slide { padding: 20px 18px 108px; }
+      .grid-3, .grid-2, .grid-4, .split, .shots, .two, .stats, .scenarios, .meters, .br-nums, .fork { grid-template-columns: 1fr; }
+      .fork::before, .fork .drop, .stem { display: none; }
+      .h-row, .flow-grid { flex-direction: column; }
+      .flow-grid { display: flex; }
+      .elbow-l, .elbow-r { display: none; }
+      .h-arrow { width: 2px; height: 22px; flex-basis: 22px; margin: 0 auto; }
+      .h-arrow::after {
+        right: auto;
+        left: 50%;
+        top: auto;
+        bottom: -5px;
+        transform: translateX(-50%);
+        border: 6px solid transparent;
+        border-left-color: transparent;
+        border-top-color: var(--violet);
+      }
+      .proj-row, .pie-wrap { grid-template-columns: 1fr; }
+      .pie { margin: 0 auto; }
+      .annual, .close-row { flex-direction: column; align-items: flex-start; }
+      figure img { height: 220px; }
+      table { min-width: 640px; font-size: 12px; }
+      .opp { min-width: 0; }
+      th, td { padding: 8px 6px; }
+    }
+
+    @media print {
+      body { background: #fff; }
+      .progress, .nav { display: none !important; }
+      .slide {
+        display: flex !important;
+        break-after: page;
+        page-break-after: always;
+        min-height: auto;
+        padding: 28px 36px;
+      }
+      .slide:last-child { break-after: auto; page-break-after: auto; }
+      .frame { min-height: auto; }
+      a.demo::after { content: "  " attr(href); font-weight: 500; }
+    }
+    @page { size: landscape; margin: 0.4in; }
+  </style>
+</head>
+<body>
+  <div class="progress" data-progress></div>
+  <main class="deck">
+    <section class="slide is-active" data-i18n-label="slide.title" aria-label="Title">
+      <div class="frame">
+        <div class="top">
+          <span class="kicker" data-i18n="kicker.pitch">Pitch</span>
+          <span class="kicker">01</span>
+        </div>
+        <div class="title">
+          <span class="mark mark-lg" aria-label="Plasty"><span class="mark-tile" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg></span><span class="mark-name">P<span>lasty</span></span></span>
+          <h1 data-i18n="title.h1">Find verified plastic surgeons.</h1>
+          <ul class="offers">
+            <li data-i18n="title.a1">Book visits</li>
+            <li data-i18n="title.a2">Find patients</li>
+            <li data-i18n="title.a3">Publish before-and-after photos without them being taken down</li>
+            <li data-i18n="title.a4">Keep the clinical record</li>
+            <li data-i18n="title.a5">Automatic notes and clinical history</li>
+          </ul>
+          <div>
+            <a class="demo" data-demo data-i18n="demo" href="" target="_blank" rel="noopener">Open the demo</a>
+            <span class="url" data-url></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-i18n-label="slide.problem" aria-label="Problem">
+      <div class="frame">
+        <div class="top">
+          <div class="brand">
+            <span class="mark" aria-label="Plasty"><span class="mark-tile" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg></span><span class="mark-name">P<span>lasty</span></span></span>
+          </div>
+          <span class="kicker" data-i18n="kicker.problem">Problem</span>
+        </div>
+        <h2 data-i18n="problem.h2">The patient guesses. The surgeon has no tool.</h2>
+        <div class="two">
+          <article class="card">
+            <h3 data-i18n="problem.patients">Patients</h3>
+            <ul>
+              <li data-i18n="problem.c1" data-i18n-html="1"><strong>Every specialty, one list.</strong> General directories mix plastic surgeons with every other doctor.</li>
+              <li data-i18n="problem.c2" data-i18n-html="1"><strong>A feed is not a credential.</strong> Med-spas and Instagram accounts look like a practice.</li>
+              <li data-i18n="problem.c3" data-i18n-html="1"><strong>A registry hit is not a booking.</strong> RETHUS can confirm a name. It does not open a visit.</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3 data-i18n="problem.surgeons">Surgeons</h3>
+            <ul>
+              <li data-i18n="problem.d1">No place to promote the practice.</li>
+              <li data-i18n="problem.d2">The calendar is not a real scheduling system.</li>
+              <li data-i18n="problem.d3">They do not control the reviews.</li>
+              <li data-i18n="problem.d4">Before-and-after photos do not stay up: the website looks poor, and Instagram takes them down.</li>
+              <li data-i18n="problem.d5">Nothing shows the patient that this is a verified plastic surgeon.</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-i18n-label="slide.solution" aria-label="Solution">
+      <div class="frame">
+        <div class="top">
+          <div class="brand">
+            <span class="mark" aria-label="Plasty"><span class="mark-tile" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg></span><span class="mark-name">P<span>lasty</span></span></span>
+          </div>
+          <span class="kicker" data-i18n="kicker.solution">Solution</span>
+        </div>
+        <div class="split">
+          <div>
+            <h2 data-i18n="solution.h2">A network of plastic surgeons only.</h2>
+            <ul class="points">
+              <li data-i18n="solution.p1">Patients find a plastic surgeon and can check the review.</li>
+            </ul>
+          </div>
+          <figure class="shot">
+            <img src="current-screens/01-home.png" data-i18n-alt="solution.alt1" alt="Plasty directory of verified plastic surgeons">
+            <figcaption data-i18n="solution.cap1">The directory patients see</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-i18n-label="slide.book" aria-label="Booking and reviews">
+      <div class="frame">
+        <div class="top">
+          <div class="brand">
+            <span class="mark" aria-label="Plasty"><span class="mark-tile" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg></span><span class="mark-name">P<span>lasty</span></span></span>
+          </div>
+          <span class="kicker" data-i18n="kicker.solution">Solution</span>
+        </div>
+        <div class="split">
+          <div>
+            <h2 data-i18n="solution.book.h2">Book the visit and read the reviews.</h2>
+            <ul class="points">
+              <li data-i18n="solution.book.p">The patient picks a time and reads reviews from verified visits.</li>
+            </ul>
+          </div>
+          <figure class="shot">
+            <img src="current-screens/06-booking-reviews.png" data-i18n-alt="solution.book.alt" alt="Public profile with patient reviews and the visit calendar">
+            <figcaption data-i18n="solution.book.cap">The public profile</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-i18n-label="slide.seal" aria-label="Verified profile">
+      <div class="frame">
+        <div class="top">
+          <div class="brand">
+            <span class="mark" aria-label="Plasty"><span class="mark-tile" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg></span><span class="mark-name">P<span>lasty</span></span></span>
+          </div>
+          <span class="kicker" data-i18n="kicker.solution">Solution</span>
+        </div>
+        <div class="split">
+          <div>
+            <h2 data-i18n="solution.seal.h2">The profile shows the reviewed RETHUS.</h2>
+            <ul class="points">
+              <li data-i18n="solution.seal.p">The seal is the review already done, not an automatic registry lookup.</li>
+            </ul>
+          </div>
+          <figure class="shot">
+            <img src="current-screens/07-rethus-profile.png" data-i18n-alt="solution.seal.alt" alt="Surgeon profile header with the RETHUS seal">
+            <figcaption data-i18n="solution.seal.cap">The header the patient sees</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-i18n-label="slide.id" aria-label="Identity check">
+      <div class="frame">
+        <div class="top">
+          <div class="brand">
+            <span class="mark" aria-label="Plasty"><span class="mark-tile" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg></span><span class="mark-name">P<span>lasty</span></span></span>
+          </div>
+          <span class="kicker" data-i18n="kicker.solution">Solution</span>
+        </div>
+        <div class="split">
+          <div>
+            <h2 data-i18n="solution.id.h2">Identity check.</h2>
+            <ul class="points">
+              <li data-i18n="solution.id.p">The surgeon takes a facial check against the document.</li>
+            </ul>
+          </div>
+          <figure class="shot">
+            <img src="current-screens/02-face-recognition.png" data-i18n-alt="solution.id.alt" alt="Facial identity check during registration">
+            <figcaption data-i18n="solution.id.cap">The identity step in registration</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-i18n-label="slide.dash" aria-label="Practice home">
+      <div class="frame">
+        <div class="top">
+          <div class="brand">
+            <span class="mark" aria-label="Plasty"><span class="mark-tile" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg></span><span class="mark-name">P<span>lasty</span></span></span>
+          </div>
+          <span class="kicker" data-i18n="kicker.solution">Solution</span>
+        </div>
+        <div class="split">
+          <div>
+            <h2 data-i18n="solution.dash.h2">Visits, views, and follow-up.</h2>
+            <ul class="points">
+              <li data-i18n="solution.dash.p">Home shows booked visits, profile views, and follow-up.</li>
+            </ul>
+          </div>
+          <figure class="shot">
+            <img src="current-screens/04-doctor-dashboard.png" data-i18n-alt="solution.dash.alt" alt="Surgeon home with visits, profile views, and follow-up">
+            <figcaption data-i18n="solution.dash.cap">The surgeon's home</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-i18n-label="slide.hist" aria-label="Clinical record">
+      <div class="frame">
+        <div class="top">
+          <div class="brand">
+            <span class="mark" aria-label="Plasty"><span class="mark-tile" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg></span><span class="mark-name">P<span>lasty</span></span></span>
+          </div>
+          <span class="kicker" data-i18n="kicker.solution">Solution</span>
+        </div>
+        <div class="split">
+          <div>
+            <h2 data-i18n="solution.hist.h2">Patients and the clinical record.</h2>
+            <ul class="points">
+              <li data-i18n="solution.hist.p">The surgeon opens the patient and builds the record.</li>
+            </ul>
+          </div>
+          <figure class="shot">
+            <img src="current-screens/08-clinical-history.png" data-i18n-alt="solution.hist.alt" alt="Patient file with clinical history and anamnesis">
+            <figcaption data-i18n="solution.hist.cap">The patient's record</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-i18n-label="slide.admin" aria-label="RETHUS review">
+      <div class="frame">
+        <div class="top">
+          <div class="brand">
+            <span class="mark" aria-label="Plasty"><span class="mark-tile" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg></span><span class="mark-name">P<span>lasty</span></span></span>
+          </div>
+          <span class="kicker" data-i18n="kicker.solution">Solution</span>
+        </div>
+        <div class="split">
+          <div>
+            <h2 data-i18n="solution.admin.h2">A person reviews RETHUS.</h2>
+            <ul class="points">
+              <li data-i18n="solution.admin.p">If they accept it and the profile is not paused, the surgeon can appear in search.</li>
+            </ul>
+          </div>
+          <figure class="shot">
+            <img src="current-screens/03-rethus-verifier.png" data-i18n-alt="solution.admin.alt" alt="Admin queue to accept or pause a RETHUS review">
+            <figcaption data-i18n="solution.admin.cap">The review queue</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-i18n-label="slide.who" aria-label="Who it is for">
+      <div class="frame">
+        <div class="top">
+          <div class="brand">
+            <span class="mark" aria-label="Plasty"><span class="mark-tile" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg></span><span class="mark-name">P<span>lasty</span></span></span>
+          </div>
+          <span class="kicker" data-i18n="kicker.who">Who it is for</span>
+        </div>
+        <h2 data-i18n="who.h2">Patients want surgery. Only plastic surgeons are listed.</h2>
+        <p class="lead" data-i18n="who.lead">Demand is the person seeking plastic surgery. Supply and the buyer are the same person: a plastic surgeon. Other doctors stay out.</p>
+        <div class="grid-2 who">
+          <article class="card">
+            <div class="num" data-i18n="who.demand">Demand</div>
+            <h3 data-i18n="who.patients">Patients</h3>
+            <p data-i18n="who.patients.p">People who want plastic surgery: face, breast, body, or reconstructive. They search by procedure and city. Search is free.</p>
+            <p class="pay" data-i18n="who.patients.pay">They do not pay.</p>
+          </article>
+          <article class="card">
+            <div class="num" data-i18n="who.supply">Supply</div>
+            <h3 data-i18n="who.surgeons">Plastic surgeons</h3>
+            <p data-i18n="who.surgeons.p">The only doctors on the network. They are the ones who subscribe. A general doctor, a dermatologist, or a med-spa is not a listing.</p>
+            <p class="pay" data-i18n="who.surgeons.pay">They pay the subscription.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-i18n-label="slide.competitors" aria-label="Competitors">
+      <div class="frame">
+        <div class="top">
+          <div class="brand">
+            <span class="mark" aria-label="Plasty"><span class="mark-tile" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg></span><span class="mark-name">P<span>lasty</span></span></span>
+          </div>
+          <span class="kicker" data-i18n="kicker.competitors">Competitors</span>
+        </div>
+        <h2 data-i18n="comp.h2">Same shelf today. Not the same product.</h2>
+        <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col"></th>
+              <th scope="col" data-i18n="comp.h.only">Plastic only</th>
+              <th scope="col" data-i18n="comp.h.sells">What they sell</th>
+              <th scope="col" data-i18n="comp.h.figure">Published figure</th>
+              <th scope="col" data-i18n="comp.h.unit">What that figure is</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="us">
+              <td>Plasty</td>
+              <td data-i18n="comp.yes">Yes</td>
+              <td data-i18n="comp.us.sells">Network, scheduling, and the record</td>
+              <td data-i18n="comp.dash">—</td>
+              <td data-i18n="comp.us.unit">The surgeon’s subscription</td>
+            </tr>
+            <tr>
+              <td>Doctoralia</td>
+              <td data-i18n="comp.no">No</td>
+              <td data-i18n="comp.doc.sells">Directory and booking</td>
+              <td data-i18n="comp.doc.figure">3,400+</td>
+              <td data-i18n="comp.doc.unit">Professionals registered in Colombia, 2025</td>
+            </tr>
+            <tr>
+              <td>Saludtools</td>
+              <td data-i18n="comp.no">No</td>
+              <td data-i18n="comp.sal.sells">Calendar and records for any doctor</td>
+              <td data-i18n="comp.sal.figure">7,000+</td>
+              <td data-i18n="comp.sal.unit">Doctors, on their site</td>
+            </tr>
+            <tr>
+              <td>Telepatía</td>
+              <td data-i18n="comp.no">No</td>
+              <td data-i18n="comp.tel.sells">AI notes for institutions</td>
+              <td data-i18n="comp.tel.figure">25 institutions</td>
+              <td data-i18n="comp.tel.unit">Not a surgeon subscription</td>
+            </tr>
+            <tr>
+              <td>Netux</td>
+              <td data-i18n="comp.no">No</td>
+              <td data-i18n="comp.net.sells">Patient acquisition for institutions</td>
+              <td data-i18n="comp.net.figure">350</td>
+              <td data-i18n="comp.net.unit">Institutional clients, on their site</td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+        <p class="note" data-i18n="comp.note">Doctoralia interviews in 2021 and 2023 cited 60,000 and 70,000 profiles. That is not a paid subscription. These figures use different units, so they are not a pie.</p>
+      </div>
+    </section>
+
+    <section class="slide" data-i18n-label="slide.model" aria-label="Business model">
+      <div class="frame">
+        <div class="top">
+          <div class="brand">
+            <span class="mark" aria-label="Plasty"><span class="mark-tile" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg></span><span class="mark-name">P<span>lasty</span></span></span>
+          </div>
+          <span class="kicker" data-i18n="kicker.model">Business model</span>
+        </div>
+        <h2 data-i18n="model.h2">Four plans. One monthly price.</h2>
+        <p class="lead" data-i18n="model.lead">Patients search free. The price below is in Colombian pesos.</p>
+        <div class="grid-4">
+          <article class="card price">
+            <h3 data-i18n="model.free">Free</h3>
+            <p class="amount">$0</p>
+            <p data-i18n="model.free.p">Sign in, create a profile, appear, and book visits. No reviews, no clinical record, and no image uploads.</p>
+          </article>
+          <article class="card price featured">
+            <h3 data-i18n="model.paid">Paid</h3>
+            <p class="amount" data-i18n="model.paid.price" data-i18n-html="1">$109.000 <span class="per">/ month</span></p>
+            <p data-i18n="model.paid.p">Full profile, booking, reviews, a clinical record to the legal standard, before-and-after photos, automatic clinical notes, and a way to promote the practice.</p>
+          </article>
+          <article class="card price">
+            <h3 data-i18n="model.promo">Promotion</h3>
+            <p class="amount">—</p>
+            <p data-i18n="model.promo.p">Pay more to stay at the top of each city.</p>
+          </article>
+          <article class="card price">
+            <h3 data-i18n="model.custom">Custom page</h3>
+            <p class="amount">—</p>
+            <p data-i18n="model.custom.p">Their own page, with appointment management too.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-i18n-label="slide.market" aria-label="Market">
+      <div class="frame">
+        <div class="top">
+          <div class="brand">
+            <span class="mark" aria-label="Plasty"><span class="mark-tile" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg></span><span class="mark-name">P<span>lasty</span></span></span>
+          </div>
+          <span class="kicker" data-i18n="kicker.market">Market</span>
+        </div>
+        <h2 data-i18n="market.h2">Plastic surgery in 2025, not all of medicine.</h2>
+        <div class="meters">
+          <article class="card meter">
+            <p class="n">331.392</p>
+            <p data-i18n="market.s1">Surgical aesthetic procedures</p>
+            <div class="track" aria-hidden="true"><span style="width:72%"></span></div>
+          </article>
+          <article class="card meter">
+            <p class="n">459.360</p>
+            <p data-i18n="market.s2">Aesthetic procedures, including non-surgical</p>
+            <div class="track" aria-hidden="true"><span style="width:100%"></span></div>
+          </article>
+          <article class="card meter surgeons">
+            <p class="n">960</p>
+            <p data-i18n="market.s4">Plastic surgeons ISAPS estimates</p>
+            <div class="track" aria-hidden="true"><span style="width:100%"></span></div>
+          </article>
+        </div>
+        <div class="glossary">
+          <p data-i18n="market.g.isaps" data-i18n-html="1"><strong>ISAPS.</strong> International Society of Aesthetic Plastic Surgery. Its survey counts procedures by plastic surgeons, not every aesthetic practice. Figures are procedures in 2025, published in 2026.</p>
+          <p data-i18n="market.g.sccp" data-i18n-html="1"><strong>SCCP.</strong> Sociedad Colombiana de Cirugía Plástica. It reported 950 members in 2026. In an interview the society said more than 1,500 are enabled in RETHUS, including non-members. That is not a census.</p>
+          <p data-i18n="market.g.surg" data-i18n-html="1"><strong>Surgical.</strong> Aesthetic operations performed by plastic surgeons. That is the 331.392.</p>
+          <p data-i18n="market.g.nonsurg" data-i18n-html="1"><strong>Non-surgical.</strong> Aesthetic procedures without surgery, such as botulinum toxin or hyaluronic acid, performed by those same surgeons. They sit inside the 459.360, together with the surgical ones.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-i18n-label="slide.market2" aria-label="Scenarios">
+      <div class="frame">
+        <div class="top">
+          <div class="brand">
+            <span class="mark" aria-label="Plasty"><span class="mark-tile" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg></span><span class="mark-name">P<span>lasty</span></span></span>
+          </div>
+          <span class="kicker" data-i18n="kicker.proj">Scenarios</span>
+        </div>
+        <h2 data-i18n="proj.h2">Scenarios, not a forecast.</h2>
+        <div class="proj">
+          <div class="proj-row">
+            <p class="pct">5%</p>
+            <div class="track" aria-hidden="true"><span style="width:5%"></span></div>
+            <p data-i18n="proj.5.n">48 surgeons</p>
+            <p data-i18n="proj.5.m">About $62.8 million. With VAT, $74.7 million.</p>
+          </div>
+          <div class="proj-row">
+            <p class="pct">10%</p>
+            <div class="track" aria-hidden="true"><span style="width:10%"></span></div>
+            <p data-i18n="proj.10.n">96 surgeons</p>
+            <p data-i18n="proj.10.m">About $125.6 million. With VAT, $149.4 million.</p>
+          </div>
+          <div class="proj-row">
+            <p class="pct">20%</p>
+            <div class="track" aria-hidden="true"><span style="width:20%"></span></div>
+            <p data-i18n="proj.20.n">192 surgeons</p>
+            <p data-i18n="proj.20.m">About $251.1 million. With VAT, $298.9 million.</p>
+          </div>
+          <div class="proj-row">
+            <p class="pct">50%</p>
+            <div class="track" aria-hidden="true"><span style="width:50%"></span></div>
+            <p data-i18n="proj.50.n">480 surgeons</p>
+            <p data-i18n="proj.50.m">About $627.8 million. With VAT, $747.1 million.</p>
+          </div>
+        </div>
+        <p class="note" data-i18n="proj.note">They use the $109,000 monthly plan for 12 months. The second figure adds 19% VAT. They are not a forecast.</p>
+      </div>
+    </section>
+
+    <section class="slide" data-i18n-label="slide.market3" aria-label="Brazil">
+      <div class="frame">
+        <div class="top">
+          <div class="brand">
+            <span class="mark" aria-label="Plasty"><span class="mark-tile" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg></span><span class="mark-name">P<span>lasty</span></span></span>
+          </div>
+          <span class="kicker" data-i18n="kicker.brazil">Opportunity</span>
+        </div>
+        <div class="split">
+          <div>
+            <h2 data-i18n="br.h2">Brazil is the opportunity.</h2>
+            <div class="br-nums">
+              <article class="card">
+                <p class="n" data-i18n="br.n1">6,497</p>
+                <p data-i18n="br.l1">Plastic surgeons</p>
+              </article>
+              <article class="card">
+                <p class="n" data-i18n="br.n2">3.2 million</p>
+                <p data-i18n="br.l2">Procedures</p>
+              </article>
+            </div>
+          </div>
+          <div class="pie-wrap">
+            <div class="pie" role="img" data-i18n-label="br.pie" aria-label="Share of plastic surgeons in these four countries"></div>
+            <ul class="legend">
+              <li>
+                <i class="swatch br" aria-hidden="true"></i>
+                <span data-i18n="br.br">Brazil</span>
+                <span data-i18n="br.br.n">6,497</span>
+                <span data-i18n="br.br.p">60.0%</span>
+              </li>
+              <li>
+                <i class="swatch mx" aria-hidden="true"></i>
+                <span data-i18n="br.mx">Mexico</span>
+                <span data-i18n="br.mx.n">2,062</span>
+                <span data-i18n="br.mx.p">19.0%</span>
+              </li>
+              <li>
+                <i class="swatch ar" aria-hidden="true"></i>
+                <span data-i18n="br.ar">Argentina</span>
+                <span data-i18n="br.ar.n">1,311</span>
+                <span data-i18n="br.ar.p">12.1%</span>
+              </li>
+              <li class="us">
+                <i class="swatch co" aria-hidden="true"></i>
+                <span data-i18n="br.co">Colombia</span>
+                <span data-i18n="br.co.n">960</span>
+                <span data-i18n="br.co.p">8.9%</span>
+              </li>
+            </ul>
+            <p class="note" data-i18n="br.total">10,830 plastic surgeons in these four countries. Not the whole region.</p>
+          </div>
+        </div>
+        <table class="opp">
+          <thead>
+            <tr>
+              <th data-i18n="opp.share">Share</th>
+              <th data-i18n="opp.surgeons">Surgeons</th>
+              <th data-i18n="opp.year">A year</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>5%</td>
+              <td data-i18n="opp.5.n">About 542</td>
+              <td data-i18n="opp.5.m">About $708.9 million</td>
+            </tr>
+            <tr>
+              <td>20%</td>
+              <td data-i18n="opp.20.n">2,166</td>
+              <td data-i18n="opp.20.m">About $2,833.1 million</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="note" data-i18n="opp.note">5% of 10,830 rounds to 542 surgeons. 20% is 2,166. The year uses the $109,000 monthly plan for 12 months. Not a forecast.</p>
+        <p class="note" data-i18n="br.line">Among the nine Latin American countries ISAPS published, Brazil is the largest and Colombia is fourth.</p>
+      </div>
+    </section>
+
+    <section class="slide" data-i18n-label="slide.path" aria-label="12-month path">
+      <div class="frame">
+        <div class="top">
+          <div class="brand">
+            <span class="mark" aria-label="Plasty"><span class="mark-tile" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg></span><span class="mark-name">P<span>lasty</span></span></span>
+          </div>
+          <span class="kicker" data-i18n="kicker.path">12-month path</span>
+        </div>
+        <h2 data-i18n="path.h2">Twelve months. Surgeons before patients.</h2>
+        <div class="grid-4">
+          <article class="card band">
+            <p class="when" data-i18n="path.m1">Months 1–3</p>
+            <h3 data-i18n="path.supply">Supply</h3>
+            <p data-i18n="path.m1.p">Colombian plastic surgeons join. A person reviews RETHUS. Free profiles go live.</p>
+          </article>
+          <article class="card band">
+            <p class="when" data-i18n="path.m2">Months 4–6</p>
+            <h3 data-i18n="who.patients">Patients</h3>
+            <p data-i18n="path.m2.p">Search by procedure and city. Booking goes through WhatsApp. The surgeon approves reviews.</p>
+          </article>
+          <article class="card band">
+            <p class="when" data-i18n="path.m3">Months 7–9</p>
+            <h3 data-i18n="path.paid">Paid plans</h3>
+            <p data-i18n="path.m3.p">Surgeons move to the paid plan.</p>
+          </article>
+          <article class="card band">
+            <p class="when" data-i18n="path.m4">Months 10–12</p>
+            <h3 data-i18n="path.brazil">Brazil</h3>
+            <p data-i18n="path.m4.p">A surgeon cohort, in Portuguese, with a local license check. Patients come after that.</p>
+          </article>
+        </div>
+        <div class="close-row">
+          <p class="lead" style="margin:0" data-i18n="path.close">Same rule the whole year: surgeons on the network before patients are asked to look.</p>
+          <div>
+            <a class="demo" data-demo data-i18n="demo" href="" target="_blank" rel="noopener">Open the demo</a>
+            <span class="url" data-url></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-i18n-label="slide.flow" aria-label="Patient flows">
+      <div class="frame">
+        <div class="top">
+          <div class="brand">
+            <span class="mark" aria-label="Plasty"><span class="mark-tile" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg></span><span class="mark-name">P<span>lasty</span></span></span>
+          </div>
+          <span class="kicker" data-i18n="kicker.flow">Flows</span>
+        </div>
+        <h2 data-i18n="flow.h2">The patient searches, on the network or not.</h2>
+        <div class="chart">
+          <div class="chart-node start" data-i18n="flow.start">Searches</div>
+          <div class="stem" aria-hidden="true"></div>
+          <div class="fork">
+            <div class="drop" aria-hidden="true"></div>
+            <div class="drop" aria-hidden="true"></div>
+            <div class="lane">
+              <p class="lane-name" data-i18n="flow.on">On the network</p>
+              <div class="chart-node" data-i18n="flow.find">Finds the surgeon</div>
+              <div class="v-arrow" aria-hidden="true"></div>
+              <div class="chart-node" data-i18n="flow.book">Books</div>
+              <div class="v-arrow" aria-hidden="true"></div>
+              <div class="chart-node end" data-i18n="flow.wa">Continues on WhatsApp</div>
+            </div>
+            <div class="lane">
+              <p class="lane-name" data-i18n="flow.off">Off the network</p>
+              <div class="chart-node" data-i18n="flow.miss">Not on the network</div>
+              <div class="v-arrow" aria-hidden="true"></div>
+              <div class="chart-node" data-i18n="flow.ask">Asks RETHUS</div>
+              <div class="v-arrow" aria-hidden="true"></div>
+              <div class="chart-node end" data-i18n="flow.exists">Says whether they exist</div>
+              <span class="api-tag" data-i18n="flow.api">Needs an API</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-i18n-label="slide.join" aria-label="Surgeon and admin">
+      <div class="frame">
+        <div class="top">
+          <div class="brand">
+            <span class="mark" aria-label="Plasty"><span class="mark-tile" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg></span><span class="mark-name">P<span>lasty</span></span></span>
+          </div>
+          <span class="kicker" data-i18n="kicker.flow">Flows</span>
+        </div>
+        <h2 data-i18n="join.h2">The surgeon signs up. A person accepts.</h2>
+        <div class="chart">
+          <p class="lane-name" data-i18n="join.doc">Surgeon</p>
+          <div class="flow-grid">
+            <div class="chart-node" data-i18n="join.account">Creates the account</div>
+            <div class="h-arrow" aria-hidden="true"></div>
+            <div class="chart-node" data-i18n="join.data">Leaves their details</div>
+            <div class="h-arrow" aria-hidden="true"></div>
+            <div class="chart-node">
+              <span data-i18n="join.face">Checks their face</span>
+              <small data-i18n="join.face.s">Against the ID</small>
+            </div>
+            <div class="elbow-l" aria-hidden="true"></div>
+            <div aria-hidden="true"></div>
+            <div aria-hidden="true"></div>
+            <div aria-hidden="true"></div>
+            <div class="elbow-r" aria-hidden="true"></div>
+          </div>
+          <p class="lane-name" data-i18n="join.admin">Admin</p>
+          <div class="flow-grid">
+            <div class="chart-node" data-i18n="join.receive">Receives the request</div>
+            <div class="h-arrow" aria-hidden="true"></div>
+            <div class="chart-node" data-i18n="join.review">Reviews RETHUS by hand</div>
+            <div class="h-arrow" aria-hidden="true"></div>
+            <div class="chart-node end" data-i18n="join.accept">Accepts</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="nav" data-i18n-label="nav.slides" aria-label="Slides">
+    <div class="lang" role="group" data-i18n-label="lang.group" aria-label="Language">
+      <button type="button" data-set-lang="en" aria-pressed="true">EN</button>
+      <button type="button" data-set-lang="es" aria-pressed="false">ES</button>
+    </div>
+    <button type="button" data-prev data-i18n-label="nav.prev" aria-label="Previous slide">←</button>
+    <div class="dots" data-dots></div>
+    <button type="button" data-next data-i18n-label="nav.next" aria-label="Next slide">→</button>
+    <span class="count" data-count>01 / 18</span>
+  </nav>
+
+  <script>
+    // Replace this with the Vercel demo URL. Every demo button reads it.
+    const DEMO_URL = "https://healthbit-one.vercel.app/";
+
+    const COPY = {
+      en: {
+        "doc.title": "Plasty — Pitch",
+        "lang.group": "Language",
+        "nav.slides": "Slides",
+        "nav.prev": "Previous slide",
+        "nav.next": "Next slide",
+        "nav.dot": "Slide",
+        "slide.title": "Title",
+        "slide.problem": "Problem",
+        "slide.solution": "Solution",
+        "slide.book": "Booking and reviews",
+        "slide.seal": "Verified profile",
+        "slide.id": "Identity check",
+        "slide.dash": "Practice home",
+        "slide.hist": "Clinical record",
+        "slide.admin": "RETHUS review",
+        "slide.who": "Who it is for",
+        "slide.competitors": "Competitors",
+        "slide.model": "Business model",
+        "slide.market": "Market",
+        "slide.market2": "Scenarios",
+        "slide.market3": "Brazil",
+        "slide.path": "12-month path",
+        "slide.flow": "Patient flows",
+        "slide.join": "Surgeon and admin",
+        "kicker.pitch": "Pitch",
+        "kicker.problem": "Problem",
+        "kicker.solution": "Solution",
+        "kicker.who": "Who it is for",
+        "kicker.competitors": "Competitors",
+        "kicker.model": "Business model",
+        "kicker.market": "Market",
+        "kicker.proj": "Scenarios",
+        "kicker.brazil": "Opportunity",
+        "kicker.path": "12-month path",
+        "kicker.flow": "Flows",
+        "title.h1": "Find verified plastic surgeons.",
+        "title.a1": "Book visits",
+        "title.a2": "Find patients",
+        "title.a3": "Publish before-and-after photos without them being taken down",
+        "title.a4": "Keep the clinical record",
+        "title.a5": "Automatic notes and clinical history",
+        "demo": "Open the demo",
+        "problem.h2": "The patient guesses. The surgeon has no tool.",
+        "problem.patients": "Patients",
+        "problem.surgeons": "Surgeons",
+        "problem.c1": "<strong>Every specialty, one list.</strong> General directories mix plastic surgeons with every other doctor.",
+        "problem.c2": "<strong>A feed is not a credential.</strong> Med-spas and Instagram accounts look like a practice.",
+        "problem.c3": "<strong>A registry hit is not a booking.</strong> RETHUS can confirm a name. It does not open a visit.",
+        "problem.d1": "No place to promote the practice.",
+        "problem.d2": "The calendar is not a real scheduling system.",
+        "problem.d3": "They do not control the reviews.",
+        "problem.d4": "Before-and-after photos do not stay up: the website looks poor, and Instagram takes them down.",
+        "problem.d5": "Nothing shows the patient that this is a verified plastic surgeon.",
+        "solution.h2": "A network of plastic surgeons only.",
+        "solution.p1": "Patients find a plastic surgeon and can check the review.",
+        "solution.p2": "The tool is built only for them.",
+        "solution.p3": "Scheduling, a clinical record shaped for plastic surgery, and automatic notes.",
+        "solution.alt1": "Plasty directory of verified plastic surgeons",
+        "solution.cap1": "The directory patients see",
+        "solution.book.h2": "Book the visit and read the reviews.",
+        "solution.book.p": "The patient picks a time and reads reviews from verified visits.",
+        "solution.book.alt": "Public profile with patient reviews and the visit calendar",
+        "solution.book.cap": "The public profile",
+        "solution.seal.h2": "The profile shows the reviewed RETHUS.",
+        "solution.seal.p": "The seal is the review already done, not an automatic registry lookup.",
+        "solution.seal.alt": "Surgeon profile header with the RETHUS seal",
+        "solution.seal.cap": "The header the patient sees",
+        "solution.id.h2": "Identity check.",
+        "solution.id.p": "The surgeon takes a facial check against the document.",
+        "solution.id.alt": "Facial identity check during registration",
+        "solution.id.cap": "The identity step in registration",
+        "solution.dash.h2": "Visits, views, and follow-up.",
+        "solution.dash.p": "Home shows booked visits, profile views, and follow-up.",
+        "solution.dash.alt": "Surgeon home with visits, profile views, and follow-up",
+        "solution.dash.cap": "The surgeon's home",
+        "solution.hist.h2": "Patients and the clinical record.",
+        "solution.hist.p": "The surgeon opens the patient and builds the record.",
+        "solution.hist.alt": "Patient file with clinical history and anamnesis",
+        "solution.hist.cap": "The patient's record",
+        "solution.admin.h2": "A person reviews RETHUS.",
+        "solution.admin.p": "If they accept it and the profile is not paused, the surgeon can appear in search.",
+        "solution.admin.alt": "Admin queue to accept or pause a RETHUS review",
+        "solution.admin.cap": "The review queue",
+        "solution.alt2": "Surgeon profile editor with procedures and weekly hours",
+        "solution.cap2": "The profile the surgeon keeps",
+        "who.h2": "Patients want surgery. Only plastic surgeons are listed.",
+        "who.lead": "Demand is the person seeking plastic surgery. Supply and the buyer are the same person: a plastic surgeon. Other doctors stay out.",
+        "who.demand": "Demand",
+        "who.patients": "Patients",
+        "who.patients.p": "People who want plastic surgery: face, breast, body, or reconstructive. They search by procedure and city. Search is free.",
+        "who.patients.pay": "They do not pay.",
+        "who.supply": "Supply",
+        "who.surgeons": "Plastic surgeons",
+        "who.surgeons.p": "The only doctors on the network. They are the ones who subscribe. A general doctor, a dermatologist, or a med-spa is not a listing.",
+        "who.surgeons.pay": "They pay the subscription.",
+        "comp.h2": "Same shelf today. Not the same product.",
+        "comp.h.only": "Plastic only",
+        "comp.h.sells": "What they sell",
+        "comp.h.figure": "Published figure",
+        "comp.h.unit": "What that figure is",
+        "comp.yes": "Yes",
+        "comp.no": "No",
+        "comp.dash": "—",
+        "comp.us.sells": "Network, scheduling, and the record",
+        "comp.us.unit": "The surgeon’s subscription",
+        "comp.doc.sells": "Directory and booking",
+        "comp.doc.figure": "3,400+",
+        "comp.doc.unit": "Professionals registered in Colombia, 2025",
+        "comp.sal.sells": "Calendar and records for any doctor",
+        "comp.sal.figure": "7,000+",
+        "comp.sal.unit": "Doctors, on their site",
+        "comp.tel.sells": "AI notes for institutions",
+        "comp.tel.figure": "25 institutions",
+        "comp.tel.unit": "Not a surgeon subscription",
+        "comp.net.sells": "Patient acquisition for institutions",
+        "comp.net.figure": "350",
+        "comp.net.unit": "Institutional clients, on their site",
+        "comp.note": "Doctoralia interviews in 2021 and 2023 cited 60,000 and 70,000 profiles. That is not a paid subscription. These figures use different units, so they are not a pie.",
+        "model.h2": "Four plans. One monthly price.",
+        "model.lead": "Patients search free. The price below is in Colombian pesos.",
+        "model.free": "Free",
+        "model.free.p": "Sign in, create a profile, appear, and book visits. No reviews, no clinical record, and no image uploads.",
+        "model.paid": "Paid",
+        "model.paid.price": "$109.000 <span class=\"per\">/ month</span>",
+        "model.paid.p": "Full profile, booking, reviews, a clinical record to the legal standard, before-and-after photos, automatic clinical notes, and a way to promote the practice.",
+        "model.promo": "Promotion",
+        "model.promo.p": "Pay more to stay at the top of each city.",
+        "model.custom": "Custom page",
+        "model.custom.p": "Their own page, with appointment management too.",
+        "market.h2": "Plastic surgery in 2025, not all of medicine.",
+        "market.s1": "Surgical aesthetic procedures",
+        "market.s2": "Aesthetic procedures, including non-surgical",
+        "market.s4": "Plastic surgeons ISAPS estimates",
+        "market.g.isaps": "<strong>ISAPS.</strong> International Society of Aesthetic Plastic Surgery. Its survey counts procedures by plastic surgeons, not every aesthetic practice. Figures are procedures in 2025, published in 2026.",
+        "market.g.sccp": "<strong>SCCP.</strong> Sociedad Colombiana de Cirugía Plástica. It reported 950 members in 2026. In an interview the society said more than 1,500 are enabled in RETHUS, including non-members. That is not a census.",
+        "market.g.surg": "<strong>Surgical.</strong> Aesthetic operations performed by plastic surgeons. That is the 331.392.",
+        "market.g.nonsurg": "<strong>Non-surgical.</strong> Aesthetic procedures without surgery, such as botulinum toxin or hyaluronic acid, performed by those same surgeons. They sit inside the 459.360, together with the surgical ones.",
+        "proj.h2": "Scenarios, not a forecast.",
+        "proj.5.n": "48 surgeons",
+        "proj.5.m": "About $62.8 million. With VAT, $74.7 million.",
+        "proj.10.n": "96 surgeons",
+        "proj.10.m": "About $125.6 million. With VAT, $149.4 million.",
+        "proj.20.n": "192 surgeons",
+        "proj.20.m": "About $251.1 million. With VAT, $298.9 million.",
+        "proj.50.n": "480 surgeons",
+        "proj.50.m": "About $627.8 million. With VAT, $747.1 million.",
+        "proj.note": "They use the $109,000 monthly plan for 12 months. The second figure adds 19% VAT. They are not a forecast.",
+        "br.h2": "Brazil is the opportunity.",
+        "br.n1": "6,497",
+        "br.l1": "Plastic surgeons",
+        "br.n2": "3.2 million",
+        "br.l2": "Procedures",
+        "br.br": "Brazil",
+        "br.br.n": "6,497",
+        "br.mx": "Mexico",
+        "br.mx.n": "2,062",
+        "br.ar": "Argentina",
+        "br.ar.n": "1,311",
+        "br.co": "Colombia",
+        "br.co.n": "960",
+        "br.br.p": "60.0%",
+        "br.mx.p": "19.0%",
+        "br.ar.p": "12.1%",
+        "br.co.p": "8.9%",
+        "br.pie": "Share of plastic surgeons in these four countries",
+        "br.total": "10,830 plastic surgeons in these four countries. Not the whole region.",
+        "opp.share": "Share",
+        "opp.surgeons": "Surgeons",
+        "opp.year": "A year",
+        "opp.5.n": "About 542",
+        "opp.5.m": "About $708.9 million",
+        "opp.20.n": "2,166",
+        "opp.20.m": "About $2,833.1 million",
+        "opp.note": "5% of 10,830 rounds to 542 surgeons. 20% is 2,166. The year uses the $109,000 monthly plan for 12 months. Not a forecast.",
+        "br.line": "Among the nine Latin American countries ISAPS published, Brazil is the largest and Colombia is fourth.",
+        "path.h2": "Twelve months. Surgeons before patients.",
+        "path.m1": "Months 1–3",
+        "path.supply": "Supply",
+        "path.m1.p": "Colombian plastic surgeons join. A person reviews RETHUS. Free profiles go live.",
+        "path.m2": "Months 4–6",
+        "path.m2.p": "Search by procedure and city. Booking goes through WhatsApp. The surgeon approves reviews.",
+        "path.m3": "Months 7–9",
+        "path.paid": "Paid plans",
+        "path.m3.p": "Surgeons move to the paid plan.",
+        "path.m4": "Months 10–12",
+        "path.brazil": "Brazil",
+        "path.m4.p": "A surgeon cohort, in Portuguese, with a local license check. Patients come after that.",
+        "path.close": "Same rule the whole year: surgeons on the network before patients are asked to look.",
+        "flow.h2": "The patient searches, on the network or not.",
+        "flow.start": "Searches",
+        "flow.on": "On the network",
+        "flow.find": "Finds the surgeon",
+        "flow.book": "Books",
+        "flow.wa": "Continues on WhatsApp",
+        "flow.off": "Off the network",
+        "flow.miss": "Not on the network",
+        "flow.ask": "Asks RETHUS",
+        "flow.exists": "Says whether they exist",
+        "flow.api": "Needs an API",
+        "join.h2": "The surgeon signs up. A person accepts.",
+        "join.doc": "Surgeon",
+        "join.account": "Creates the account",
+        "join.data": "Leaves their details",
+        "join.face": "Checks their face",
+        "join.face.s": "Against the ID",
+        "join.admin": "Admin",
+        "join.receive": "Receives the request",
+        "join.review": "Reviews RETHUS by hand",
+        "join.accept": "Accepts"
+      },
+      es: {
+        "doc.title": "Plasty — Presentación",
+        "lang.group": "Idioma",
+        "nav.slides": "Diapositivas",
+        "nav.prev": "Diapositiva anterior",
+        "nav.next": "Diapositiva siguiente",
+        "nav.dot": "Diapositiva",
+        "slide.title": "Portada",
+        "slide.problem": "Problema",
+        "slide.solution": "Solución",
+        "slide.book": "Citas y opiniones",
+        "slide.seal": "Perfil verificado",
+        "slide.id": "Identidad",
+        "slide.dash": "Inicio del cirujano",
+        "slide.hist": "Historia clínica",
+        "slide.admin": "Revisión RETHUS",
+        "slide.who": "Para quién",
+        "slide.competitors": "Competencia",
+        "slide.model": "Modelo de negocio",
+        "slide.market": "Mercado",
+        "slide.market2": "Escenarios",
+        "slide.market3": "Brasil",
+        "slide.path": "Ruta de 12 meses",
+        "slide.flow": "Flujos del paciente",
+        "slide.join": "Cirujano y admin",
+        "kicker.pitch": "Presentación",
+        "kicker.problem": "Problema",
+        "kicker.solution": "Solución",
+        "kicker.who": "Para quién",
+        "kicker.competitors": "Competencia",
+        "kicker.model": "Modelo",
+        "kicker.market": "Mercado",
+        "kicker.proj": "Escenarios",
+        "kicker.brazil": "Oportunidad",
+        "kicker.path": "Ruta de 12 meses",
+        "kicker.flow": "Flujos",
+        "title.h1": "Encuentra cirujanos plásticos verificados.",
+        "title.a1": "Agendar citas",
+        "title.a2": "Encontrar pacientes",
+        "title.a3": "Publicar el antes y después sin que lo bajen",
+        "title.a4": "Llevar el historial clínico",
+        "title.a5": "Tomar notas e historia clínica de forma automática",
+        "demo": "Abrir la demo",
+        "problem.h2": "El paciente adivina. El cirujano no tiene herramienta.",
+        "problem.patients": "Pacientes",
+        "problem.surgeons": "Cirujanos",
+        "problem.c1": "<strong>Todas las especialidades, una lista.</strong> Los directorios generales mezclan cirujanos plásticos con cualquier otro médico.",
+        "problem.c2": "<strong>Un feed no es un título.</strong> Centros estéticos y cuentas de Instagram parecen un consultorio.",
+        "problem.c3": "<strong>Aparecer en el registro no es agendar.</strong> RETHUS puede confirmar un nombre. No abre una cita.",
+        "problem.d1": "No tienen dónde promocionarse.",
+        "problem.d2": "La agenda no alcanza para una gestión avanzada.",
+        "problem.d3": "No controlan las opiniones.",
+        "problem.d4": "No pueden mostrar el antes y después: la web se ve mal e Instagram lo baja.",
+        "problem.d5": "Nada le garantiza al paciente que son cirujanos verificados.",
+        "solution.h2": "Una red de solo cirujanos plásticos.",
+        "solution.p1": "El paciente encuentra un cirujano plástico y puede verificarlo.",
+        "solution.p2": "La herramienta está hecha solo para ellos.",
+        "solution.p3": "Agenda, historia clínica adaptada y notas automáticas.",
+        "solution.alt1": "Directorio Plasty de cirujanos plásticos verificados",
+        "solution.cap1": "El directorio que ve el paciente",
+        "solution.book.h2": "Agenda la cita y ve las opiniones.",
+        "solution.book.p": "El paciente elige un horario y lee opiniones de citas verificadas.",
+        "solution.book.alt": "Ficha pública con opiniones y la agenda de la cita",
+        "solution.book.cap": "La ficha pública",
+        "solution.seal.h2": "El perfil muestra el RETHUS revisado.",
+        "solution.seal.p": "El sello es la revisión ya hecha, no una consulta automática al registro.",
+        "solution.seal.alt": "Cabecera del perfil con el sello RETHUS",
+        "solution.seal.cap": "La cabecera que ve el paciente",
+        "solution.id.h2": "Verificación de identidad.",
+        "solution.id.p": "El cirujano hace una prueba facial contra su documento.",
+        "solution.id.alt": "Prueba facial de identidad en el registro",
+        "solution.id.cap": "El paso de identidad del registro",
+        "solution.dash.h2": "Citas, vistas y seguimiento.",
+        "solution.dash.p": "El inicio muestra las citas agendadas, las vistas del perfil y el seguimiento.",
+        "solution.dash.alt": "Inicio del cirujano con citas, vistas del perfil y seguimiento",
+        "solution.dash.cap": "El inicio del cirujano",
+        "solution.hist.h2": "Pacientes e historia clínica.",
+        "solution.hist.p": "El cirujano abre el paciente y arma la historia.",
+        "solution.hist.alt": "Ficha del paciente con historia clínica y anamnesis",
+        "solution.hist.cap": "La historia del paciente",
+        "solution.admin.h2": "Una persona revisa el RETHUS.",
+        "solution.admin.p": "Si lo acepta y no está pausado, el cirujano puede salir en el buscador.",
+        "solution.admin.alt": "Cola de admin para aceptar o pausar una revisión RETHUS",
+        "solution.admin.cap": "La cola de revisión",
+        "solution.alt2": "Perfil del cirujano, con procedimientos y horario semanal",
+        "solution.cap2": "El perfil que guarda el cirujano",
+        "who.h2": "El paciente quiere operarse. Solo aparecen cirujanos plásticos.",
+        "who.lead": "La demanda es quien busca cirugía plástica. La oferta y quien paga son la misma persona: un cirujano plástico. Los demás médicos quedan fuera.",
+        "who.demand": "Demanda",
+        "who.patients": "Pacientes",
+        "who.patients.p": "Personas que quieren cirugía plástica: cara, seno, cuerpo o reconstructiva. Buscan por procedimiento y ciudad. Buscar es gratis.",
+        "who.patients.pay": "No pagan.",
+        "who.supply": "Oferta",
+        "who.surgeons": "Cirujanos plásticos",
+        "who.surgeons.p": "Los únicos médicos de la red. Ellos se suscriben. Un médico general, un dermatólogo o un centro estético no tienen ficha.",
+        "who.surgeons.pay": "Pagan la suscripción.",
+        "comp.h2": "El mismo estante. No el mismo producto.",
+        "comp.h.only": "Solo plástica",
+        "comp.h.sells": "Qué vende",
+        "comp.h.figure": "Cifra publicada",
+        "comp.h.unit": "Qué es esa cifra",
+        "comp.yes": "Sí",
+        "comp.no": "No",
+        "comp.dash": "—",
+        "comp.us.sells": "Red, agenda e historia",
+        "comp.us.unit": "La suscripción del cirujano",
+        "comp.doc.sells": "Directorio y agenda",
+        "comp.doc.figure": "Más de 3.400",
+        "comp.doc.unit": "Profesionales registrados en Colombia, 2025",
+        "comp.sal.sells": "Agenda e historia para cualquier médico",
+        "comp.sal.figure": "Más de 7.000",
+        "comp.sal.unit": "Médicos, cifra de su sitio",
+        "comp.tel.sells": "Notas con IA para instituciones",
+        "comp.tel.figure": "25 instituciones",
+        "comp.tel.unit": "No es una suscripción de cirujanos",
+        "comp.net.sells": "Captación para instituciones",
+        "comp.net.figure": "350",
+        "comp.net.unit": "Clientes institucionales, su sitio",
+        "comp.note": "Entrevistas de Doctoralia en 2021 y 2023 citaban 60.000 y 70.000 perfiles. Eso no es una suscripción paga. Las cifras usan unidades distintas, así que no arman una torta.",
+        "model.h2": "Cuatro planes. Un precio mensual.",
+        "model.lead": "El paciente busca gratis. El precio de abajo está en pesos colombianos.",
+        "model.free": "Gratis",
+        "model.free.p": "Entrar, crear el perfil, aparecer y agendar citas. No muestra opiniones, no lleva historia clínica y no sube imágenes.",
+        "model.paid": "Pago",
+        "model.paid.price": "$109.000 <span class=\"per\">/ mes</span>",
+        "model.paid.p": "Perfil completo, agendar citas, gestionar opiniones, historia clínica bajo el estándar legal, antes y después, notas clínicas automáticas y poder promocionarse.",
+        "model.promo": "Promoción",
+        "model.promo.p": "Paga más para quedarse en el tope de cada ciudad.",
+        "model.custom": "A medida",
+        "model.custom.p": "Una página propia, también con la gestión de citas.",
+        "market.h2": "Cirugía plástica en 2025, no toda la medicina.",
+        "market.s1": "Procedimientos quirúrgicos estéticos",
+        "market.s2": "Procedimientos estéticos, incluidos los no quirúrgicos",
+        "market.s4": "Cirujanos plásticos que estima ISAPS",
+        "market.g.isaps": "<strong>ISAPS.</strong> International Society of Aesthetic Plastic Surgery. Su encuesta cuenta procedimientos hechos por cirujanos plásticos, no toda la medicina estética. Cifras de procedimientos en 2025, publicadas en 2026.",
+        "market.g.sccp": "<strong>SCCP.</strong> Sociedad Colombiana de Cirugía Plástica. Reportó 950 miembros en 2026. En una entrevista dijo que en RETHUS hay más de 1.500 habilitados, incluidos quienes no son miembros. No es un censo.",
+        "market.g.surg": "<strong>Quirúrgicos.</strong> Operaciones estéticas hechas por cirujanos plásticos. Son los 331.392.",
+        "market.g.nonsurg": "<strong>No quirúrgicos.</strong> Procedimientos estéticos sin cirugía, como toxina botulínica o ácido hialurónico, hechos por esos mismos cirujanos. Están dentro de los 459.360, junto con los quirúrgicos.",
+        "proj.h2": "Escenarios, no un pronóstico.",
+        "proj.5.n": "48 cirujanos",
+        "proj.5.m": "Cerca de $62,8 millones. Con IVA, $74,7 millones.",
+        "proj.10.n": "96 cirujanos",
+        "proj.10.m": "Cerca de $125,6 millones. Con IVA, $149,4 millones.",
+        "proj.20.n": "192 cirujanos",
+        "proj.20.m": "Cerca de $251,1 millones. Con IVA, $298,9 millones.",
+        "proj.50.n": "480 cirujanos",
+        "proj.50.m": "Cerca de $627,8 millones. Con IVA, $747,1 millones.",
+        "proj.note": "Usan el plan de $109.000 al mes por 12 meses. El segundo número lleva IVA del 19%. No son un pronóstico.",
+        "br.h2": "Brasil es la oportunidad.",
+        "br.n1": "6.497",
+        "br.l1": "Cirujanos plásticos",
+        "br.n2": "3,2 millones",
+        "br.l2": "Procedimientos",
+        "br.br": "Brasil",
+        "br.br.n": "6.497",
+        "br.mx": "México",
+        "br.mx.n": "2.062",
+        "br.ar": "Argentina",
+        "br.ar.n": "1.311",
+        "br.co": "Colombia",
+        "br.co.n": "960",
+        "br.br.p": "60,0%",
+        "br.mx.p": "19,0%",
+        "br.ar.p": "12,1%",
+        "br.co.p": "8,9%",
+        "br.pie": "Parte de los cirujanos plásticos en estos cuatro países",
+        "br.total": "10.830 cirujanos plásticos en estos cuatro países. No es toda la región.",
+        "opp.share": "Parte",
+        "opp.surgeons": "Cirujanos",
+        "opp.year": "Al año",
+        "opp.5.n": "Cerca de 542",
+        "opp.5.m": "Cerca de $708,9 millones",
+        "opp.20.n": "2.166",
+        "opp.20.m": "Cerca de $2.833,1 millones",
+        "opp.note": "El 5% de 10.830 se redondea a 542 cirujanos. El 20% son 2.166. El año usa el plan de $109.000 al mes por 12 meses. No es un pronóstico.",
+        "br.line": "Entre los nueve países de Latinoamérica que ISAPS publicó, Brasil es el más grande y Colombia el cuarto.",
+        "path.h2": "Doce meses. Cirujanos antes que pacientes.",
+        "path.m1": "Meses 1–3",
+        "path.supply": "Oferta",
+        "path.m1.p": "Entran cirujanos plásticos en Colombia. Una persona revisa RETHUS. Salen los perfiles gratis.",
+        "path.m2": "Meses 4–6",
+        "path.m2.p": "Búsqueda por procedimiento y ciudad. La cita va por WhatsApp. El cirujano aprueba las opiniones.",
+        "path.m3": "Meses 7–9",
+        "path.paid": "Planes de pago",
+        "path.m3.p": "Los cirujanos pasan al plan pago.",
+        "path.m4": "Meses 10–12",
+        "path.brazil": "Brasil",
+        "path.m4.p": "Un grupo de cirujanos, en portugués, con revisión de la licencia local. Los pacientes llegan después.",
+        "path.close": "La misma regla todo el año: cirujanos en la red antes de pedirle al paciente que busque.",
+        "flow.h2": "El paciente busca, esté o no en la red.",
+        "flow.start": "Busca",
+        "flow.on": "En la red",
+        "flow.find": "Encuentra al cirujano",
+        "flow.book": "Agenda",
+        "flow.wa": "Sigue por WhatsApp",
+        "flow.off": "Fuera de la red",
+        "flow.miss": "No está en la red",
+        "flow.ask": "Consulta RETHUS",
+        "flow.exists": "Dice si existe",
+        "flow.api": "Pide una API",
+        "join.h2": "El cirujano se registra. Una persona acepta.",
+        "join.doc": "Cirujano",
+        "join.account": "Crea la cuenta",
+        "join.data": "Deja sus datos",
+        "join.face": "Verifica el rostro",
+        "join.face.s": "Contra el documento de identidad",
+        "join.admin": "Admin",
+        "join.receive": "Recibe la solicitud",
+        "join.review": "Revisa RETHUS a mano",
+        "join.accept": "Acepta"
+      }
+    };
+
+    const slides = [...document.querySelectorAll(".slide")];
+    const dotsWrap = document.querySelector("[data-dots]");
+    const progress = document.querySelector("[data-progress]");
+    const count = document.querySelector("[data-count]");
+    const prev = document.querySelector("[data-prev]");
+    const next = document.querySelector("[data-next]");
+    let index = 0;
+    let lang = "en";
+
+    document.querySelectorAll("[data-demo]").forEach((link) => {
+      link.href = DEMO_URL;
+    });
+    document.querySelectorAll("[data-url]").forEach((node) => {
+      node.textContent = DEMO_URL;
+    });
+
+    slides.forEach((_, i) => {
+      const dot = document.createElement("button");
+      dot.type = "button";
+      dot.className = "dot";
+      dot.dataset.dot = String(i);
+      dot.setAttribute("aria-label", "Slide " + (i + 1));
+      dot.addEventListener("click", () => show(i));
+      dotsWrap.appendChild(dot);
+    });
+
+    function show(nextIndex) {
+      index = Math.max(0, Math.min(slides.length - 1, nextIndex));
+      slides.forEach((slide, i) => {
+        slide.classList.toggle("is-active", i === index);
+      });
+      dotsWrap.querySelectorAll(".dot").forEach((dot, i) => {
+        dot.classList.toggle("is-active", i === index);
+        if (i === index) dot.setAttribute("aria-current", "true");
+        else dot.removeAttribute("aria-current");
+      });
+      progress.style.width = ((index + 1) / slides.length) * 100 + "%";
+      count.textContent = String(index + 1).padStart(2, "0") + " / " + String(slides.length).padStart(2, "0");
+      prev.disabled = index === 0;
+      next.disabled = index === slides.length - 1;
+      const url = new URL(location.href);
+      url.hash = String(index + 1);
+      if (location.hash !== url.hash || location.search !== url.search) history.replaceState(null, "", url);
+    }
+
+    function textFor(key) {
+      return (COPY[lang] && COPY[lang][key]) || COPY.en[key] || "";
+    }
+
+    function applyLang() {
+      document.documentElement.lang = lang;
+      document.title = textFor("doc.title");
+      document.querySelectorAll("[data-i18n]").forEach((el) => {
+        const value = textFor(el.dataset.i18n);
+        if (el.dataset.i18nHtml === "1") el.innerHTML = value;
+        else el.textContent = value;
+      });
+      document.querySelectorAll("[data-i18n-label]").forEach((el) => {
+        el.setAttribute("aria-label", textFor(el.dataset.i18nLabel));
+      });
+      document.querySelectorAll("[data-i18n-alt]").forEach((el) => {
+        el.alt = textFor(el.dataset.i18nAlt);
+      });
+      dotsWrap.querySelectorAll(".dot").forEach((dot, i) => {
+        dot.setAttribute("aria-label", textFor("nav.dot") + " " + (i + 1));
+      });
+      document.querySelectorAll("[data-set-lang]").forEach((button) => {
+        button.setAttribute("aria-pressed", button.dataset.setLang === lang ? "true" : "false");
+      });
+    }
+
+    function setLang(nextLang) {
+      lang = nextLang === "es" ? "es" : "en";
+      const url = new URL(location.href);
+      url.searchParams.set("lang", lang);
+      history.replaceState(null, "", url);
+      applyLang();
+    }
+
+    prev.addEventListener("click", () => show(index - 1));
+    next.addEventListener("click", () => show(index + 1));
+
+    document.querySelectorAll("[data-set-lang]").forEach((button) => {
+      button.addEventListener("click", () => setLang(button.dataset.setLang));
+    });
+
+    document.addEventListener("keydown", (event) => {
+      const tag = event.target && event.target.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA") return;
+      if (event.target && event.target.closest && event.target.closest(".lang")) return;
+      if (event.key === "ArrowRight" || event.key === " " || event.key === "PageDown") {
+        event.preventDefault();
+        show(index + 1);
+      } else if (event.key === "ArrowLeft" || event.key === "PageUp") {
+        event.preventDefault();
+        show(index - 1);
+      } else if (event.key === "Home") {
+        event.preventDefault();
+        show(0);
+      } else if (event.key === "End") {
+        event.preventDefault();
+        show(slides.length - 1);
+      }
+    });
+
+    window.addEventListener("hashchange", () => {
+      const n = parseInt(location.hash.slice(1), 10);
+      if (Number.isFinite(n)) show(n - 1);
+    });
+
+    const fromHash = parseInt(location.hash.slice(1), 10);
+    const requested = new URLSearchParams(location.search).get("lang");
+    setLang(requested === "es" ? "es" : "en");
+    show(Number.isFinite(fromHash) ? fromHash - 1 : 0);
+  </script>
+</body>
+</html>

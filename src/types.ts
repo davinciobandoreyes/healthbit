@@ -113,6 +113,10 @@ export interface DayAvailability {
 
 export type WeeklyAvailability = Record<WeekdayKey, DayAvailability>;
 
+export type PublicLayout = 'basic' | 'landing';
+
+export type LandingTemplateId = 'consulta' | 'historia' | 'estudio' | 'editorial' | 'clinica';
+
 export interface DoctorProfile {
   id: string;
   fullName: string;
@@ -151,6 +155,12 @@ export interface DoctorProfile {
   };
   rethusReviewStatus?: RethusReviewStatus;
   isPaused?: boolean;
+  /** Ausente = perfil básico. */
+  publicLayout?: PublicLayout;
+  landingTemplateId?: LandingTemplateId;
+  /** Plantillas de pago desbloqueadas en esta sesión. */
+  unlockedTemplateIds?: string[];
+  customPageRequested?: boolean;
 }
 
 export type RethusLookupOutcome = 'absent' | 'enabled' | 'not_enabled';

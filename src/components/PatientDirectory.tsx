@@ -94,7 +94,7 @@ const SpecialtyMore: React.FC<{ items: string[] }> = ({ items }) => {
 
 const doctorWhatsAppLink = (doc: DoctorProfile) => {
   const message = encodeURIComponent(
-    `Hola Dr./Dra. ${doc.fullName}, vi su perfil verificado en CiruPlastify y me gustaría agendar una cita presencial de valoración en ${doc.specialty}.`
+    `Hola Dr./Dra. ${doc.fullName}, vi su perfil verificado en Plasty y me gustaría agendar una cita presencial de valoración en ${doc.specialty}.`
   );
   const source = doc.whatsappPhone || doc.phone;
   const cleanPhone = source ? source.replace(/[^0-9]/g, '') : '573124567890';
@@ -164,7 +164,7 @@ const RethusSearchFeedback: React.FC<{
       <div className="h-2 rounded-full bg-slate-100 overflow-hidden" role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100}>
         <div className="h-full bg-violet-600 rounded-full" style={{ width: `${progress}%` }} />
       </div>
-      <p className="text-xs text-slate-500">Consulta demo. No abre un perfil en CiruPlastify.</p>
+      <p className="text-xs text-slate-500">Consulta demo. No abre un perfil en Plasty.</p>
     </section>
   );
 };
@@ -174,7 +174,7 @@ const RethusLookupPanel: React.FC<{ lookup: RethusLookup }> = ({ lookup }) => (
     <div className="space-y-2">
       <h2 className="font-bold text-base text-slate-900">{lookup.fullName}</h2>
       {lookup.outcome === 'absent' ? (
-        <p className="text-xs text-slate-500">No aparece en RETHUS. Consulta demo. No tiene perfil en CiruPlastify.</p>
+        <p className="text-xs text-slate-500">No aparece en RETHUS. Consulta demo. No tiene perfil en Plasty.</p>
       ) : (
         <>
           <div className="flex flex-wrap items-center gap-1.5">
@@ -194,8 +194,8 @@ const RethusLookupPanel: React.FC<{ lookup: RethusLookup }> = ({ lookup }) => (
           </div>
           <p className="text-xs text-slate-500">
             {lookup.outcome === 'not_enabled'
-              ? 'El registro existe y no tiene facultad para ejercer. Consulta demo. No tiene perfil en CiruPlastify.'
-              : 'Consulta demo. Esta persona está en RETHUS y no tiene perfil en CiruPlastify.'}
+              ? 'El registro existe y no tiene facultad para ejercer. Consulta demo. No tiene perfil en Plasty.'
+              : 'Consulta demo. Esta persona está en RETHUS y no tiene perfil en Plasty.'}
           </p>
         </>
       )}
@@ -507,7 +507,7 @@ export const PatientDirectory: React.FC<PatientDirectoryProps> = ({
               <Sparkles className="w-6 h-6 text-white stroke-[2.5]" />
             </div>
             <span className="font-extrabold text-xl tracking-tight text-slate-900">
-              Ciru<span className="text-violet-600">Plastify</span>
+              P<span className="text-violet-600">lasty</span>
             </span>
           </div>
 
@@ -732,6 +732,11 @@ export const PatientDirectory: React.FC<PatientDirectoryProps> = ({
                         <ShieldCheck className="w-3.5 h-3.5 text-violet-600" />
                         RETHUS
                       </span>
+                      {doc.publicLayout === 'landing' && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-900 text-white text-[11px] font-bold whitespace-nowrap">
+                          Landing
+                        </span>
+                      )}
                       {doc.repsReviewStatus === 'approved' && (
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-violet-50 text-violet-800 border border-violet-200/80 text-[11px] font-bold whitespace-nowrap">
                           <ShieldCheck className="w-3.5 h-3.5 text-violet-600" />

@@ -64,6 +64,8 @@ export const INITIAL_DOCTORS: DoctorProfile[] = [
     repsReviewStatus: 'approved',
     phone: '+57 (601) 625-3344',
     email: 'dr.mendoza@healthbit.co',
+    publicLayout: 'landing',
+    landingTemplateId: 'consulta',
     verifiedStatus: {
       identityFront: true,
       identityBack: true,
@@ -99,6 +101,8 @@ export const INITIAL_DOCTORS: DoctorProfile[] = [
     repsReviewStatus: 'approved',
     phone: '+57 (602) 685-1100',
     email: 'dra.arango@healthbit.co',
+    publicLayout: 'landing',
+    landingTemplateId: 'historia',
     verifiedStatus: {
       identityFront: true,
       identityBack: true,
@@ -134,6 +138,8 @@ export const INITIAL_DOCTORS: DoctorProfile[] = [
     repsReviewStatus: 'approved',
     phone: '+57 (605) 385-9000',
     email: 'dr.morales@healthbit.co',
+    publicLayout: 'landing',
+    landingTemplateId: 'estudio',
     verifiedStatus: {
       identityFront: true,
       identityBack: true,

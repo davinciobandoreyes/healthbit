@@ -244,7 +244,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
             <Clock className="w-4 h-4" />
           </div>
           <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-            Tu perfil está pausado. No apareces en el buscador de pacientes hasta que el equipo CiruPlastify lo reactive.
+            Tu perfil está pausado. No apareces en el buscador de pacientes hasta que el equipo Plasty lo reactive.
           </p>
         </div>
       )}

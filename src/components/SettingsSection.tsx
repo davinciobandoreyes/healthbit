@@ -16,13 +16,23 @@ import {
   Building2,
   Plus,
   X,
+  LayoutTemplate,
 } from 'lucide-react';
 import {
+  AppointmentBooking,
   DoctorProfile,
   DoctorTitlePrefix,
+  LandingTemplateId,
+  PublicLayout,
+  PublicReview,
   WeekdayKey,
   WeeklyAvailability,
 } from '../types';
+import {
+  isLandingTemplateId,
+  isTemplateSelectable,
+  PUBLIC_TEMPLATES,
+} from '../data/publicTemplates';
 import {
   WEEKDAY_KEYS,
   WEEKDAY_LABELS,
@@ -32,11 +42,13 @@ import {
   hydrateDoctorProfile,
 } from '../data/doctorPublic';
 import { isPlasticSurgeonSpecialty, PLASTIC_PROCEDURE_GROUPS } from '../data/plasticProcedures';
+import { DoctorOnePager } from './DoctorOnePager';
 
 interface SettingsSectionProps {
   doctor: DoctorProfile;
   onUpdateDoctor: (updated: Partial<DoctorProfile>) => void;
   onLogout?: () => void;
+  reviews?: PublicReview[];
 }
 
 const inputClass =
@@ -57,6 +69,8 @@ function publicProfileSnapshot(input: {
   officeAddress?: string;
   institution: string;
   weeklyAvailability?: WeeklyAvailability;
+  publicLayout?: PublicLayout;
+  landingTemplateId?: LandingTemplateId;
 }) {
   return JSON.stringify({
     titlePrefix: input.titlePrefix || '',
@@ -73,6 +87,8 @@ function publicProfileSnapshot(input: {
     officeAddress: (input.officeAddress || '').trim(),
     institution: input.institution.trim(),
     weeklyAvailability: input.weeklyAvailability,
+    publicLayout: input.publicLayout || 'basic',
+    landingTemplateId: input.landingTemplateId || 'consulta',
   });
 }
 
@@ -101,6 +117,7 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({
   doctor,
   onUpdateDoctor,
   onLogout,
+  reviews = [],
 }) => {
   const seeded = useMemo(() => hydrateDoctorProfile(doctor), [doctor]);
   const [titlePrefix, setTitlePrefix] = useState<DoctorTitlePrefix>(seeded.titlePrefix || '');
@@ -120,6 +137,18 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({
   const [availability, setAvailability] = useState<WeeklyAvailability>(
     seeded.weeklyAvailability || defaultWeeklyAvailability()
   );
+  const [publicLayout, setPublicLayout] = useState<PublicLayout>(seeded.publicLayout || 'basic');
+  const [landingTemplateId, setLandingTemplateId] = useState<LandingTemplateId>(
+    isLandingTemplateId(seeded.landingTemplateId) ? seeded.landingTemplateId : 'consulta'
+  );
+  const [unlockedIds, setUnlockedIds] = useState<string[]>(seeded.unlockedTemplateIds || []);
+  const [customRequested, setCustomRequested] = useState(Boolean(seeded.customPageRequested));
+  const [templateNotice, setTemplateNotice] = useState('');
+  const [previewTarget, setPreviewTarget] = useState<
+    { layout: PublicLayout; templateId?: LandingTemplateId } | null
+  >(null);
+  const [previewReviews, setPreviewReviews] = useState<PublicReview[]>([]);
+  const [previewBookings, setPreviewBookings] = useState<AppointmentBooking[]>([]);
 
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -158,7 +187,15 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({
         officeAddress,
         institution,
         weeklyAvailability: availability,
-      }) !== publicProfileSnapshot({ ...seeded, weeklyAvailability: seeded.weeklyAvailability }),
+        publicLayout,
+        landingTemplateId,
+      }) !==
+        publicProfileSnapshot({
+          ...seeded,
+          weeklyAvailability: seeded.weeklyAvailability,
+          publicLayout: seeded.publicLayout,
+          landingTemplateId: seeded.landingTemplateId,
+        }),
     [
       titlePrefix,
       firstName,
@@ -174,6 +211,8 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({
       officeAddress,
       institution,
       availability,
+      publicLayout,
+      landingTemplateId,
       seeded,
     ]
   );
@@ -205,6 +244,10 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({
       location: previewLocation,
       institution: institution.trim(),
       weeklyAvailability: availability,
+      publicLayout,
+      landingTemplateId: publicLayout === 'landing' ? landingTemplateId : seeded.landingTemplateId,
+      unlockedTemplateIds: unlockedIds,
+      customPageRequested: customRequested,
     });
     setSaveSuccess(true);
     setTimeout(() => setSaveSuccess(false), 3500);
@@ -229,6 +272,36 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({
     setTimeout(() => setPasswordSuccess(false), 3500);
   };
 
+  const openPreview = (layout: PublicLayout, templateId?: LandingTemplateId) => {
+    setPreviewReviews(reviews);
+    setPreviewBookings([]);
+    setPreviewTarget({ layout, templateId });
+  };
+
+  const flashNotice = (message: string) => {
+    setTemplateNotice(message);
+    window.setTimeout(() => setTemplateNotice(''), 4000);
+  };
+
+  const unlockTemplate = (id: LandingTemplateId, priceLabel: string) => {
+    const next = unlockedIds.includes(id) ? unlockedIds : [...unlockedIds, id];
+    setUnlockedIds(next);
+    setLandingTemplateId(id);
+    setPublicLayout('landing');
+    onUpdateDoctor({
+      unlockedTemplateIds: next,
+      landingTemplateId: id,
+      publicLayout: 'landing',
+    });
+    flashNotice(`${priceLabel} quedó registrado en esta demo. La plantilla ya está disponible. No hay cobro real.`);
+  };
+
+  const requestCustomPage = () => {
+    setCustomRequested(true);
+    onUpdateDoctor({ customPageRequested: true });
+    flashNotice('Solicitud recibida. En esta demo no se cobra ni se arma la página.');
+  };
+
   const patchDay = (key: WeekdayKey, patch: Partial<WeeklyAvailability[WeekdayKey]>) => {
     setAvailability((prev) => ({ ...prev, [key]: { ...prev[key], ...patch } }));
   };
@@ -243,6 +316,105 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({
       </div>
 
       <form onSubmit={handleProfileSave} className="space-y-5">
+        <section className="bg-white border border-slate-200/80 rounded-3xl p-5 sm:p-8 shadow-xs space-y-5">
+          <div className="border-b border-slate-100 pb-4">
+            <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+              <LayoutTemplate className="w-5 h-5 text-violet-600" /> Cómo te ven
+            </h2>
+          </div>
+          {templateNotice && (
+            <p className="text-xs font-bold text-violet-700 bg-violet-50 px-3 py-2 rounded-xl inline-flex items-center gap-1.5">
+              <CheckCircle2 className="w-4 h-4 text-violet-600 shrink-0" /> {templateNotice}
+            </p>
+          )}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {(
+              [
+                { id: 'basic' as const, label: 'Perfil básico', hint: 'Ficha con pestañas y agenda al lado.' },
+                { id: 'landing' as const, label: 'Landing', hint: 'Página de una columna, enfocada a reservar.' },
+              ]
+            ).map((option) => (
+              <button
+                key={option.id}
+                type="button"
+                onClick={() => setPublicLayout(option.id)}
+                className={`min-h-[44px] text-left rounded-2xl border px-4 py-3 cursor-pointer ${
+                  publicLayout === option.id
+                    ? 'border-violet-600 bg-violet-50'
+                    : 'border-slate-200 bg-white hover:bg-slate-50'
+                }`}
+              >
+                <span className="block text-sm font-bold text-slate-900">{option.label}</span>
+                <span className="block text-xs text-slate-500 mt-0.5">{option.hint}</span>
+              </button>
+            ))}
+          </div>
+          {publicLayout === 'landing' && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {PUBLIC_TEMPLATES.map((template) => {
+                const unlocked = isTemplateSelectable(template.id, unlockedIds);
+                const selected = template.id !== 'medida' && landingTemplateId === template.id;
+                return (
+                  <div
+                    key={template.id}
+                    className={`rounded-2xl border p-4 space-y-2 ${
+                      selected ? 'border-violet-600 bg-violet-50' : 'border-slate-200'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-sm font-bold text-slate-900">{template.name}</p>
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[11px] font-bold whitespace-nowrap">
+                        {template.tier === 'free' ? 'Gratis' : template.priceLabel}
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-500">{template.blurb}</p>
+                    {template.tier === 'custom' ? (
+                      <button
+                        type="button"
+                        onClick={requestCustomPage}
+                        disabled={customRequested}
+                        className="min-h-[44px] px-4 rounded-xl bg-slate-900 text-white text-xs font-bold disabled:opacity-60 cursor-pointer"
+                      >
+                        {customRequested ? 'Solicitud enviada' : 'Pedir página'}
+                      </button>
+                    ) : (
+                      <div className="flex flex-wrap gap-2">
+                        {unlocked ? (
+                          <button
+                            type="button"
+                            onClick={() => setLandingTemplateId(template.id as LandingTemplateId)}
+                            className="min-h-[44px] px-4 rounded-xl bg-violet-600 text-white text-xs font-bold cursor-pointer"
+                          >
+                            {selected ? 'En uso' : 'Usar'}
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              unlockTemplate(template.id as LandingTemplateId, template.priceLabel || '')
+                            }
+                            className="min-h-[44px] px-4 rounded-xl bg-white border border-slate-200 text-slate-800 text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer"
+                          >
+                            <Lock className="w-3.5 h-3.5" /> Pagar
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => openPreview('landing', template.id as LandingTemplateId)}
+                          className="min-h-[44px] px-4 rounded-xl bg-white border border-slate-200 text-slate-800 text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer"
+                        >
+                          <Eye className="w-3.5 h-3.5" /> Vista previa
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+          <p className="text-xs text-slate-500">Se guarda junto con el perfil público.</p>
+        </section>
+
         <section className="bg-white border border-slate-200/80 rounded-3xl p-5 sm:p-8 shadow-xs space-y-5">
           <div className="flex items-center justify-between border-b border-slate-100 pb-4">
             <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
@@ -573,6 +745,40 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({
           </p>
           <p className="text-[11px] text-slate-500 mt-1">Activada en esta demo.</p>
         </div>
+        {previewTarget && (
+          <div className="fixed inset-0 z-[80] overflow-y-auto bg-slate-50">
+            <DoctorOnePager
+              doctor={hydrateDoctorProfile({
+                ...doctor,
+                titlePrefix,
+                firstName: firstName.trim(),
+                lastName: lastName.trim(),
+                fullName: previewName,
+                email,
+                phone,
+                whatsappPhone,
+                avatarUrl,
+                specialty: specialty.trim(),
+                focusAreas,
+                subspecialty: focusAreas[1] || focusAreas[0],
+                biography: biography.trim(),
+                officeCity: officeCity.trim(),
+                officeAddress: officeAddress.trim(),
+                location: previewLocation,
+                institution: institution.trim(),
+                weeklyAvailability: availability,
+                publicLayout: previewTarget.layout,
+                landingTemplateId: previewTarget.templateId,
+              })}
+              onBack={() => setPreviewTarget(null)}
+              backLabel="Volver al perfil"
+              reviews={previewReviews}
+              onAddReview={(review) => setPreviewReviews((prev) => [review, ...prev])}
+              bookings={previewBookings}
+              onAddBooking={(booking) => setPreviewBookings((prev) => [booking, ...prev])}
+            />
+          </div>
+        )}
         {onLogout && (
           <button
             type="button"

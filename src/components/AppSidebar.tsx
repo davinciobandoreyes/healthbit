@@ -30,7 +30,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
         </div>
         {!collapsed && (
           <span className="font-extrabold text-lg tracking-tight text-slate-900 whitespace-nowrap">
-            Ciru<span className="text-violet-600">Plastify</span>
+            P<span className="text-violet-600">lasty</span>
           </span>
         )}
       </div>

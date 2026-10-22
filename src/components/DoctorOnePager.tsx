@@ -28,10 +28,13 @@ import {
   defaultWeeklyAvailability,
 } from '../data/doctorPublic';
 import { groupVisibleProcedures, isPlasticSurgeonSpecialty, visibleProcedureLabels } from '../data/plasticProcedures';
+import { isLandingTemplateId } from '../data/publicTemplates';
+import { DoctorLanding } from './DoctorLanding';
 
 interface DoctorOnePagerProps {
   doctor: DoctorProfile;
   onBack: () => void;
+  backLabel?: string;
   reviews: PublicReview[];
   onAddReview: (review: PublicReview) => void;
   bookings: AppointmentBooking[];
@@ -614,6 +617,7 @@ const ReviewsSection: React.FC<{
 export const DoctorOnePager: React.FC<DoctorOnePagerProps> = ({
   doctor,
   onBack,
+  backLabel = 'Volver al Directorio',
   reviews,
   onAddReview,
   bookings,
@@ -793,11 +797,26 @@ export const DoctorOnePager: React.FC<DoctorOnePagerProps> = ({
   };
 
   const whatsAppMessage = encodeURIComponent(
-    `Hola Dr./Dra. ${doctor.fullName}, vi su perfil verificado en CiruPlastify y me gustaría agendar una cita presencial de valoración en ${doctor.specialty}.`
+    `Hola Dr./Dra. ${doctor.fullName}, vi su perfil verificado en Plasty y me gustaría agendar una cita presencial de valoración en ${doctor.specialty}.`
   );
   const whatsappSource = doctor.whatsappPhone || doctor.phone;
   const cleanPhone = whatsappSource ? whatsappSource.replace(/[^0-9]/g, '') : '573124567890';
   const whatsAppLink = `https://wa.me/${cleanPhone}?text=${whatsAppMessage}`;
+
+  if (doctor.publicLayout === 'landing') {
+    const templateId = isLandingTemplateId(doctor.landingTemplateId) ? doctor.landingTemplateId : 'consulta';
+    return (
+      <DoctorLanding
+        doctor={doctor}
+        templateId={templateId}
+        onBack={onBack}
+        backLabel={backLabel}
+        reviews={reviews}
+        onAddReview={onAddReview}
+        booking={<BookingPanel doctor={doctor} bookings={bookings} onAddBooking={onAddBooking} />}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-['Plus_Jakarta_Sans',sans-serif] pb-16">
@@ -808,7 +827,7 @@ export const DoctorOnePager: React.FC<DoctorOnePagerProps> = ({
             className="inline-flex items-center gap-2 min-h-[44px] text-xs sm:text-sm font-bold text-slate-700 hover:text-violet-700 bg-slate-100 hover:bg-violet-50 px-3 py-1.5 rounded-xl transition-all cursor-pointer group"
           >
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
-            <span>Volver al Directorio</span>
+            <span>{backLabel}</span>
           </button>
 
           <button

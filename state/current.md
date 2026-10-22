@@ -1,7 +1,8 @@
-# Estado actual — 2026-09-24
+# Estado actual — 2026-10-21
 
 ## Hecho
 
+- Nombre visible: **Plasty**. El login admin sigue en `@healthbit.co`.
 - Buscador público: hero corto “Encuentra doctores verificados” y foto; sigue en todas las especialidades y se oculta al buscar o al elegir ciudad. Footer: Privacidad y Términos (fase 1, Ley 1581). Búsqueda bajo el header con botón Buscar y Volver al inicio; especialidades y ciudad siguen visibles tras buscar. La card HealthBit abre la ficha; WhatsApp es icono. Si el nombre no está en HealthBit, una barra demo confirma que sí aparece en RETHUS y después el panel (memoria, se pierde al recargar); no abre ficha. La ficha no lleva hero.
 - Ficha pública del médico (`DoctorOnePager`): cabecera compacta, pestañas (Experiencia / Verificación / Credenciales / Opiniones) y agenda sticky. Sin catálogo de precios ni EPS.
 - Sandbox Verifik RETHUS: `GET /test` + `POST /api/verifik-rethus`. Token en servidor. Registro no lo llama.

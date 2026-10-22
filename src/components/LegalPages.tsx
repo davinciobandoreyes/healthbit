@@ -13,7 +13,7 @@ const Section: React.FC<{ title: string; children: React.ReactNode }> = ({ title
 export const SiteFooter: React.FC<{ onOpen: (page: LegalPageId) => void }> = ({ onOpen }) => (
   <footer className="border-t border-slate-200/80 bg-white">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-      <p className="text-xs text-slate-500">CiruPlastify · directorio médico en Colombia</p>
+      <p className="text-xs text-slate-500">Plasty · directorio médico en Colombia</p>
       <p className="text-xs text-slate-500">
         <button
           type="button"
@@ -60,7 +60,7 @@ const PrivacyBody: React.FC = () => (
 
     <Section title="Responsable">
       <p>
-        CiruPlastify trata datos personales como responsable, en los términos de la Ley 1581 de 2012. En esta fase es un
+        Plasty trata datos personales como responsable, en los términos de la Ley 1581 de 2012. En esta fase es un
         directorio para encontrar médicos con RETHUS revisado por una persona. No es una IPS, no presta la consulta y no
         es el médico tratante.
       </p>
@@ -79,7 +79,7 @@ const PrivacyBody: React.FC = () => (
     <Section title="Datos sensibles de salud">
       <p>
         El estado de salud, la historia clínica y las imágenes clínicas son datos sensibles (artículo 5 de la Ley 1581).
-        CiruPlastify no los pide para aparecer en el buscador. Si un médico los registra, lo hace para su propia consulta,
+        Plasty no los pide para aparecer en el buscador. Si un médico los registra, lo hace para su propia consulta,
         con el deber de reserva de la Ley 23 de 1981. La historia clínica sigue siendo del prestador, conforme a la
         Resolución 1995 de 1999 y la Ley 2015 de 2020. Esta fase no es el archivo clínico ni un sistema de RIPS.
       </p>
@@ -96,8 +96,8 @@ const PrivacyBody: React.FC = () => (
 
     <Section title="Quién más los ve">
       <p>
-        El médico ve las citas y opiniones de su ficha, y la historia que él mismo registra. Un revisor de CiruPlastify ve
-        el expediente de RETHUS y REPS. WhatsApp es de Meta: al escribirle al médico sales de CiruPlastify y aplican las
+        El médico ve las citas y opiniones de su ficha, y la historia que él mismo registra. Un revisor de Plasty ve
+        el expediente de RETHUS y REPS. WhatsApp es de Meta: al escribirle al médico sales de Plasty y aplican las
         reglas de ese servicio. No hay encargados de almacenamiento permanente en esta fase.
       </p>
     </Section>
@@ -120,17 +120,17 @@ const TermsBody: React.FC = () => (
       <p className="text-xs text-slate-500">Fase 1 del directorio · leyes de la República de Colombia</p>
     </header>
 
-    <Section title="Qué es CiruPlastify">
+    <Section title="Qué es Plasty">
       <p>
-        CiruPlastify es un directorio para encontrar médicos. Publicar un perfil, reservar una cita o abrir WhatsApp no
-        crea una relación médico-paciente con CiruPlastify. Esa relación, si nace, es con el médico o con su consultorio.
+        Plasty es un directorio para encontrar médicos. Publicar un perfil, reservar una cita o abrir WhatsApp no
+        crea una relación médico-paciente con Plasty. Esa relación, si nace, es con el médico o con su consultorio.
       </p>
       <p>Esto no es un servicio de urgencias. Ante una emergencia, usa la línea de emergencias o acude a un servicio de urgencias.</p>
     </Section>
 
     <Section title="Verificación en esta fase">
       <p>
-        Un médico entra al buscador cuando una persona de CiruPlastify aprueba su RETHUS y el perfil no está pausado. El
+        Un médico entra al buscador cuando una persona de Plasty aprueba su RETHUS y el perfil no está pausado. El
         sello REPS aparece solo si esa revisión fue aceptada. El registro no consulta solo una API para dar por
         verificado al médico. Los documentos de identidad apoyan la revisión; un análisis automático no reemplaza el
         RETHUS ni el concepto del revisor.
@@ -145,13 +145,13 @@ const TermsBody: React.FC = () => (
       </p>
       <p>
         La historia clínica que el médico escribe en el portal no forma parte del directorio público y no sustituye la
-        historia que debe llevar el prestador. CiruPlastify no diagnostica ni prescribe.
+        historia que debe llevar el prestador. Plasty no diagnostica ni prescribe.
       </p>
     </Section>
 
     <Section title="WhatsApp y cuentas">
       <p>
-        El botón de WhatsApp abre un chat con el número del médico, fuera de CiruPlastify. El mensaje inicial nombra la
+        El botón de WhatsApp abre un chat con el número del médico, fuera de Plasty. El mensaje inicial nombra la
         especialidad y pide una cita de valoración. No envíes por ahí documentos de identidad ni historias clínicas.
       </p>
       <p>
@@ -163,7 +163,7 @@ const TermsBody: React.FC = () => (
     <Section title="Uso aceptable y ley">
       <p>
         No uses el directorio para suplantar a un médico, publicar datos de pacientes o ofrecer servicios no
-        habilitados. CiruPlastify puede pausar un perfil. No responde por el acto médico, por la disponibilidad del
+        habilitados. Plasty puede pausar un perfil. No responde por el acto médico, por la disponibilidad del
         consultorio ni por lo que ocurra en WhatsApp.
       </p>
       <p>

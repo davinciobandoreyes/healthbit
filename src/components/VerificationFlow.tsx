@@ -494,7 +494,7 @@ export const VerificationFlow: React.FC<VerificationFlowProps> = ({
                 Registro Profesional y RETHUS
               </h2>
               <p className="text-xs text-slate-500 max-w-md mx-auto">
-                Ingresa tu información médica oficial. El equipo CiruPlastify revisará tu RETHUS.
+                Ingresa tu información médica oficial. El equipo Plasty revisará tu RETHUS.
               </p>
             </div>
 
@@ -567,7 +567,7 @@ export const VerificationFlow: React.FC<VerificationFlowProps> = ({
                     <span>No puedes unirte a la red</span>
                   </div>
                   <p className="text-xs text-slate-600 leading-relaxed">
-                    CiruPlastify es solo para cirujanos plásticos. Tu RETHUS se puede revisar, pero esta especialidad
+                    Plasty es solo para cirujanos plásticos. Tu RETHUS se puede revisar, pero esta especialidad
                     no entra al directorio ni a la cola de registro.
                   </p>
                 </div>
@@ -587,7 +587,7 @@ export const VerificationFlow: React.FC<VerificationFlowProps> = ({
                     </span>
                   </div>
                   <p className="text-xs text-slate-600 leading-relaxed">
-                    Tu verificación por RETHUS está siendo revisada por el equipo de CiruPlastify. Puedes continuar con
+                    Tu verificación por RETHUS está siendo revisada por el equipo de Plasty. Puedes continuar con
                     la cédula y la prueba facial. Mientras no esté confirmado, no aparecerás en el buscador de
                     pacientes.
                   </p>
