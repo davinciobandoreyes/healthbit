@@ -750,18 +750,30 @@ export const PatientDirectory: React.FC<PatientDirectoryProps> = ({
                   <MapPin className="w-4 h-4 text-violet-600 shrink-0" />
                   <span className="truncate">{composeCardPlace(doc)}</span>
                 </div>
-                <a
-                  href={doctorWhatsAppLink(doc)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={`Escríbeme a ${doc.fullName}`}
-                  onClick={(e) => e.stopPropagation()}
-                  onKeyDown={(e) => e.stopPropagation()}
-                  className="min-h-[44px] w-full rounded-xl bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 transition-all inline-flex items-center justify-center gap-2 text-sm font-bold"
-                >
-                  <WhatsAppIcon className="w-5 h-5 text-[#128C7E]" />
-                  Escríbeme
-                </a>
+                <div className="flex gap-2">
+                  <a
+                    href={doctorWhatsAppLink(doc)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`Escríbeme a ${doc.fullName}`}
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => e.stopPropagation()}
+                    className="min-h-[44px] flex-1 rounded-xl bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 transition-all inline-flex items-center justify-center gap-2 px-3 text-sm font-bold whitespace-nowrap"
+                  >
+                    <WhatsAppIcon className="w-5 h-5 text-[#128C7E] shrink-0" />
+                    Escríbeme
+                  </a>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedDoctor(doc);
+                    }}
+                    className="min-h-[44px] shrink-0 rounded-xl bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 transition-all inline-flex items-center justify-center px-4 text-sm font-bold whitespace-nowrap cursor-pointer"
+                  >
+                    Ver perfil
+                  </button>
+                </div>
               </article>
               );
             })}
