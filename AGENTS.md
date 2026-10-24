@@ -45,6 +45,7 @@ No leer de entrada: `dashboard.html`, `src/data/mock*.ts`, `DESIGNHealthBit.md` 
 | Gemini enfermedad actual | `server.ts` | `POST /api/categorize-illness`. Fallback local + flag; UI no lo vende como IA. |
 | Sandbox Verifik RETHUS | `public/test.html` + `server.ts` | `GET /test`. Proxy `POST /api/verifik-rethus`. No es el registro. |
 | Design system | `DESIGNHealthBit.md` | No inventar tokens |
+| Design system (página) | `design-system.html` + `src/design-system/` | `GET /design-system`. Documenta el sistema. No es el producto. |
 | Mapa de producto (humano) | `dashboard.html` | No es la app |
 
 Componentes no montados (no usar como base): `SpecialistDashboard.tsx`, `MobileFrame.tsx`.

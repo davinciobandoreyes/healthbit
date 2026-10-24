@@ -588,6 +588,15 @@ No inventes otras. Si no encaja, usa "Otro".`,
     }
   });
 
+  app.get('/design-system', (req, res, next) => {
+    if (process.env.NODE_ENV === 'production') {
+      res.sendFile(path.join(process.cwd(), 'dist', 'design-system.html'));
+      return;
+    }
+    req.url = '/design-system.html';
+    next();
+  });
+
   // Vite Middleware for development
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({
